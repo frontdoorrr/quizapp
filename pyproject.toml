@@ -9,6 +9,7 @@ readme = "README.md"
 python = "^3.13"
 fastapi = "^0.115.5"
 uvicorn = {extras = ["standard"], version = "^0.32.0"}
+py-ulid = "^1.0.3"
 
 
 [build-system]
