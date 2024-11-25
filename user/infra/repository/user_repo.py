@@ -1,3 +1,5 @@
+from fastapi import HTTPException
+
 from database import SessionLocal
 from user.domain.repository.user_repo import IUserRepository
 from user.domain.user import User as UserVO
@@ -22,3 +24,19 @@ class UserRepository(IUserRepository):
                 db.commit()
             finally:
                 db.close()
+
+    def find_by_email(self, email: str) -> UserVO:
+        with SessionLocal() as db:
+            user = db.query(User).filter(User.email == email).first()
+
+        if not user:
+            raise HTTPException(status_code=422)
+
+        return UserVO(
+            id=user.id,
+            name=user.name,
+            email=user.email,
+            password=user.password,
+            created_at=user.created_at,
+            updated_at=user.updated_at,
+        )
