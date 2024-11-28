@@ -1,8 +1,9 @@
+from typing import Annotated
 from ulid import ULID
 from datetime import datetime
 from user.domain.user import User
 
-from fastapi import HTTPException
+from fastapi import HTTPException, Depends
 
 from utils.crypto import Crypto
 from user.domain.repository.user_repo import IUserRepository
@@ -10,7 +11,7 @@ from user.infra.repository.user_repo import UserRepository
 
 
 class UserService:
-    def __init__(self):
+    def __init__(self, user_repo: Annotated[IUserRepository, Depends(UserRepository)]):
         self.user_repo: IUserRepository = UserRepository()
         self.ulid = ULID()
         self.crypto = Crypto()
