@@ -64,7 +64,8 @@ class UserService:
         if password:
             user.password = self.crtypto.encrypt(password)
         user.updated_at = datetime.now()
-
         self.user_repo.update(user)
-
         return user
+
+    def get_users(self) -> list[User]:
+        return self.user_repo.get_users()

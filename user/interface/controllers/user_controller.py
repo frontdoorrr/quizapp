@@ -51,3 +51,12 @@ def update_user(
         password=user.password,
     )
     return user
+
+
+@router.get("")
+@inject
+def get_users(user_service: UserService = Depends(Provide[Container.user_service])):
+    users = user_service.get_users()
+    return {
+        "users": users,
+    }
