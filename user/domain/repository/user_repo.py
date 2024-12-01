@@ -14,3 +14,11 @@ class IUserRepository(metaclass=ABCMeta):
         If there is not user, 422 Error occurs.
         """
         raise NotImplementedError
+
+    @abstractmethod
+    def find_by_id(self, id: str) -> User:
+        raise NotImplementedError
+
+    @abstractmethod
+    def update(self, user: User):
+        raise NotImplementedError
