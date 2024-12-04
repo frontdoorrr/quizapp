@@ -1,4 +1,5 @@
 from typing import Annotated
+from datetime import datetime
 
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel, EmailStr, Field
@@ -17,13 +18,27 @@ class CreateUserBody(BaseModel):
     password: str = Field(min_length=8, max_length=32)
 
 
+class UserResponse(BaseModel):
+    id: str
+    name: str
+    email: str
+    created_at: datetime
+    updated_at: datetime
+
+
+class GetUserResponse(BaseModel):
+    total_count: int
+    page: int
+    users: list[UserResponse]
+
+
 @router.post("", status_code=201)
 @inject
 def create_user(
     user: CreateUserBody,
     user_service: UserService = Depends(Provide[Container.user_service]),
     # user_service: Annotated[UserService, Depends(UserService)],
-):
+) -> UserResponse:
     user_service = UserService()
     created_user = user_service.create_user(
         name=user.name,
@@ -44,7 +59,7 @@ def update_user(
     user_id: str,
     user: UpdateUser,
     user_service: UserService = Depends(Provide[Container.user_service]),
-):
+) -> UserResponse:
     user = user_service.update_user(
         user_id=user_id,
         name=user.name,
@@ -55,7 +70,9 @@ def update_user(
 
 @router.get("")
 @inject
-def get_users(user_service: UserService = Depends(Provide[Container.user_service])):
+def get_users(
+    user_service: UserService = Depends(Provide[Container.user_service]),
+) -> GetUserResponse:
     users = user_service.get_users()
     return {
         "users": users,
