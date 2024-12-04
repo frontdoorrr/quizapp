@@ -67,3 +67,13 @@ class UserRepository(IUserRepository):
         with SessionLocal() as db:
             users = db.query(User).all()
         return [UserVO(**row_to_dict(user)) for user in users]
+
+    def delete(self, id: str):
+        with SessionLocal() as db:
+            user = db.query(User).filter(User.id == id).first()
+
+            if not user:
+                raise HTTPException(status_code=422)
+
+        db.delete(user)
+        db.commit()

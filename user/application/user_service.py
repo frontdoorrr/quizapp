@@ -67,5 +67,9 @@ class UserService:
         self.user_repo.update(user)
         return user
 
-    def get_users(self) -> list[User]:
-        return self.user_repo.get_users()
+    def get_users(self, page: int, items_per_page: int) -> tuple[int, list[User]]:
+        users = self.user_repo.get_users(page, items_per_page)
+        return users
+
+    def delete_user(self, user_id: str):
+        return self.user_repo.delete(user_id)
