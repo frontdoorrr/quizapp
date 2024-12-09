@@ -3,15 +3,13 @@ from ulid import ULID
 from datetime import datetime
 from user.domain.user import User
 
-from dependency_injector.wiring import inject, Provide
-from fastapi import HTTPException, Depends, status
-from containers import Container
+from dependency_injector.wiring import inject
+from fastapi import HTTPException, status
 
 
 from common.auth import Role, create_access_token
 from utils.crypto import Crypto
 from user.domain.repository.user_repo import IUserRepository
-from user.infra.repository.user_repo import UserRepository
 
 
 class UserService:
