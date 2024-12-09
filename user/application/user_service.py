@@ -8,7 +8,7 @@ from fastapi import HTTPException, Depends, status
 from containers import Container
 
 
-from common.auth import create_access_token
+from common.auth import Role, create_access_token
 from utils.crypto import Crypto
 from user.domain.repository.user_repo import IUserRepository
 from user.infra.repository.user_repo import UserRepository
@@ -81,5 +81,8 @@ class UserService:
         if not self.crypto.verify(password, user.password):
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
 
-        access_token = create_access_token(payload={"user_id": user.id})
+        access_token = create_access_token(
+            payload={"user_id": user.id},
+            role=Role.USER,
+        )
         return access_token
