@@ -19,6 +19,7 @@ pydantic = {extras = ["email"], version = "^2.10.3"}
 python-jose = {extras = ["cryptography"], version = "^3.3.0"}
 python-multipart = "^0.0.19"
 python-dotenv = "^1.0.1"
+pydantic-settings = "^2.6.1"
 
 
 [build-system]
