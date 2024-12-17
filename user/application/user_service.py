@@ -24,6 +24,7 @@ class UserService:
         name: str,
         email: str,
         password: str,
+        role: Role = Role.USER,
         memo: str | None = None,
     ):
         _user = None
@@ -43,6 +44,7 @@ class UserService:
             name=name,
             email=email,
             password=self.crypto.encrypt(password),
+            role=role,
             created_at=now,
             updated_at=now,
             memo=memo,
@@ -61,7 +63,7 @@ class UserService:
         if name:
             user.name = name
         if password:
-            user.password = self.crtypto.encrypt(password)
+            user.password = self.crypto.encrypt(password)
         user.updated_at = datetime.now()
         self.user_repo.update(user)
         return user

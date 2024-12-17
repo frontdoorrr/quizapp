@@ -6,10 +6,11 @@ from fastapi.security import OAuth2PasswordRequestForm
 from pydantic import BaseModel, EmailStr, Field
 from dependency_injector.wiring import inject, Provide
 
-
 from containers import Container
 from user.application.user_service import UserService
 from common.auth import CurrentUser, get_current_user, get_admin_user
+from common.enums import Role
+
 
 router = APIRouter(prefix="/users")
 
@@ -18,6 +19,7 @@ class CreateUserBody(BaseModel):
     name: str = Field(min_length=2, max_length=32)
     email: EmailStr = Field(max_length=64)
     password: str = Field(min_length=8, max_length=32)
+    role: Role = Field(default=Role.USER)
 
 
 class UpdateUserBody(BaseModel):
@@ -44,13 +46,12 @@ class GetUserResponse(BaseModel):
 def create_user(
     user: CreateUserBody,
     user_service: UserService = Depends(Provide[Container.user_service]),
-    # user_service: Annotated[UserService, Depends(UserService)],
 ) -> UserResponse:
-    user_service = UserService()
     created_user = user_service.create_user(
         name=user.name,
         email=user.email,
         password=user.password,
+        role=user.role,
     )
     return created_user
 
@@ -110,7 +111,7 @@ def login(
         password=form_data.password,
     )
     return {
-        "access_toekn": access_token,
+        "access_token": access_token,
         "token_type": "bearer",
     }
 

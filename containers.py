@@ -6,7 +6,11 @@ from user.infra.repository.user_repo import UserRepository
 
 class Container(containers.DeclarativeContainer):
     wiring_config = containers.WiringConfiguration(
-        packages=["user"],
+        packages=[
+            "user.interface.controllers",
+            "user.application",
+        ],
     )
-    user_repo = providers.Factory(UserRepository)
-    user_service = providers.Factory(UserService, user_repo=user_repo)
+
+    user_repo = providers.Singleton(UserRepository)
+    user_service = providers.Singleton(UserService, user_repo=user_repo)

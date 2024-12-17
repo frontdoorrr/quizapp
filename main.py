@@ -7,7 +7,9 @@ from containers import Container
 from user.interface.controllers.user_controller import router as user_routers
 
 app = FastAPI()
-app.container = Container()
+container = Container()
+container.wire(packages=["user"])
+app.container = container
 app.include_router(router=user_routers)
 
 

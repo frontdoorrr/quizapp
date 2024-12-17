@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from enum import StrEnum
 from typing import Annotated
 
@@ -53,7 +53,7 @@ def decode_access_token(token: str):
 def create_access_token(
     payload: dict, role: Role, expires_delta: timedelta = timedelta(hours=6)
 ):
-    expire = datetime.now(datetime.timezone.utc) + expires_delta
+    expire = datetime.now(timezone.utc) + expires_delta
     payload.update(
         {
             "role": role,
