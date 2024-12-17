@@ -11,7 +11,7 @@ from user.application.user_service import UserService
 from common.auth import CurrentUser, get_current_user, get_admin_user, Role
 
 
-router = APIRouter(prefix="/users")
+router = APIRouter(prefix="/user")
 
 
 class CreateUserBody(BaseModel):
