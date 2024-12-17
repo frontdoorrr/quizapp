@@ -1,6 +1,7 @@
 from typing import Annotated
 from ulid import ULID
 from datetime import datetime, date
+
 from dependency_injector.wiring import inject
 from fastapi import HTTPException, status
 
@@ -28,7 +29,7 @@ class UserService:
         phone: str | None = None,
         nickname: str | None = None,
         memo: str | None = None,
-    ):
+    ) -> User:
         _user = None
 
         try:
@@ -38,10 +39,13 @@ class UserService:
                 raise e
 
         if _user:
-            raise HTTPException(status_code=422)
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail="Email already exists",
+            )
 
         now = datetime.now()
-        user: User = User(
+        user = User(
             id=self.ulid.generate(),
             name=name,
             email=email,
@@ -85,21 +89,45 @@ class UserService:
         self.user_repo.update(user)
         return user
 
-    def get_users(self, page: int, items_per_page: int) -> tuple[int, list[User]]:
-        users = self.user_repo.get_users(page, items_per_page)
-        return users
+    def get_users(self, page: int = 1, items_per_page: int = 10) -> dict:
+        users = self.user_repo.find_all()
+        total_count = len(users)
+        start_idx = (page - 1) * items_per_page
+        end_idx = start_idx + items_per_page
+        paginated_users = users[start_idx:end_idx]
 
-    def delete_user(self, user_id: str):
-        return self.user_repo.delete(user_id)
+        return {
+            "total_count": total_count,
+            "page": page,
+            "users": paginated_users,
+        }
 
-    def login(self, email: str, password: str):
-        user = self.user_repo.find_by_email(email=email)
+    def get_user_by_id(self, user_id: str) -> User:
+        return self.user_repo.find_by_id(user_id)
 
-        if not self.crypto.verify(password, user.password):
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
+    def login(self, email: str, password: str) -> dict:
+        try:
+            user = self.user_repo.find_by_email(email)
+            if not self.crypto.verify(password, user.password):
+                raise HTTPException(
+                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    detail="Invalid credentials",
+                )
+        except HTTPException:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid credentials",
+            )
 
         access_token = create_access_token(
-            payload={"user_id": user.id},
-            role=Role.USER,
+            data={
+                "sub": user.id,
+                "email": user.email,
+                "role": user.role,
+            }
         )
-        return access_token
+
+        return {
+            "access_token": access_token,
+            "token_type": "bearer",
+        }

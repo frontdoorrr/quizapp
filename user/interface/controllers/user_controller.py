@@ -19,7 +19,7 @@ class CreateUserBody(BaseModel):
     email: EmailStr = Field(max_length=64)
     password: str = Field(min_length=8, max_length=32)
     role: Role = Field(default=Role.USER)
-    birth: date
+    birth: date = Field(...)  # 명시적으로 필수 필드로 지정
     address: str | None = Field(max_length=32, default=None)
     phone: str = Field(max_length=32)
     nickname: str = Field(min_length=2, max_length=32)
@@ -60,6 +60,7 @@ def create_user(
     user: CreateUserBody,
     user_service: UserService = Depends(Provide[Container.user_service]),
 ) -> UserResponse:
+
     created_user = user_service.create_user(
         name=user.name,
         email=user.email,
@@ -78,9 +79,10 @@ def create_user(
 def update_user(
     user_id: str,
     user: UpdateUserBody,
+    current_user: Annotated[CurrentUser, Depends(get_admin_user)],
     user_service: UserService = Depends(Provide[Container.user_service]),
 ) -> UserResponse:
-    user = user_service.update_user(
+    updated_user = user_service.update_user(
         user_id=user_id,
         name=user.name,
         password=user.password,
@@ -89,7 +91,7 @@ def update_user(
         phone=user.phone,
         nickname=user.nickname,
     )
-    return user
+    return updated_user
 
 
 @router.get("")
@@ -97,23 +99,18 @@ def update_user(
 def get_users(
     page: int = 1,
     items_per_page: int = 10,
-    current_user: CurrentUser = Depends(get_admin_user),
     user_service: UserService = Depends(Provide[Container.user_service]),
 ) -> GetUserResponse:
-    users = user_service.get_users()
-    return {
-        "users": users,
-    }
+    return user_service.get_users(page=page, items_per_page=items_per_page)
 
 
-@router.delete("", status_code=status.HTTP_204_NO_CONTENT)
+@router.get("/me")
 @inject
-def delete_user(
+def get_my_info(
     current_user: Annotated[CurrentUser, Depends(get_current_user)],
     user_service: UserService = Depends(Provide[Container.user_service]),
-):
-    # TODO : 다른 유저를 삭제할 수 없도록 Token에서 유저 아이디를 구한다.
-    user_service.delete_user(current_user.id)
+) -> UserResponse:
+    return user_service.get_user_by_id(current_user.id)
 
 
 @router.post("/login")
@@ -122,24 +119,17 @@ def login(
     form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
     user_service: UserService = Depends(Provide[Container.user_service]),
 ):
-    access_token = user_service.login(
-        email=form_data.username,
-        password=form_data.password,
-    )
-    return {
-        "access_token": access_token,
-        "token_type": "bearer",
-    }
+    return user_service.login(email=form_data.username, password=form_data.password)
 
 
-@router.put("", response_model=UserResponse)
+@router.put("/me")
 @inject
-def update_user(
-    current_user: Annotated[CurrentUser, Depends(get_current_user)],
+def update_my_info(
     body: UpdateUserBody,
+    current_user: Annotated[CurrentUser, Depends(get_current_user)],
     user_service: UserService = Depends(Provide[Container.user_service]),
-):
-    user = user_service.update_user(
+) -> UserResponse:
+    updated_user = user_service.update_user(
         user_id=current_user.id,
         name=body.name,
         password=body.password,
@@ -148,4 +138,4 @@ def update_user(
         phone=body.phone,
         nickname=body.nickname,
     )
-    return user
+    return updated_user
