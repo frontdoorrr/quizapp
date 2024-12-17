@@ -1,15 +1,14 @@
 from typing import Annotated
-from datetime import datetime
+from datetime import datetime, date
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, status
 from fastapi.security import OAuth2PasswordRequestForm
 from pydantic import BaseModel, EmailStr, Field
 from dependency_injector.wiring import inject, Provide
 
 from containers import Container
 from user.application.user_service import UserService
-from common.auth import CurrentUser, get_current_user, get_admin_user
-from common.enums import Role
+from common.auth import CurrentUser, get_current_user, get_admin_user, Role
 
 
 router = APIRouter(prefix="/users")
@@ -20,19 +19,33 @@ class CreateUserBody(BaseModel):
     email: EmailStr = Field(max_length=64)
     password: str = Field(min_length=8, max_length=32)
     role: Role = Field(default=Role.USER)
+    birth: date
+    address: str | None = Field(max_length=32, default=None)
+    phone: str = Field(max_length=32)
+    nickname: str = Field(min_length=2, max_length=32)
 
 
 class UpdateUserBody(BaseModel):
     name: str | None = Field(min_length=2, max_length=32, default=None)
     password: str | None = Field(min_length=8, max_length=32, default=None)
+    birth: date | None = None
+    address: str | None = Field(max_length=32, default=None)
+    phone: str | None = Field(max_length=32, default=None)
+    nickname: str | None = Field(min_length=2, max_length=32, default=None)
 
 
 class UserResponse(BaseModel):
     id: str
     name: str
     email: str
+    role: Role
+    birth: date
+    address: str | None
+    phone: str
+    nickname: str
     created_at: datetime
     updated_at: datetime
+    memo: str | None
 
 
 class GetUserResponse(BaseModel):
@@ -41,7 +54,7 @@ class GetUserResponse(BaseModel):
     users: list[UserResponse]
 
 
-@router.post("", status_code=201)
+@router.post("", status_code=status.HTTP_201_CREATED)
 @inject
 def create_user(
     user: CreateUserBody,
@@ -52,26 +65,29 @@ def create_user(
         email=user.email,
         password=user.password,
         role=user.role,
+        birth=user.birth,
+        address=user.address,
+        phone=user.phone,
+        nickname=user.nickname,
     )
     return created_user
-
-
-class UpdateUser(BaseModel):
-    name: str | None = Field(min_length=2, max_length=32, default=None)
-    password: str | None = Field(min_length=8, max_length=32, default=None)
 
 
 @router.put("/{user_id}")
 @inject
 def update_user(
     user_id: str,
-    user: UpdateUser,
+    user: UpdateUserBody,
     user_service: UserService = Depends(Provide[Container.user_service]),
 ) -> UserResponse:
     user = user_service.update_user(
         user_id=user_id,
         name=user.name,
         password=user.password,
+        birth=user.birth,
+        address=user.address,
+        phone=user.phone,
+        nickname=user.nickname,
     )
     return user
 
@@ -90,7 +106,7 @@ def get_users(
     }
 
 
-@router.delete("", status_code=204)
+@router.delete("", status_code=status.HTTP_204_NO_CONTENT)
 @inject
 def delete_user(
     current_user: Annotated[CurrentUser, Depends(get_current_user)],
@@ -127,5 +143,9 @@ def update_user(
         user_id=current_user.id,
         name=body.name,
         password=body.password,
+        birth=body.birth,
+        address=body.address,
+        phone=body.phone,
+        nickname=body.nickname,
     )
     return user

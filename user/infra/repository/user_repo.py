@@ -1,11 +1,11 @@
-from fastapi import HTTPException
+from fastapi import HTTPException, status
 
 from database import SessionLocal
-from utils.db_utils import row_to_dict
-
 from user.domain.repository.user_repo import IUserRepository
 from user.domain.user import User as UserVO
 from user.infra.db_models.user import User
+
+from utils.db_utils import row_to_dict
 
 
 class UserRepository(IUserRepository):
@@ -54,7 +54,7 @@ class UserRepository(IUserRepository):
 
     def update(self, user_vo: UserVO):
         with SessionLocal() as db:
-            user = db.qeury(User).filter(User.id == user_vo.id).first()
+            user = db.query(User).filter(User.id == user_vo.id).first()
             if not user:
                 raise HTTPException(status_code=422)
             user.name = user_vo.name

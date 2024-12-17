@@ -1,15 +1,13 @@
 from typing import Annotated
 from ulid import ULID
-from datetime import datetime
-from user.domain.user import User
-
+from datetime import datetime, date
 from dependency_injector.wiring import inject
 from fastapi import HTTPException, status
-
 
 from common.auth import Role, create_access_token
 from utils.crypto import Crypto
 from user.domain.repository.user_repo import IUserRepository
+from user.domain.user import User
 
 
 class UserService:
@@ -25,6 +23,10 @@ class UserService:
         email: str,
         password: str,
         role: Role = Role.USER,
+        birth: date | None = None,
+        address: str | None = None,
+        phone: str | None = None,
+        nickname: str | None = None,
         memo: str | None = None,
     ):
         _user = None
@@ -45,6 +47,10 @@ class UserService:
             email=email,
             password=self.crypto.encrypt(password),
             role=role,
+            birth=birth,
+            address=address,
+            phone=phone,
+            nickname=nickname,
             created_at=now,
             updated_at=now,
             memo=memo,
@@ -57,13 +63,24 @@ class UserService:
         user_id: str,
         name: str | None = None,
         password: str | None = None,
-    ):
+        birth: date | None = None,
+        address: str | None = None,
+        phone: str | None = None,
+        nickname: str | None = None,
+    ) -> User:
         user = self.user_repo.find_by_id(user_id)
-
         if name:
             user.name = name
         if password:
             user.password = self.crypto.encrypt(password)
+        if birth:
+            user.birth = birth
+        if address is not None:
+            user.address = address
+        if phone:
+            user.phone = phone
+        if nickname:
+            user.nickname = nickname
         user.updated_at = datetime.now()
         self.user_repo.update(user)
         return user
