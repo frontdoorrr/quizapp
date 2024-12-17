@@ -15,11 +15,13 @@ class Game(Base):
     opened_at: Mapped[str] = Column("opened_at", DateTime, nullable=False)
     closed_at: Mapped[str] = Column("closed_at", DateTime, nullable=False)
 
-    title: Mapped[str] = Column("title", String)
-    description: Mapped[str] = Column("description", Text, nullable=True)
-    status: Mapped[str] = Column("status", String,nullable=False, default="Outstanding"
+    title: Mapped[str] = Column("title", String, nullable=False)
+    description: Mapped[str] = Column("description", Text, nullable=False)
+    status: Mapped[str] = Column(
+        "status", String, nullable=False, default="Outstanding"
+    )
     memo: Mapped[str] = Column("memo", Text, nullable=True)
     question: Mapped[str] = Column("question", String, nullable=False)
     answer: Mapped[str] = Column("answer", String, nullable=False)
     question_link: Mapped[str] = Column("question_link", String, nullable=True)
-    answer_link: Mapped[str] = Column("answer_link", String, nullable)
+    answer_link: Mapped[str] = Column("answer_link", String, nullable=True)
