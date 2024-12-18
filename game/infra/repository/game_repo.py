@@ -3,7 +3,6 @@ from fastapi import HTTPException, status
 from game.domain.repository.game_repo import IGameRepository
 from game.domain.game import Game as GameVO
 from game.infra.db_models.game import Game
-from game.infra.db import SessionLocal
 
 
 class GameRepository(IGameRepository):

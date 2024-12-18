@@ -1,10 +1,11 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends
-from fastapi.exceptions import HTTPException
-from fastapi.security import OAuth2PasswordRequestForm
-from pydantic import BaseModel
+from fastapi import APIRouter, Depends, status
+from pydantic import BaseModel, Field
+from dependency_injector.wiring import inject, Provide
+from datetime import datetime
 
+from containers import Container
 from game.application.game_service import GameService
 from common.auth import get_current_user
 
@@ -24,7 +25,6 @@ class CreateGameBody(BaseModel):
 @inject
 async def create_game(
     body: CreateGameBody,
-    current_user: Annotated[CurrentUser, Depends(get_current_user)],
     game_service: GameService = Depends(Provide[Container.game_service]),
 ):
     return game_service.create_game(
@@ -51,7 +51,6 @@ class UpdateGameBody(BaseModel):
 async def update_game(
     game_id: str,
     body: UpdateGameBody,
-    current_user: Annotated[CurrentUser, Depends(get_current_user)],
     game_service: GameService = Depends(Provide[Container.game_service]),
 ):
     return game_service.update_game(
