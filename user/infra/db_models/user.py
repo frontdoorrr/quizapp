@@ -7,7 +7,7 @@ from common.auth import Role
 
 
 class User(Base):
-    __tablename__ = "users"
+    __tablename__ = "user"
 
     id: Mapped[str] = Column(String(36), primary_key=True)
     name: Mapped[str] = Column(String(32), nullable=False)

@@ -1,27 +1,29 @@
-from contextlib import nullcontext
-from sqlalchemy import Column, String, DateTime, Text
+from datetime import datetime
+from sqlalchemy import Column, String, DateTime, Text, Integer, Enum
 from sqlalchemy.orm import Mapped
 
 from database import Base
+from game.domain.game import GameStatus
 
 
 class Game(Base):
     __tablename__ = "game"
 
-    id: Mapped[int] = Column("id", String, primary_key=True)
-
-    created_at: Mapped[str] = Column("created_at", DateTime, nullable=False)
-    modified_at: Mapped[str] = Column("modified_at", DateTime, nullable=False)
-    opened_at: Mapped[str] = Column("opened_at", DateTime, nullable=False)
-    closed_at: Mapped[str] = Column("closed_at", DateTime, nullable=False)
-
-    title: Mapped[str] = Column("title", String, nullable=False)
-    description: Mapped[str] = Column("description", Text, nullable=False)
-    status: Mapped[str] = Column(
-        "status", String, nullable=False, default="Outstanding"
+    id: Mapped[str] = Column(String(36), primary_key=True)
+    number: Mapped[int] = Column(
+        Integer, primary_key=False, autoincrement=True, unique=True, nullable=False, index=True
     )
-    memo: Mapped[str] = Column("memo", Text, nullable=True)
-    question: Mapped[str] = Column("question", String, nullable=False)
-    answer: Mapped[str] = Column("answer", String, nullable=False)
-    question_link: Mapped[str] = Column("question_link", String, nullable=True)
-    answer_link: Mapped[str] = Column("answer_link", String, nullable=True)
+    created_at: Mapped[datetime] = Column(DateTime, nullable=False)
+    modified_at: Mapped[datetime] = Column(DateTime, nullable=False)
+    opened_at: Mapped[datetime] = Column(DateTime, nullable=True)
+    closed_at: Mapped[datetime] = Column(DateTime, nullable=True)
+    title: Mapped[str] = Column(String(32), nullable=False)
+    description: Mapped[str] = Column(Text, nullable=True)
+    status: Mapped[GameStatus] = Column(
+        Enum(GameStatus), nullable=False, default=GameStatus.DRAFT
+    )
+    memo: Mapped[str] = Column(Text, nullable=True)
+    question: Mapped[str] = Column(Text, nullable=False)
+    answer: Mapped[str] = Column(Text, nullable=False)
+    question_link: Mapped[str] = Column(String(256), nullable=True)
+    answer_link: Mapped[str] = Column(String(256), nullable=True)

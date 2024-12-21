@@ -1,5 +1,12 @@
 from dataclasses import dataclass
 from datetime import datetime
+from enum import Enum
+
+
+class GameStatus(str, Enum):
+    DRAFT = "DRAFT"
+    PUBLISHED = "PUBLISHED"
+    CLOSED = "CLOSED"
 
 
 @dataclass
@@ -8,12 +15,11 @@ class Game:
     number: int
     created_at: datetime
     modified_at: datetime
-    opened_at: datetime
-    closed_at: datetime
-
+    opened_at: datetime | None
+    closed_at: datetime | None
     title: str
-    description: str
-    status: str  # Choice
+    description: str | None
+    status: GameStatus
     memo: str | None
     question: str
     answer: str

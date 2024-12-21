@@ -1,5 +1,6 @@
 from fastapi import HTTPException, status
 
+from database import SessionLocal
 from game.domain.repository.game_repo import IGameRepository
 from game.domain.game import Game as GameVO
 from game.infra.db_models.game import Game
@@ -9,6 +10,7 @@ class GameRepository(IGameRepository):
     def save(self, game: GameVO):
         db_game = Game(
             id=game.id,
+            number=game.number,
             created_at=game.created_at,
             modified_at=game.modified_at,
             opened_at=game.opened_at,
@@ -25,6 +27,8 @@ class GameRepository(IGameRepository):
         with SessionLocal() as db:
             db.add(db_game)
             db.commit()
+            db.refresh(db_game)
+            game.number = db_game.number  # 자동 생성된 number를 도메인 객체에 반영
 
     def find_all(self) -> list[GameVO]:
         with SessionLocal() as db:
@@ -32,6 +36,7 @@ class GameRepository(IGameRepository):
             return [
                 GameVO(
                     id=game.id,
+                    number=game.number,
                     created_at=game.created_at,
                     modified_at=game.modified_at,
                     opened_at=game.opened_at,
@@ -50,47 +55,46 @@ class GameRepository(IGameRepository):
 
     def find_by_id(self, id: str) -> GameVO:
         with SessionLocal() as db:
-            game_db = db.query(Game).filter(Game.id == id).first()
-            if not game_db:
-                raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY)
+            game = db.query(Game).filter(Game.id == id).first()
+            if not game:
+                raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
             return GameVO(
-                id=game_db.id,
-                created_at=game_db.created_at,
-                modified_at=game_db.modified_at,
-                opened_at=game_db.opened_at,
-                closed_at=game_db.closed_at,
-                title=game_db.title,
-                description=game_db.description,
-                status=game_db.status,
-                memo=game_db.memo,
-                question=game_db.question,
-                answer=game_db.answer,
-                question_link=game_db.question_link,
-                answer_link=game_db.answer_link,
+                id=game.id,
+                number=game.number,
+                created_at=game.created_at,
+                modified_at=game.modified_at,
+                opened_at=game.opened_at,
+                closed_at=game.closed_at,
+                title=game.title,
+                description=game.description,
+                status=game.status,
+                memo=game.memo,
+                question=game.question,
+                answer=game.answer,
+                question_link=game.question_link,
+                answer_link=game.answer_link,
             )
 
-    def update(self, game_vo: GameVO):
+    def update(self, game: GameVO) -> GameVO:
         with SessionLocal() as db:
-            game = db.query(Game).filter(Game.id == game_vo.id).first()
-            if not game:
-                raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY)
+            db_game = db.query(Game).filter(Game.id == game.id).first()
+            if not db_game:
+                raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
 
-            game.id = game_vo.id
-            game.created_at = game_vo.created_at
-            game.modified_at = game_vo.modified_at
-            game.opened_at = game_vo.opened_at
-            game.closed_at = game_vo.closed_at
-            game.title = game_vo.title
-            game.description = game_vo.description
-            game.status = game_vo.status
-            game.memo = game_vo.memo
-            game.question = game_vo.question
-            game.answer = game_vo.answer
-            game.question_link = game_vo.question_link
-            game.answer_link = game_vo.answer_link
+            db_game.title = game.title
+            db_game.description = game.description
+            db_game.status = game.status
+            db_game.memo = game.memo
+            db_game.question = game.question
+            db_game.answer = game.answer
+            db_game.question_link = game.question_link
+            db_game.answer_link = game.answer_link
+            db_game.modified_at = game.modified_at
+            db_game.opened_at = game.opened_at
+            db_game.closed_at = game.closed_at
 
             db.commit()
-            return game_vo
+            return game
 
     def delete(self, game: GameVO):
         raise NotImplementedError
