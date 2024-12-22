@@ -1,6 +1,6 @@
 from datetime import datetime
 from sqlalchemy import Column, String, DateTime, Text, Integer, Enum
-from sqlalchemy.orm import Mapped
+from sqlalchemy.orm import Mapped, relationship
 
 from database import Base
 from game.domain.game import GameStatus
@@ -27,3 +27,6 @@ class Game(Base):
     answer: Mapped[str] = Column(Text, nullable=False)
     question_link: Mapped[str] = Column(String(256), nullable=True)
     answer_link: Mapped[str] = Column(String(256), nullable=True)
+
+    # Relationships
+    answers = relationship("Answer", back_populates="game")
