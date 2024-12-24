@@ -1,7 +1,7 @@
 from dependency_injector import containers, providers
 
 from user.application.user_service import UserService
-from user.infra.repository.user_repo import UserRepository
+from user.infra.repository.user_repo import UserRepository, LoginHistoryRepository
 from game.application.game_service import GameService
 from game.infra.repository.game_repo import GameRepository
 from answer.application.answer_service import AnswerService
@@ -22,7 +22,10 @@ class Container(containers.DeclarativeContainer):
 
     # User
     user_repo = providers.Singleton(UserRepository)
-    user_service = providers.Singleton(UserService, user_repo=user_repo)
+    login_history_repo = providers.Singleton(LoginHistoryRepository)
+    user_service = providers.Singleton(
+        UserService, user_repo=user_repo, login_history_repo=login_history_repo
+    )
 
     # Game
     game_repo = providers.Singleton(GameRepository)

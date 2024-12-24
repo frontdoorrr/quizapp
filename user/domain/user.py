@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+import dataclasses
 from datetime import datetime, date
 from common.auth import Role
 
@@ -17,3 +18,10 @@ class User:
     created_at: datetime
     updated_at: datetime
     memo: str | None = None
+
+
+@dataclass
+class LoginHistory:
+    id: str
+    user_id: str
+    created_at: datetime

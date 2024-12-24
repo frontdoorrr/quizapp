@@ -8,7 +8,7 @@ from answer.application.answer_service import AnswerService
 from common.auth import get_current_user
 
 
-router = APIRouter(prefix="/answers", tags=["answers"])
+router = APIRouter(prefix="/answer", tags=["answer"])
 
 
 class SubmitAnswerBody(BaseModel):

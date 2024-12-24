@@ -6,15 +6,19 @@ from dependency_injector.wiring import inject
 from fastapi import HTTPException, status
 
 from common.auth import Role, create_access_token
+from user.infra.db_models.user import LoginHistory
 from utils.crypto import Crypto
-from user.domain.repository.user_repo import IUserRepository
+from user.domain.repository.user_repo import IUserRepository, ILoginHistoryRepository
 from user.domain.user import User
 
 
 class UserService:
     @inject
-    def __init__(self, user_repo: IUserRepository):
+    def __init__(
+        self, user_repo: IUserRepository, login_history_repo: ILoginHistoryRepository
+    ):
         self.user_repo = user_repo
+        self.login_history_repo = login_history_repo
         self.ulid = ULID()
         self.crypto = Crypto()
 
@@ -85,7 +89,7 @@ class UserService:
             user.phone = phone
         if nickname:
             user.nickname = nickname
-        user.updated_at = datetime.now()
+        user.modified_at = datetime.now()
         self.user_repo.update(user)
         return user
 
@@ -107,24 +111,28 @@ class UserService:
 
     def login(self, email: str, password: str) -> dict:
         try:
+            print("1111111111111111111111111111111111111111")
+
             user = self.user_repo.find_by_email(email)
+            print(user)
             if not self.crypto.verify(password, user.password):
                 raise HTTPException(
                     status_code=status.HTTP_401_UNAUTHORIZED,
                     detail="Invalid credentials",
                 )
         except HTTPException:
+
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Invalid credentials",
             )
 
         access_token = create_access_token(
-            data={
+            payload={
                 "sub": user.id,
                 "email": user.email,
-                "role": user.role,
-            }
+            },
+            role=user.role,
         )
 
         return {

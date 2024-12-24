@@ -5,6 +5,7 @@ from sqlalchemy.orm import Mapped, relationship
 from database import Base
 from common.auth import Role
 
+
 class User(Base):
     __tablename__ = "user"
 
@@ -19,8 +20,16 @@ class User(Base):
     nickname: Mapped[str] = Column(String(32), nullable=False)
     memo: Mapped[str] = Column(Text, nullable=True)
     created_at: Mapped[datetime] = Column(DateTime, nullable=False)
-    modified_at: Mapped[datetime] = Column(DateTime, nullable=False)
+    updated_at: Mapped[datetime] = Column(DateTime, nullable=False)
     last_login_at: Mapped[datetime] = Column(DateTime, nullable=True)
 
     # Relationships
     answers = relationship("Answer", back_populates="user")
+
+
+class LoginHistory(Base):
+    __tablename__ = "login_history"
+
+    id: Mapped[str] = Column(String(36), primary_key=True)
+    user_id: Mapped[str] = Column(String(36), nullable=False)
+    login_at: Mapped[datetime] = Column(DateTime, nullable=False)

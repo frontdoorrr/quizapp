@@ -1,13 +1,18 @@
 from fastapi import HTTPException, status
 
 from database import SessionLocal
-from user.domain.repository.user_repo import IUserRepository
+from user.domain.repository.user_repo import IUserRepository, ILoginHistoryRepository
 from user.domain.user import User as UserVO
-from user.infra.db_models.user import User
+from user.domain.user import LoginHistory as LoginHistoryVO
+from user.infra.db_models.user import User, LoginHistory
 
 
 class UserRepository(IUserRepository):
     def save(self, user: UserVO):
+        print(user.updated_at)
+        print(user.updated_at)
+        print(user.updated_at)
+        print(user.updated_at)
         db_user = User(
             id=user.id,
             name=user.name,
@@ -106,3 +111,66 @@ class UserRepository(IUserRepository):
 
             db.commit()
             return user_vo
+
+
+class LoginHistoryRepository(ILoginHistoryRepository):
+    def save(self, login_history: LoginHistoryVO):
+        login_history = LoginHistory(
+            id=login_history.id,
+            user_id=login_history.user_id,
+            login_at=login_history.login_at,
+        )
+        with SessionLocal() as db:
+            db.add(login_history)
+            db.commit()  # DB에 저장
+
+    def find_by_user_id(self, user_id: str) -> list[LoginHistoryVO]:
+        with SessionLocal() as db:
+            login_histories = (
+                db.query(LoginHistory).filter(LoginHistory.user_id == user_id).all()
+            )
+            return [
+                LoginHistoryVO(
+                    id=login_history.id,
+                    user_id=login_history.user_id,
+                    login_at=login_history.login_at,
+                )
+                for login_history in login_histories
+            ]
+
+    def delete(self, login_history: LoginHistoryVO):
+        with SessionLocal() as db:
+            login_history = (
+                db.query(LoginHistory)
+                .filter(LoginHistory.id == login_history.id)
+                .first()
+            )
+            db.delete(login_history)
+            db.commit()  # DB에서 삭제
+
+        return login_history
+
+    def find_all(self) -> list[LoginHistoryVO]:
+        with SessionLocal() as db:
+            login_histories = db.query(LoginHistory).all()
+            return [
+                LoginHistoryVO(
+                    id=login_history.id,
+                    user_id=login_history.user_id,
+                    login_at=login_history.login_at,
+                )
+                for login_history in login_histories
+            ]
+
+    def update(self, login_history: LoginHistoryVO):
+        with SessionLocal() as db:
+            login_history = (
+                db.query(LoginHistory)
+                .filter(LoginHistory.id == login_history.id)
+                .first()
+            )
+            login_history.user_id = login_history.user_id
+            login_history.login_at = login_history.login_at
+
+            db.commit()
+            return login_history
