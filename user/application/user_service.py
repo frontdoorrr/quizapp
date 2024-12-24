@@ -111,17 +111,13 @@ class UserService:
 
     def login(self, email: str, password: str) -> dict:
         try:
-            print("1111111111111111111111111111111111111111")
-
             user = self.user_repo.find_by_email(email)
-            print(user)
             if not self.crypto.verify(password, user.password):
                 raise HTTPException(
                     status_code=status.HTTP_401_UNAUTHORIZED,
                     detail="Invalid credentials",
                 )
         except HTTPException:
-
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Invalid credentials",
@@ -134,6 +130,13 @@ class UserService:
             },
             role=user.role,
         )
+        if access_token:
+            login_history = LoginHistory(
+                id=self.ulid.generate(),
+                user_id=user.id,
+                login_at=datetime.now(),
+            )
+            self.login_history_repo.save(login_history)
 
         return {
             "access_token": access_token,
