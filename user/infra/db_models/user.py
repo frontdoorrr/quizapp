@@ -1,5 +1,5 @@
 from datetime import datetime, date
-from sqlalchemy import Column, String, DateTime, Text, Date, Enum
+from sqlalchemy import Column, String, DateTime, Text, Date, Enum, Integer
 from sqlalchemy.orm import Mapped, relationship
 
 from database import Base
@@ -25,6 +25,13 @@ class User(Base):
 
     # Relationships
     answers = relationship("Answer", back_populates="user")
+
+
+class UserPoint(Base):
+    __tablename__ = "user_point"
+
+    user_id: Mapped[str] = Column(String(36), primary_key=True)
+    point: Mapped[int] = Column(Integer, nullable=False)
 
 
 class LoginHistory(Base):
