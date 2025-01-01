@@ -8,6 +8,7 @@ from containers import Container
 from user.interface.controllers.user_controller import router as user_router
 from game.interface.controllers.game_controller import router as game_router
 from answer.interface.controllers.answer_controller import router as answer_router
+from inquiry.interface.controllers.inquiry_controller import router as inquiry_router
 
 
 app = FastAPI()
@@ -26,6 +27,7 @@ app.add_middleware(
 app.include_router(router=user_router)
 app.include_router(router=game_router)
 app.include_router(router=answer_router)
+app.include_router(router=inquiry_router)
 
 
 @app.exception_handler(RequestValidationError)

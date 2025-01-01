@@ -1,5 +1,3 @@
-from typing import Annotated
-
 from fastapi import APIRouter, Depends, status
 from pydantic import BaseModel, Field
 from dependency_injector.wiring import inject, Provide
