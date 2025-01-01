@@ -110,6 +110,7 @@ def get_my_info(
     current_user: Annotated[CurrentUser, Depends(get_current_user)],
     user_service: UserService = Depends(Provide[Container.user_service]),
 ) -> UserResponse:
+
     return user_service.get_user_by_id(current_user.id)
 
 

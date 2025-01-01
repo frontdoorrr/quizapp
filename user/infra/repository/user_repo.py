@@ -46,6 +46,7 @@ class UserRepository(IUserRepository):
                 created_at=user.created_at,
                 updated_at=user.updated_at,
                 memo=user.memo,
+                point=user.point,
             )
 
     def find_by_id(self, id: str) -> UserVO:
@@ -66,6 +67,7 @@ class UserRepository(IUserRepository):
                 created_at=user.created_at,
                 updated_at=user.updated_at,
                 memo=user.memo,
+                point=user.point,
             )
 
     def find_all(self) -> list[UserVO]:

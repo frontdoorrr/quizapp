@@ -58,12 +58,12 @@ def create_access_token(
 def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
     payload = decode_access_token(token=token)
 
-    user_id = payload.get("user_id")
+    user_id = payload.get("sub")
     role = payload.get("role")
     if not user_id or not role or role != Role.USER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
 
-    return CurrentUser(user_id, Role(role))
+    return CurrentUser(id=user_id, role=Role(role))
 
 
 def get_admin_user(token: Annotated[str, Depends(oauth2_scheme)]):
