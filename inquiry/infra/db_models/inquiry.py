@@ -1,10 +1,8 @@
 from datetime import datetime
 from sqlalchemy import Column, String, DateTime, Text
-from sqlalchemy.orm import Mapped, relationship
+from sqlalchemy.orm import Mapped
 
 from database import Base
-
-from inquiry.domain.inquiry import Inquiry
 
 
 class Inquiry(Base):
