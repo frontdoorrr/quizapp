@@ -3,12 +3,10 @@ from sqlalchemy import Column, String, DateTime, Integer, Boolean, ForeignKey, T
 from sqlalchemy.orm import Mapped, relationship
 
 from database import Base
-from game.infra.db_models.game import Game
-from user.infra.db_models.user import User
 
 
 class Answer(Base):
-    __tablename__ = "answer"
+    __tablename__ = "answer"  # DB 테이블 이름은 소문자
 
     id: Mapped[str] = Column(String(36), primary_key=True)
     game_id: Mapped[str] = Column(String(36), ForeignKey("game.id"), nullable=False)
@@ -20,6 +18,10 @@ class Answer(Base):
     updated_at: Mapped[datetime] = Column(DateTime, nullable=False)
     point: Mapped[int] = Column(Integer, nullable=False)
 
-    # Relationships
-    game: Mapped[Game] = relationship("Game", back_populates="answers")
-    user: Mapped[User] = relationship("User", back_populates="answers")
+
+# Late binding: relationship을 클래스 정의 후에 설정
+from game.infra.db_models.game import Game
+from user.infra.db_models.user import User
+
+Answer.game = relationship("Game", back_populates="answers")
+Answer.user = relationship("User", back_populates="answers")

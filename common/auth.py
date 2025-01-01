@@ -15,7 +15,7 @@ settings = get_settings()
 SECRET_KEY = settings.jwt_secret
 ALGORITHM = "HS256"
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/users/login")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/user/login")
 
 
 class Role(StrEnum):
@@ -42,7 +42,7 @@ def create_access_token(
     expire = datetime.now(timezone.utc) + expires_delta
     payload.update(
         {
-            "role": role,
+            "role": role.value,
             "exp": expire,
         }
     )
@@ -57,10 +57,11 @@ def create_access_token(
 
 def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
     payload = decode_access_token(token=token)
+    print("Token payload:", payload)  # 디버그 로그 추가
 
     user_id = payload.get("sub")
     role = payload.get("role")
-    if not user_id or not role or role != Role.USER:
+    if not user_id or not role or role != Role.USER.value:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
 
     return CurrentUser(id=user_id, role=Role(role))
@@ -69,7 +70,8 @@ def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
 def get_admin_user(token: Annotated[str, Depends(oauth2_scheme)]):
     payload = decode_access_token(token=token)
 
+    user_id = payload.get("sub")
     role = payload.get("role")
-    if not role or role != Role.ADMIN:
+    if not user_id or not role or role != Role.ADMIN.value:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
-    return CurrentUser("ADMIN_USER_ID", role=role)
+    return CurrentUser(id=user_id, role=Role(role))

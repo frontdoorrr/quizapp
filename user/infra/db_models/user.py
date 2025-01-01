@@ -1,4 +1,5 @@
 from datetime import datetime, date
+from typing import List
 from sqlalchemy import Column, String, DateTime, Text, Date, Enum, Integer
 from sqlalchemy.orm import Mapped, relationship
 
@@ -24,9 +25,6 @@ class User(Base):
     last_login_at: Mapped[datetime] = Column(DateTime, nullable=True)
     point: Mapped[int] = Column(Integer, nullable=False, default=0)
 
-    # Relationships
-    answers = relationship("Answer", back_populates="user")
-
 
 class LoginHistory(Base):
     __tablename__ = "login_history"
@@ -34,3 +32,8 @@ class LoginHistory(Base):
     id: Mapped[str] = Column(String(36), primary_key=True)
     user_id: Mapped[str] = Column(String(36), nullable=False)
     login_at: Mapped[datetime] = Column(DateTime, nullable=False)
+
+
+# Late binding: relationship을 클래스 정의 후에 설정
+from answer.infra.db_models.answer import Answer
+User.answers = relationship("Answer", back_populates="user")

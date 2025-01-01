@@ -1,5 +1,7 @@
 from fastapi import HTTPException, status
-
+from datetime import datetime, date
+from sqlalchemy import desc
+from common.auth import Role
 from database import SessionLocal
 from user.domain.repository.user_repo import IUserRepository, ILoginHistoryRepository
 from user.domain.user import User as UserVO
@@ -111,6 +113,57 @@ class UserRepository(IUserRepository):
 
             db.commit()
             return user_vo
+
+    def get_users(
+        self,
+        nickname: str | None = None,
+        min_point: int | None = None,
+        max_point: int | None = None,
+        order_by: str | None = None,
+        order: str | None = "asc",
+    ) -> list[UserVO]:
+        db = SessionLocal()
+        try:
+            query = db.query(User)
+
+            # 필터 적용
+            if nickname:
+                query = query.filter(User.nickname.ilike(f"%{nickname}%"))
+            if min_point is not None:
+                query = query.filter(User.point >= min_point)
+            if max_point is not None:
+                query = query.filter(User.point <= max_point)
+
+            # 정렬 적용
+            if order_by:
+                print(f"Ordering by {order_by} in {order} order")  # 디버그 로그
+                order_column = getattr(User, order_by)
+                if order == "desc":
+                    query = query.order_by(desc(order_column))
+                else:
+                    query = query.order_by(order_column)
+
+            users = query.all()
+            return [
+                UserVO(
+                    id=user.id,
+                    name=user.name,
+                    email=user.email,
+                    password=user.password,
+                    role=user.role,
+                    birth=user.birth,
+                    address=user.address,
+                    phone=user.phone,
+                    nickname=user.nickname,
+                    created_at=user.created_at,
+                    updated_at=user.updated_at,
+                    memo=user.memo,
+                    point=user.point,
+                )
+                for user in users
+            ]
+        finally:
+            db.close()
 
 
 class LoginHistoryRepository(ILoginHistoryRepository):

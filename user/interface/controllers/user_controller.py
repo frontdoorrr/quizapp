@@ -46,11 +46,18 @@ class UserResponse(BaseModel):
     created_at: datetime
     updated_at: datetime
     memo: str | None
+    point: int
+
+
+class GetUsersRequest(BaseModel):
+    nickname: str | None = None
+    min_point: int | None = None
+    max_point: int | None = None
+    order_by: str | None = None  # 'point' or 'nickname'
+    order: str | None = "asc"  # 'asc' or 'desc'
 
 
 class GetUserResponse(BaseModel):
-    total_count: int
-    page: int
     users: list[UserResponse]
 
 
@@ -79,7 +86,7 @@ def create_user(
 def update_user(
     user_id: str,
     user: UpdateUserBody,
-    current_user: Annotated[CurrentUser, Depends(get_admin_user)],
+    current_user: Annotated[CurrentUser, Depends(get_current_user)],
     user_service: UserService = Depends(Provide[Container.user_service]),
 ) -> UserResponse:
     updated_user = user_service.update_user(
@@ -94,14 +101,39 @@ def update_user(
     return updated_user
 
 
-@router.get("")
+@router.get("", response_model=GetUserResponse)
 @inject
-def get_users(
-    page: int = 1,
-    items_per_page: int = 10,
+async def get_users(
+    request: GetUsersRequest = Depends(),
+    current_user: CurrentUser = Depends(get_current_user),
     user_service: UserService = Depends(Provide[Container.user_service]),
 ) -> GetUserResponse:
-    return user_service.get_users(page=page, items_per_page=items_per_page)
+    users = user_service.get_users(
+        nickname=request.nickname,
+        min_point=request.min_point,
+        max_point=request.max_point,
+        order_by=request.order_by,
+        order=request.order,
+    )
+    return GetUserResponse(
+        users=[
+            UserResponse(
+                id=user.id,
+                name=user.name,
+                email=user.email,
+                role=user.role,
+                birth=user.birth,
+                address=user.address,
+                phone=user.phone,
+                nickname=user.nickname,
+                created_at=user.created_at,
+                updated_at=user.updated_at,
+                memo=user.memo,
+                point=user.point,
+            )
+            for user in users
+        ]
+    )
 
 
 @router.get("/me")

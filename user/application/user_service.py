@@ -93,18 +93,21 @@ class UserService:
         self.user_repo.update(user)
         return user
 
-    def get_users(self, page: int = 1, items_per_page: int = 10) -> dict:
-        users = self.user_repo.find_all()
-        total_count = len(users)
-        start_idx = (page - 1) * items_per_page
-        end_idx = start_idx + items_per_page
-        paginated_users = users[start_idx:end_idx]
-
-        return {
-            "total_count": total_count,
-            "page": page,
-            "users": paginated_users,
-        }
+    def get_users(
+        self,
+        nickname: str | None = None,
+        min_point: int | None = None,
+        max_point: int | None = None,
+        order_by: str | None = None,
+        order: str | None = "asc",
+    ):
+        return self.user_repo.get_users(
+            nickname=nickname,
+            min_point=min_point,
+            max_point=max_point,
+            order_by=order_by,
+            order=order,
+        )
 
     def get_user_by_id(self, user_id: str) -> User:
         return self.user_repo.find_by_id(user_id)
