@@ -34,6 +34,14 @@ class UpdateUserBody(BaseModel):
     nickname: str | None = Field(min_length=2, max_length=32, default=None)
 
 
+class UpdateMeRequest(BaseModel):
+    name: str | None = None
+    nickname: str | None = None
+    phone: str | None = None
+    address: str | None = None
+    memo: str | None = None
+
+
 class UserResponse(BaseModel):
     id: str
     name: str
@@ -176,3 +184,33 @@ def update_my_info(
         nickname=body.nickname,
     )
     return updated_user
+
+
+@router.patch("/me", response_model=UserResponse)
+@inject
+async def update_me(
+    request: UpdateMeRequest,
+    current_user: CurrentUser = Depends(get_current_user),
+    user_service: UserService = Depends(Provide[Container.user_service]),
+) -> UserResponse:
+    updated_user = user_service.update_user(
+        user_id=current_user.id,
+        name=request.name,
+        nickname=request.nickname,
+        phone=request.phone,
+        address=request.address,
+    )
+    return UserResponse(
+        id=updated_user.id,
+        name=updated_user.name,
+        email=updated_user.email,
+        role=updated_user.role,
+        birth=updated_user.birth,
+        address=updated_user.address,
+        phone=updated_user.phone,
+        nickname=updated_user.nickname,
+        created_at=updated_user.created_at,
+        updated_at=updated_user.updated_at,
+        memo=updated_user.memo,
+        point=updated_user.point,
+    )
