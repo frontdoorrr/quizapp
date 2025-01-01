@@ -9,10 +9,7 @@ from user.infra.db_models.user import User, LoginHistory
 
 class UserRepository(IUserRepository):
     def save(self, user: UserVO):
-        print(user.updated_at)
-        print(user.updated_at)
-        print(user.updated_at)
-        print(user.updated_at)
+
         db_user = User(
             id=user.id,
             name=user.name,
@@ -88,6 +85,7 @@ class UserRepository(IUserRepository):
                     created_at=user.created_at,
                     updated_at=user.updated_at,
                     memo=user.memo,
+                    point=user.point,
                 )
                 for user in users
             ]

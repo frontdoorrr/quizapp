@@ -22,16 +22,10 @@ class User(Base):
     created_at: Mapped[datetime] = Column(DateTime, nullable=False)
     updated_at: Mapped[datetime] = Column(DateTime, nullable=False)
     last_login_at: Mapped[datetime] = Column(DateTime, nullable=True)
+    point: Mapped[int] = Column(Integer, nullable=False, default=0)
 
     # Relationships
     answers = relationship("Answer", back_populates="user")
-
-
-class UserPoint(Base):
-    __tablename__ = "user_point"
-
-    user_id: Mapped[str] = Column(String(36), primary_key=True)
-    point: Mapped[int] = Column(Integer, nullable=False)
 
 
 class LoginHistory(Base):

@@ -15,6 +15,7 @@ class User:
     address: str | None
     phone: str
     nickname: str
+    point: int
     created_at: datetime
     updated_at: datetime
     memo: str | None = None
