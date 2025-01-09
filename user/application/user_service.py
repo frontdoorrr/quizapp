@@ -1,3 +1,5 @@
+"""user service"""
+
 from typing import Annotated
 from ulid import ULID
 from datetime import datetime, date
@@ -62,6 +64,7 @@ class UserService:
             created_at=now,
             updated_at=now,
             memo=memo,
+            point=0,  # 초기 포인트는 0으로 설정
         )
         self.user_repo.save(user)
         return user
