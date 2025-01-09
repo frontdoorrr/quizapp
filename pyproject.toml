@@ -6,13 +6,13 @@ authors = ["JEONGMUN LEE <lot9616@gmail.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.13"
+python = "^3.11"
 fastapi = "^0.115.5"
 uvicorn = {extras = ["standard"], version = "^0.32.0"}
 py-ulid = "^1.0.3"
 passlib = {extras = ["bcrypt"], version = "^1.7.4"}
 sqlalchemy = "^2.0.36"
-mysqlclient = "^2.2.6"
+psycopg2-binary = "^2.9.10"
 alembic = "^1.14.0"
 dependency-injector = "^4.43.0"
 pydantic = {extras = ["email"], version = "^2.10.3"}

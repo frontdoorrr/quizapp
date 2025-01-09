@@ -8,8 +8,7 @@ class Settings(BaseSettings):
         env_file_encoding="utf-8",
     )
 
-    database_username: str
-    database_password: str
+    database_url: str = "postgresql://postgres:postgres@localhost:5432/quizapp"
     jwt_secret: str
 
 

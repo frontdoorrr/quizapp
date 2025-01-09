@@ -6,8 +6,7 @@ from config import get_settings
 
 settings = get_settings()
 
-
-SQLALCHEMY_DATABASE_URL = f"mysql+mysqldb://{settings.database_username}:{settings.database_password}@127.0.0.1/fastapi-ca"
+SQLALCHEMY_DATABASE_URL = settings.database_url
 
 engine = create_engine(SQLALCHEMY_DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
