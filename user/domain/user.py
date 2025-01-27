@@ -16,6 +16,7 @@ class User:
     phone: str
     nickname: str
     point: int
+    coin: int
     created_at: datetime
     updated_at: datetime
     memo: str | None = None

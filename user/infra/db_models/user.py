@@ -24,6 +24,7 @@ class User(Base):
     updated_at: Mapped[datetime] = Column(DateTime, nullable=False)
     last_login_at: Mapped[datetime] = Column(DateTime, nullable=True)
     point: Mapped[int] = Column(Integer, nullable=False, default=0)
+    coin: Mapped[int] = Column(Integer, nullable=False, default=0)
 
 
 class LoginHistory(Base):
@@ -36,4 +37,5 @@ class LoginHistory(Base):
 
 # Late binding: relationship을 클래스 정의 후에 설정
 from answer.infra.db_models.answer import Answer
+
 User.answers = relationship("Answer", back_populates="user")

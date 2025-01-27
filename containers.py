@@ -46,6 +46,7 @@ class Container(containers.DeclarativeContainer):
         AnswerService,
         answer_repo=answer_repo,
         game_repo=game_repo,
+        user_repo=user_repo,
     )
 
     # Inquiry

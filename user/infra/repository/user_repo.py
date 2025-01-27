@@ -1,7 +1,5 @@
 from fastapi import HTTPException, status
-from datetime import datetime, date
 from sqlalchemy import desc
-from common.auth import Role
 from database import SessionLocal
 from user.domain.repository.user_repo import IUserRepository, ILoginHistoryRepository
 from user.domain.user import User as UserVO
@@ -25,6 +23,7 @@ class UserRepository(IUserRepository):
             created_at=user.created_at,
             updated_at=user.updated_at,
             memo=user.memo,
+            coin=user.coin,
         )
         with SessionLocal() as db:
             db.add(db_user)
@@ -49,6 +48,7 @@ class UserRepository(IUserRepository):
                 updated_at=user.updated_at,
                 memo=user.memo,
                 point=user.point,
+                coin=user.coin,
             )
 
     def find_by_id(self, id: str) -> UserVO:
@@ -70,6 +70,7 @@ class UserRepository(IUserRepository):
                 updated_at=user.updated_at,
                 memo=user.memo,
                 point=user.point,
+                coin=user.coin,
             )
 
     def find_all(self) -> list[UserVO]:
@@ -90,6 +91,7 @@ class UserRepository(IUserRepository):
                     updated_at=user.updated_at,
                     memo=user.memo,
                     point=user.point,
+                    coin=user.coin,
                 )
                 for user in users
             ]
@@ -110,6 +112,7 @@ class UserRepository(IUserRepository):
             user.nickname = user_vo.nickname
             user.updated_at = user_vo.updated_at
             user.memo = user_vo.memo
+            user.coin = user_vo.coin
 
             db.commit()
             return user_vo
@@ -159,6 +162,7 @@ class UserRepository(IUserRepository):
                     updated_at=user.updated_at,
                     memo=user.memo,
                     point=user.point,
+                    coin=user.coin,
                 )
                 for user in users
             ]

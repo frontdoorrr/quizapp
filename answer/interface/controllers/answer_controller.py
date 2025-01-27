@@ -1,12 +1,12 @@
 from datetime import datetime
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel, Field
 from dependency_injector.wiring import inject, Provide
 
 from containers import Container
 from answer.application.answer_service import AnswerService
-from common.auth import get_current_user
-
+from common.auth import get_current_user, CurrentUser
+from answer.domain.exceptions import InsufficientCoinError
 
 router = APIRouter(prefix="/answer", tags=["answer"])
 
@@ -32,13 +32,13 @@ class AnswerResponse(BaseModel):
 @inject
 async def submit_answer(
     body: SubmitAnswerBody,
-    user: dict = Depends(get_current_user),
+    user: CurrentUser = Depends(get_current_user),
     answer_service: AnswerService = Depends(Provide[Container.answer_service]),
 ):
     try:
         answer = answer_service.submit_answer(
             game_id=body.game_id,
-            user_id=user["id"],
+            user_id=user.id,
             answer_text=body.answer,
         )
         return AnswerResponse(
@@ -52,6 +52,11 @@ async def submit_answer(
             updated_at=answer.updated_at,
             point=answer.point,
         )
+    except InsufficientCoinError:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="Insufficient coins to submit answer"
+        )
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))
     except Exception as e:
@@ -62,7 +67,7 @@ async def submit_answer(
 @inject
 async def get_answer(
     answer_id: str,
-    _=Depends(get_current_user),  # 인증된 사용자만 접근 가능
+    _: CurrentUser = Depends(get_current_user),  # 인증된 사용자만 접근 가능
     answer_service: AnswerService = Depends(Provide[Container.answer_service]),
 ):
     try:
@@ -88,7 +93,7 @@ async def get_answer(
 @inject
 async def get_answers_by_game(
     game_id: str,
-    _=Depends(get_current_user),  # 인증된 사용자만 접근 가능
+    _: CurrentUser = Depends(get_current_user),  # 인증된 사용자만 접근 가능
     answer_service: AnswerService = Depends(Provide[Container.answer_service]),
 ):
     try:
@@ -115,11 +120,11 @@ async def get_answers_by_game(
 @inject
 async def get_answers_by_user(
     user_id: str,
-    current_user: dict = Depends(get_current_user),
+    current_user: CurrentUser = Depends(get_current_user),
     answer_service: AnswerService = Depends(Provide[Container.answer_service]),
 ):
     # 자신의 답변만 조회 가능
-    if current_user["id"] != user_id:
+    if current_user.id != user_id:
         raise HTTPException(
             status_code=403, detail="You can only view your own answers"
         )

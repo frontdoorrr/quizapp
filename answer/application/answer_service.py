@@ -7,6 +7,7 @@ from answer.domain.answer import Answer
 from answer.domain.repository.answer_repo import IAnswerRepository
 from game.domain.repository.game_repo import IGameRepository
 from user.domain.repository.user_repo import IUserRepository
+from answer.domain.exceptions import InsufficientCoinError
 
 
 class AnswerService:
@@ -26,11 +27,16 @@ class AnswerService:
         # 게임 정보 조회
         game = self.game_repo.find_by_id(game_id)
 
+        # 유저 정보 조회
+        user = self.user_repo.find_by_id(user_id)
+        if user.coin < 1:
+            raise InsufficientCoinError()
+
         # 정답 여부 확인
         is_correct = game.answer.strip().lower() == answer_text.strip().lower()
 
         # 포인트 계산 (임시로 정답이면 10점)
-        # point = 10 if is_correct else 0
+        point = 10 if is_correct else 0
 
         now = datetime.now()
         answer = Answer(
@@ -45,8 +51,7 @@ class AnswerService:
             point=point,
         )
 
-        user = self.user_repo.find_by_id(user_id)
-        user.coin
+        user.coin -= 1
 
         return self.answer_repo.save(answer)
 
