@@ -78,6 +78,20 @@ Authorization: Bearer <token>
   ]
   ```
 
+### Check Nickname Availability
+- **URL**: `/user/check-nickname/{nickname}`
+- **Method**: `GET`
+- **URL Parameters**:
+  - `nickname`: string - Nickname to check
+- **Success Response**: `200 OK`
+  ```json
+  {
+    "exists": boolean
+  }
+  ```
+- **Description**: Check if a nickname is already taken. Returns `true` if the nickname exists, `false` if it's available.
+- **Note**: This endpoint does not require authentication
+
 ## Game Management
 
 ### Create Game
