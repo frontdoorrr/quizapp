@@ -214,3 +214,16 @@ async def update_me(
         memo=updated_user.memo,
         point=updated_user.point,
     )
+
+
+@router.get("/check-nickname/{nickname}")
+@inject
+async def check_nickname(
+    nickname: str,
+    user_service: UserService = Depends(Provide[Container.user_service]),
+):
+    """
+    Check if a nickname is available
+    """
+    exists = user_service.check_nickname_exists(nickname)
+    return {"exists": exists}

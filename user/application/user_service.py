@@ -115,6 +115,23 @@ class UserService:
     def get_user_by_id(self, user_id: str) -> User:
         return self.user_repo.find_by_id(user_id)
 
+    def check_nickname_exists(self, nickname: str) -> bool:
+        """Check if a nickname already exists
+        
+        Args:
+            nickname (str): Nickname to check
+            
+        Returns:
+            bool: True if nickname exists, False otherwise
+        """
+        try:
+            self.user_repo.find_by_nickname(nickname)
+            return True
+        except HTTPException as e:
+            if e.status_code == 404:
+                return False
+            raise e
+
     def login(self, email: str, password: str) -> dict:
         try:
             user = self.user_repo.find_by_email(email)

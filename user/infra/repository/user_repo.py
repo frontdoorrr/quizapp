@@ -73,6 +73,30 @@ class UserRepository(IUserRepository):
                 coin=user.coin,
             )
 
+    def find_by_nickname(self, nickname: str) -> UserVO:
+        with SessionLocal() as db:
+            user = db.query(User).filter(User.nickname == nickname).first()
+            if not user:
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail="User not found",
+                )
+            return UserVO(
+                id=user.id,
+                email=user.email,
+                password=user.password,
+                name=user.name,
+                birth=user.birth,
+                address=user.address,
+                phone=user.phone,
+                nickname=user.nickname,
+                created_at=user.created_at,
+                updated_at=user.updated_at,
+                memo=user.memo,
+                point=user.point,
+                coin=user.coin,
+            )
+
     def find_all(self) -> list[UserVO]:
         with SessionLocal() as db:
             users = db.query(User).all()

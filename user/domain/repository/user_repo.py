@@ -1,11 +1,19 @@
-from abc import ABCMeta, abstractmethod
+from abc import ABC, abstractmethod
 from user.domain.user import User, LoginHistory
 
 
-class IUserRepository(metaclass=ABCMeta):
+class IUserRepository(ABC):
     @abstractmethod
-    def save(self, user: User):
-        raise NotImplementedError
+    def save(self, user: User) -> User:
+        pass
+
+    @abstractmethod
+    def update(self, user: User) -> User:
+        pass
+
+    @abstractmethod
+    def find_by_id(self, id: str) -> User:
+        pass
 
     @abstractmethod
     def find_by_email(self, email: str) -> User:
@@ -13,38 +21,34 @@ class IUserRepository(metaclass=ABCMeta):
         Search User by Email.
         If there is not user, 422 Error occurs.
         """
-        raise NotImplementedError
+        pass
 
     @abstractmethod
-    def find_by_id(self, id: str) -> User:
-        raise NotImplementedError
+    def find_by_nickname(self, nickname: str) -> User:
+        pass
 
     @abstractmethod
     def find_all(self) -> list[User]:
-        raise NotImplementedError
-
-    @abstractmethod
-    def update(self, user: User) -> User:
-        raise NotImplementedError
+        pass
 
 
-class ILoginHistoryRepository(metaclass=ABCMeta):
+class ILoginHistoryRepository(ABC):
     @abstractmethod
     def save(self, login_history: LoginHistory) -> LoginHistory:
-        raise NotImplementedError
+        pass
 
     @abstractmethod
     def find_by_user_id(self, user_id: str) -> list[LoginHistory]:
-        raise NotImplementedError
+        pass
 
     @abstractmethod
     def find_all(self) -> list[LoginHistory]:
-        raise NotImplementedError
+        pass
 
     @abstractmethod
     def update(self, login_history: LoginHistory) -> LoginHistory:
-        raise NotImplementedError
+        pass
 
     @abstractmethod
     def delete(self, login_history: LoginHistory) -> LoginHistory:
-        raise NotImplementedError
+        pass
