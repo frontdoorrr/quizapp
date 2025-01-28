@@ -85,6 +85,7 @@ def create_user(
         address=user.address,
         phone=user.phone,
         nickname=user.nickname,
+        coin=0,
     )
     return created_user
 
@@ -227,3 +228,29 @@ async def check_nickname(
     """
     exists = user_service.check_nickname_exists(nickname)
     return {"exists": exists}
+
+
+@router.post("/send-verification-email")
+@inject
+async def send_verification_email(
+    current_user: CurrentUser = Depends(get_current_user),
+    user_service: UserService = Depends(Provide[Container.user_service]),
+):
+    """
+    Send verification email to current user
+    """
+    user_service.send_verification_email(current_user.id)
+    return {"message": "Verification email sent"}
+
+
+@router.post("/verify-email")
+@inject
+async def verify_email(
+    current_user: CurrentUser = Depends(get_current_user),
+    user_service: UserService = Depends(Provide[Container.user_service]),
+):
+    """
+    Verify current user's email
+    """
+    user_service.verify_email(current_user.id)
+    return {"message": "Email verified successfully"}

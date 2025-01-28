@@ -92,6 +92,33 @@ Authorization: Bearer <token>
 - **Description**: Check if a nickname is already taken. Returns `true` if the nickname exists, `false` if it's available.
 - **Note**: This endpoint does not require authentication
 
+### Send Verification Email
+- **URL**: `/user/send-verification-email`
+- **Method**: `POST`
+- **Authentication**: Required
+- **Success Response**: `200 OK`
+  ```json
+  {
+    "message": "Verification email sent"
+  }
+  ```
+- **Error Response**:
+  - `400 Bad Request` if email already verified
+  - `500 Internal Server Error` if email sending fails
+
+### Verify Email
+- **URL**: `/user/verify-email`
+- **Method**: `POST`
+- **Authentication**: Required
+- **Success Response**: `200 OK`
+  ```json
+  {
+    "message": "Email verified successfully"
+  }
+  ```
+- **Error Response**:
+  - `400 Bad Request` if email already verified
+
 ## Game Management
 
 ### Create Game

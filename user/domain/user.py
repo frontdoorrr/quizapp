@@ -20,6 +20,7 @@ class User:
     created_at: datetime
     updated_at: datetime
     memo: str | None = None
+    email_verified: bool = False
 
 
 @dataclass

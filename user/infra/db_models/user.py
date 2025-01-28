@@ -1,6 +1,6 @@
 from datetime import datetime, date
 from typing import List
-from sqlalchemy import Column, String, DateTime, Text, Date, Enum, Integer
+from sqlalchemy import Column, String, DateTime, Text, Date, Enum, Integer, Boolean
 from sqlalchemy.orm import Mapped, relationship
 
 from database import Base
@@ -25,6 +25,9 @@ class User(Base):
     last_login_at: Mapped[datetime] = Column(DateTime, nullable=True)
     point: Mapped[int] = Column(Integer, nullable=False, default=0)
     coin: Mapped[int] = Column(Integer, nullable=False, default=0)
+    email_verified: Mapped[bool] = Column(Boolean, nullable=False, default=False)
+    login_histories: Mapped[List["LoginHistory"]] = relationship("LoginHistory", back_populates="user")
+    email_verifications: Mapped[List["EmailVerification"]] = relationship("EmailVerification", back_populates="user")
 
 
 class LoginHistory(Base):

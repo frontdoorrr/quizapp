@@ -2,14 +2,14 @@
 
 from typing import Annotated
 from ulid import ULID
-from datetime import datetime, date
-
-from dependency_injector.wiring import inject
+from datetime import datetime, date, timedelta
+import secrets
 from fastapi import HTTPException, status
 
 from common.auth import Role, create_access_token
 from user.infra.db_models.user import LoginHistory
 from utils.crypto import Crypto
+from utils.email import EmailSender
 from user.domain.repository.user_repo import IUserRepository, ILoginHistoryRepository
 from user.domain.user import User
 
@@ -23,6 +23,7 @@ class UserService:
         self.login_history_repo = login_history_repo
         self.ulid = ULID()
         self.crypto = Crypto()
+        self.email_sender = EmailSender()
 
     def create_user(
         self,
@@ -35,6 +36,7 @@ class UserService:
         phone: str | None = None,
         nickname: str | None = None,
         memo: str | None = None,
+        coin: int = 0,
     ) -> User:
         _user = None
 
@@ -65,6 +67,7 @@ class UserService:
             updated_at=now,
             memo=memo,
             point=0,  # 초기 포인트는 0으로 설정
+            coin=coin,
         )
         self.user_repo.save(user)
         return user
@@ -117,10 +120,10 @@ class UserService:
 
     def check_nickname_exists(self, nickname: str) -> bool:
         """Check if a nickname already exists
-        
+
         Args:
             nickname (str): Nickname to check
-            
+
         Returns:
             bool: True if nickname exists, False otherwise
         """
@@ -131,6 +134,54 @@ class UserService:
             if e.status_code == 404:
                 return False
             raise e
+
+    def send_verification_email(self, user_id: str) -> None:
+        """Send verification email to user
+        
+        Args:
+            user_id (str): User ID
+        """
+        user = self.user_repo.find_by_id(user_id)
+        if user.email_verified:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Email already verified",
+            )
+
+        # Generate verification token
+        token = secrets.token_urlsafe(32)
+        now = datetime.now()
+
+        # Update user with verification token
+        user.email_verification_token = token
+        user.email_verification_sent_at = now
+        self.user_repo.update(user)
+
+        # Send verification email
+        try:
+            self.email_sender.send_verification_email(user.email, token)
+        except Exception as e:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=str(e),
+            )
+
+    def verify_email(self, user_id: str) -> None:
+        """Verify user's email
+        
+        Args:
+            user_id (str): User ID to verify
+        """
+        user = self.user_repo.find_by_id(user_id)
+        if user.email_verified:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Email already verified",
+            )
+
+        # Update user as verified
+        user.email_verified = True
+        self.user_repo.update(user)
 
     def login(self, email: str, password: str) -> dict:
         try:
