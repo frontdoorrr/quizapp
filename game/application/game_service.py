@@ -71,3 +71,27 @@ class GameService:
 
         self.game_repo.update(game)
         return game
+
+    def get_game(self, id: str) -> Game:
+        """Get a game by id
+
+        Args:
+            id (str): Game id
+
+        Returns:
+            Game: Game object
+        """
+        return self.game_repo.find_by_id(id)
+
+    def get_games(self, status: GameStatus | None = None) -> list[Game]:
+        """Get all games with optional status filter
+
+        Args:
+            status (GameStatus | None, optional): Game status filter. Defaults to None.
+
+        Returns:
+            list[Game]: List of games
+        """
+        if status:
+            return self.game_repo.find_by_status(status)
+        return self.game_repo.find_all()

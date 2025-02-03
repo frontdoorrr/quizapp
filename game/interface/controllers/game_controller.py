@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, status
 from pydantic import BaseModel, Field
 from dependency_injector.wiring import inject, Provide
 from datetime import datetime
+from enum import Enum
 
 from containers import Container
 from game.application.game_service import GameService
@@ -113,3 +114,75 @@ class GetGameResponse(BaseModel):
     answer: str
     question_link: str | None
     answer_link: str | None
+
+
+@router.get("/{game_id}", response_model=GameResponse)
+@inject
+async def get_game(
+    game_id: str,
+    game_service: GameService = Depends(Provide[Container.game_service]),
+):
+    """Get a game by id
+
+    Args:
+        game_id (str): Game id
+        game_service (GameService): Game service
+
+    Returns:
+        GameResponse: Game response
+    """
+    game = game_service.get_game(game_id)
+    return GameResponse(
+        id=game.id,
+        number=game.number,
+        created_at=game.created_at,
+        modified_at=game.modified_at,
+        opened_at=game.opened_at,
+        closed_at=game.closed_at,
+        title=game.title,
+        description=game.description,
+        status=game.status,
+        memo=game.memo,
+        question=game.question,
+        answer=game.answer,
+        question_link=game.question_link,
+        answer_link=game.answer_link,
+    )
+
+
+@router.get("", response_model=list[GameResponse])
+@inject
+async def get_games(
+    status: str | None = None,
+    game_service: GameService = Depends(Provide[Container.game_service]),
+):
+    """Get all games with optional status filter
+
+    Args:
+        status (str | None, optional): Game status filter. Defaults to None.
+        game_service (GameService): Game service
+
+    Returns:
+        list[GameResponse]: List of games
+    """
+    game_status = GameStatus(status.upper()) if status else None
+    games = game_service.get_games(game_status)
+    return [
+        GameResponse(
+            id=game.id,
+            number=game.number,
+            created_at=game.created_at,
+            modified_at=game.modified_at,
+            opened_at=game.opened_at,
+            closed_at=game.closed_at,
+            title=game.title,
+            description=game.description,
+            status=game.status,
+            memo=game.memo,
+            question=game.question,
+            answer=game.answer,
+            question_link=game.question_link,
+            answer_link=game.answer_link,
+        )
+        for game in games
+    ]
