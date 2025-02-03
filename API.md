@@ -109,7 +109,12 @@ Authorization: Bearer <token>
 ### Verify Email
 - **URL**: `/user/verify-email`
 - **Method**: `POST`
-- **Authentication**: Required
+- **Request Body**:
+  ```json
+  {
+    "email": "string"
+  }
+  ```
 - **Success Response**: `200 OK`
   ```json
   {
@@ -117,7 +122,7 @@ Authorization: Bearer <token>
   }
   ```
 - **Error Response**:
-  - `400 Bad Request` if email already verified
+  - `400 Bad Request` if email already exists
 
 ## Game Management
 
@@ -142,6 +147,59 @@ Authorization: Bearer <token>
     "created_at": "datetime",
     "updated_at": "datetime"
   }
+  ```
+
+### Get Game
+- **URL**: `/game/{game_id}`
+- **Method**: `GET`
+- **URL Parameters**:
+  - `game_id`: string - Game ID
+- **Success Response**: `200 OK`
+  ```json
+  {
+    "id": "string",
+    "number": 0,
+    "created_at": "datetime",
+    "modified_at": "datetime",
+    "opened_at": "datetime",
+    "closed_at": "datetime",
+    "title": "string",
+    "description": "string",
+    "status": "string",
+    "memo": "string",
+    "question": "string",
+    "answer": "string",
+    "question_link": "string",
+    "answer_link": "string"
+  }
+  ```
+- **Error Response**: `404 Not Found` if game not found
+
+### Get Games
+- **URL**: `/game`
+- **Method**: `GET`
+- **Query Parameters**:
+  - `status`: string (optional) - Filter by game status (DRAFT, OPEN, CLOSED)
+- **Success Response**: `200 OK`
+  ```json
+  [
+    {
+      "id": "string",
+      "number": 0,
+      "created_at": "datetime",
+      "modified_at": "datetime",
+      "opened_at": "datetime",
+      "closed_at": "datetime",
+      "title": "string",
+      "description": "string",
+      "status": "string",
+      "memo": "string",
+      "question": "string",
+      "answer": "string",
+      "question_link": "string",
+      "answer_link": "string"
+    }
+  ]
   ```
 
 ### Get Game List
