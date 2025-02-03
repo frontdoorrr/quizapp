@@ -26,8 +26,7 @@ class User(Base):
     point: Mapped[int] = Column(Integer, nullable=False, default=0)
     coin: Mapped[int] = Column(Integer, nullable=False, default=0)
     email_verified: Mapped[bool] = Column(Boolean, nullable=False, default=False)
-    login_histories: Mapped[List["LoginHistory"]] = relationship("LoginHistory", back_populates="user")
-    email_verifications: Mapped[List["EmailVerification"]] = relationship("EmailVerification", back_populates="user")
+    # login_histories relationship은 나중에 조회 기능 추가할 때 함께 추가
 
 
 class LoginHistory(Base):

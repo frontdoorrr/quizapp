@@ -6,6 +6,8 @@ from datetime import datetime, date, timedelta
 import secrets
 from fastapi import HTTPException, status
 
+from dependency_injector.wiring import inject
+
 from common.auth import Role, create_access_token
 from user.infra.db_models.user import LoginHistory
 from utils.crypto import Crypto
@@ -137,7 +139,7 @@ class UserService:
 
     def send_verification_email(self, user_id: str) -> None:
         """Send verification email to user
-        
+
         Args:
             user_id (str): User ID
         """
@@ -153,8 +155,7 @@ class UserService:
         now = datetime.now()
 
         # Update user with verification token
-        user.email_verification_token = token
-        user.email_verification_sent_at = now
+        user.email_verified = True
         self.user_repo.update(user)
 
         # Send verification email
@@ -166,22 +167,20 @@ class UserService:
                 detail=str(e),
             )
 
-    def verify_email(self, user_id: str) -> None:
+    def verify_email(self, email: str) -> None:
         """Verify user's email
-        
+
         Args:
             user_id (str): User ID to verify
         """
-        user = self.user_repo.find_by_id(user_id)
-        if user.email_verified:
+        user = self.user_repo.find_by_email(email=email)
+        if user:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Email already verified",
+                detail="Email already exists",
             )
 
-        # Update user as verified
-        user.email_verified = True
-        self.user_repo.update(user)
+        # self.user_repo.update(user)
 
     def login(self, email: str, password: str) -> dict:
         try:

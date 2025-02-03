@@ -246,11 +246,11 @@ async def send_verification_email(
 @router.post("/verify-email")
 @inject
 async def verify_email(
-    current_user: CurrentUser = Depends(get_current_user),
+    email: str,
     user_service: UserService = Depends(Provide[Container.user_service]),
 ):
     """
     Verify current user's email
     """
-    user_service.verify_email(current_user.id)
+    user_service.verify_email(email)
     return {"message": "Email verified successfully"}
