@@ -18,3 +18,12 @@ class IGameRepository(metaclass=ABCMeta):
     @abstractmethod
     def update(self, game: Game) -> Game:
         raise NotImplementedError
+
+    @abstractmethod
+    def find_latest(self) -> Game | None:
+        """Find the game with the highest number
+
+        Returns:
+            Game | None: The game with the highest number, or None if no games exist
+        """
+        raise NotImplementedError

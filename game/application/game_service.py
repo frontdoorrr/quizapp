@@ -23,6 +23,21 @@ class GameService:
         question_link: str | None = None,
         answer_link: str | None = None,
     ) -> Game:
+        """
+        Create a new game with the provided details and save it to the repository.
+
+        Args:
+            title (str): The title of the game.
+            number (int): The game number.
+            description (str | None, optional): A brief description of the game.
+            question (str | None, optional): The main question of the game.
+            answer (str | None, optional): The answer to the main question.
+            question_link (str | None, optional): A link related to the question.
+            answer_link (str | None, optional): A link related to the answer.
+
+        Returns:
+            Game: The created game object.
+        """
         now = datetime.now()
         game = Game(
             id=self.ulid.generate(),
@@ -79,9 +94,15 @@ class GameService:
             id (str): Game id
 
         Returns:
-            Game: Game object
+            Game: Game with given id
+
+        Raises:
+            Exception: If game not found
         """
-        return self.game_repo.find_by_id(id)
+        game = self.game_repo.find_by_id(id)
+        if not game:
+            raise Exception(f"Game {id} not found")
+        return game
 
     def get_games(self, status: GameStatus | None = None) -> list[Game]:
         """Get all games with optional status filter
@@ -95,3 +116,17 @@ class GameService:
         if status:
             return self.game_repo.find_by_status(status)
         return self.game_repo.find_all()
+
+    def get_current_game(self) -> Game:
+        """Get the game with the highest number (most recent)
+
+        Returns:
+            Game: The most recent game
+
+        Raises:
+            Exception: If no games found
+        """
+        game = self.game_repo.find_latest()
+        if not game:
+            raise Exception("No games found")
+        return game

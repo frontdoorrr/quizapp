@@ -53,48 +53,97 @@ class GameRepository(IGameRepository):
                 for game in games
             ]
 
-    def find_by_id(self, id: str) -> GameVO:
+    def find_by_id(self, id: str) -> GameVO | None:
         with SessionLocal() as db:
-            game = db.query(Game).filter(Game.id == id).first()
-            if not game:
-                raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+            db_game = db.query(Game).filter(Game.id == id).first()
+            if not db_game:
+                return None
             return GameVO(
-                id=game.id,
-                number=game.number,
-                created_at=game.created_at,
-                modified_at=game.modified_at,
-                opened_at=game.opened_at,
-                closed_at=game.closed_at,
-                title=game.title,
-                description=game.description,
-                status=game.status,
-                memo=game.memo,
-                question=game.question,
-                answer=game.answer,
-                question_link=game.question_link,
-                answer_link=game.answer_link,
+                id=db_game.id,
+                number=db_game.number,
+                created_at=db_game.created_at,
+                modified_at=db_game.modified_at,
+                opened_at=db_game.opened_at,
+                closed_at=db_game.closed_at,
+                title=db_game.title,
+                description=db_game.description,
+                status=db_game.status,
+                memo=db_game.memo,
+                question=db_game.question,
+                answer=db_game.answer,
+                question_link=db_game.question_link,
+                answer_link=db_game.answer_link,
             )
 
     def update(self, game: GameVO) -> GameVO:
         with SessionLocal() as db:
-            db_game = db.query(Game).filter(Game.id == game.id).first()
+            db_game = (
+                db.query(Game).filter(Game.id == game.id).first()
+            )
             if not db_game:
-                raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail=f"Game {game.id} not found",
+                )
 
             db_game.title = game.title
             db_game.description = game.description
+            db_game.modified_at = game.modified_at
+            db_game.opened_at = game.opened_at
+            db_game.closed_at = game.closed_at
             db_game.status = game.status
             db_game.memo = game.memo
             db_game.question = game.question
             db_game.answer = game.answer
             db_game.question_link = game.question_link
             db_game.answer_link = game.answer_link
-            db_game.modified_at = game.modified_at
-            db_game.opened_at = game.opened_at
-            db_game.closed_at = game.closed_at
 
             db.commit()
-            return game
+            db.refresh(db_game)
+
+            return GameVO(
+                id=db_game.id,
+                number=db_game.number,
+                created_at=db_game.created_at,
+                modified_at=db_game.modified_at,
+                opened_at=db_game.opened_at,
+                closed_at=db_game.closed_at,
+                title=db_game.title,
+                description=db_game.description,
+                status=db_game.status,
+                memo=db_game.memo,
+                question=db_game.question,
+                answer=db_game.answer,
+                question_link=db_game.question_link,
+                answer_link=db_game.answer_link,
+            )
+
+    def find_latest(self) -> GameVO | None:
+        """Find the game with the highest number using a direct SQL query
+
+        Returns:
+            GameVO | None: The game with the highest number, or None if no games exist
+        """
+        with SessionLocal() as db:
+            db_game = db.query(Game).order_by(Game.number.desc()).first()
+            if not db_game:
+                return None
+            return GameVO(
+                id=db_game.id,
+                number=db_game.number,
+                created_at=db_game.created_at,
+                modified_at=db_game.modified_at,
+                opened_at=db_game.opened_at,
+                closed_at=db_game.closed_at,
+                title=db_game.title,
+                description=db_game.description,
+                status=db_game.status,
+                memo=db_game.memo,
+                question=db_game.question,
+                answer=db_game.answer,
+                question_link=db_game.question_link,
+                answer_link=db_game.answer_link,
+            )
 
     def delete(self, game: GameVO):
         raise NotImplementedError

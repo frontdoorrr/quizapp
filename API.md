@@ -221,6 +221,31 @@ Authorization: Bearer <token>
   ]
   ```
 
+### Get Current Game
+- **URL**: `/game/current`
+- **Method**: `GET`
+- **Success Response**: `200 OK`
+  ```json
+  {
+    "id": "string",
+    "number": 0,
+    "created_at": "datetime",
+    "modified_at": "datetime",
+    "opened_at": "datetime",
+    "closed_at": "datetime",
+    "title": "string",
+    "description": "string",
+    "status": "string",
+    "memo": "string",
+    "question": "string",
+    "answer": "string",
+    "question_link": "string",
+    "answer_link": "string"
+  }
+  ```
+- **Error Response**: `404 Not Found` if no games exist
+- **Description**: Returns the most recently created game based on creation date
+
 ## Answer Management
 
 ### Submit Answer

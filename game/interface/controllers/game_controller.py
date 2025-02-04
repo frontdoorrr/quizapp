@@ -3,6 +3,7 @@ from pydantic import BaseModel, Field
 from dependency_injector.wiring import inject, Provide
 from datetime import datetime
 from enum import Enum
+from fastapi import HTTPException
 
 from containers import Container
 from game.application.game_service import GameService
@@ -165,6 +166,7 @@ async def get_games(
     Returns:
         list[GameResponse]: List of games
     """
+
     game_status = GameStatus(status.upper()) if status else None
     games = game_service.get_games(game_status)
     return [
@@ -186,3 +188,44 @@ async def get_games(
         )
         for game in games
     ]
+
+
+@router.get("/current/", response_model=GameResponse)
+@inject
+def get_current_game(
+    game_service: GameService = Depends(Provide[Container.game_service]),
+):
+    """Get the most recently created game
+
+    Args:
+        game_service (GameService): Game service
+
+    Returns:
+        GameResponse: The most recent game response
+
+    Raises:
+        HTTPException: 404 if no games found
+    """
+    try:
+        game = game_service.get_current_game()
+        return GameResponse(
+            id=game.id,
+            number=game.number,
+            created_at=game.created_at,
+            modified_at=game.modified_at,
+            opened_at=game.opened_at,
+            closed_at=game.closed_at,
+            title=game.title,
+            description=game.description,
+            status=game.status,
+            memo=game.memo,
+            question=game.question,
+            answer=game.answer,
+            question_link=game.question_link,
+            answer_link=game.answer_link,
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=str(e),
+        )

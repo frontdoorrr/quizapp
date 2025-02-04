@@ -5,6 +5,9 @@ venv/
 *.pyc
 __pycache__
 db.sqlite3
+# Media files
+media/*
+!media/.gitkeep
 media
 
 # Backup files #
