@@ -35,6 +35,14 @@ async def submit_answer(
     user: CurrentUser = Depends(get_current_user),
     answer_service: AnswerService = Depends(Provide[Container.answer_service]),
 ):
+    submitted_answer = answer_service.get_answer_by_game_and_user(body.game_id, user.id)
+    if submitted_answer:
+        if submitted_answer.is_correct:
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail="You have already correctly submitted an answer for this game",
+            )
+
     try:
         answer = answer_service.submit_answer(
             game_id=body.game_id,
@@ -55,7 +63,7 @@ async def submit_answer(
     except InsufficientCoinError:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail="Insufficient coins to submit answer"
+            detail="Insufficient coins to submit answer",
         )
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))
@@ -119,18 +127,13 @@ async def get_answers_by_game(
 @router.get("/user/{user_id}", response_model=list[AnswerResponse])
 @inject
 async def get_answers_by_user(
-    user_id: str,
     current_user: CurrentUser = Depends(get_current_user),
     answer_service: AnswerService = Depends(Provide[Container.answer_service]),
 ):
     # 자신의 답변만 조회 가능
-    if current_user.id != user_id:
-        raise HTTPException(
-            status_code=403, detail="You can only view your own answers"
-        )
 
     try:
-        answers = answer_service.get_answers_by_user(user_id)
+        answers = answer_service.get_answers_by_user(current_user.id)
         return [
             AnswerResponse(
                 id=answer.id,
@@ -147,3 +150,14 @@ async def get_answers_by_user(
         ]
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/game/{game_id}/user", response_model=AnswerResponse | None)
+@inject
+async def get_answer_by_game_and_user(
+    game_id: str,
+    current_user: CurrentUser = Depends(get_current_user),
+    answer_service: AnswerService = Depends(Provide[Container.answer_service]),
+):
+
+    return answer_service.get_answer_by_game_and_user(game_id, current_user.id)

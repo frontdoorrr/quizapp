@@ -61,9 +61,14 @@ class AnswerRepository(IAnswerRepository):
     def find_by_game_id_and_user_id(self, game_id: str, user_id: str) -> AnswerDomain:
         model = (
             self.db.query(AnswerModel)
-            .filter(AnswerModel.game_id == game_id, AnswerModel.user_id == user_id)
+            .filter(
+                AnswerModel.game_id == game_id,
+                AnswerModel.user_id == user_id,
+                AnswerModel.is_correct == True,
+            )
             .first()
         )
         if not model:
-            raise ValueError(f"Answer not found with game_id: {game_id} and user_id: {user_id}")
+            # raise ValueError(f"Answer not found with game_id: {game_id} and user_id: {user_id}")
+            return None
         return self._to_domain(model)
