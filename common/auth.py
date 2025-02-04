@@ -57,7 +57,6 @@ def create_access_token(
 
 def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
     payload = decode_access_token(token=token)
-    print("Token payload:", payload)  # 디버그 로그 추가
 
     user_id = payload.get("sub")
     role = payload.get("role")

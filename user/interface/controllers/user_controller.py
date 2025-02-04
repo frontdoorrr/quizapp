@@ -162,8 +162,6 @@ def login(
     user_service: UserService = Depends(Provide[Container.user_service]),
 ):
 
-    print(form_data.username)
-    print(form_data.password)
 
     return user_service.login(email=form_data.username, password=form_data.password)
 
