@@ -36,7 +36,7 @@ class AnswerService:
         is_correct = game.answer.strip().lower() == answer_text.strip().lower()
 
         # 포인트 계산 (임시로 정답이면 10점)
-        point = 10 if is_correct else 0
+        # point = 10 if is_correct else 0
 
         now = datetime.now()
         answer = Answer(
