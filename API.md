@@ -336,6 +336,30 @@ Authorization: Bearer <token>
   ```
 - **Error Response**: `403 Forbidden` if trying to access another user's answers
 
+### Get Answer by Game and User
+- **URL**: `/answer/game/{game_id}/user`
+- **Method**: `GET`
+- **URL Parameters**:
+  - `game_id`: string - Game ID
+- **Authentication**: Required
+- **Success Response**: `200 OK`
+  ```json
+  {
+    "id": "string",
+    "game_id": "string",
+    "user_id": "string",
+    "answer": "string",
+    "is_correct": boolean,
+    "solved_at": "datetime",
+    "created_at": "datetime",
+    "updated_at": "datetime",
+    "point": integer
+  }
+  ```
+- **Error Response**: 
+  - `500 Internal Server Error` if server error occurs
+- **Description**: 현재 로그인한 사용자가 특정 게임에 대해 제출한 답변을 조회합니다. 답변이 없는 경우 null을 반환합니다.
+
 ## Inquiry Management
 
 ### Create Inquiry
