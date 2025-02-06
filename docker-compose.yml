@@ -15,17 +15,44 @@ services:
   web:
     build: .
     environment:
-      - DATABASE_URL=postgresql://postgres:postgres@db:5432/quizapp
+      - database_url=postgresql://postgres:postgres@db:5432/quizapp
       - DATABASE_USERNAME=postgres
       - DATABASE_PASSWORD=postgres
-      - JWT_SECRET=THISISKEY
+      - jwt_secret=THISISKEY
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_DB=0
     depends_on:
       db:
         condition: service_healthy
+      redis:
+        condition: service_started
     volumes:
       - .:/app
     expose:
       - 8000
+    networks:
+      - quizapp-network
+
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile.worker
+    environment:
+      - database_url=postgresql://postgres:postgres@db:5432/quizapp
+      - DATABASE_USERNAME=postgres
+      - DATABASE_PASSWORD=postgres
+      - jwt_secret=THISISKEY
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_DB=0
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    volumes:
+      - .:/app
     networks:
       - quizapp-network
 
@@ -47,8 +74,24 @@ services:
       timeout: 5s
       retries: 5
 
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - quizapp-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    command: redis-server --appendonly yes
+
 volumes:
   postgres_data:
+  redis_data:
 
 networks:
   quizapp-network:

@@ -20,6 +20,8 @@ python-jose = {extras = ["cryptography"], version = "^3.3.0"}
 python-multipart = "^0.0.19"
 python-dotenv = "^1.0.1"
 pydantic-settings = "^2.6.1"
+redis = "^5.2.1"
+rq = "^2.1.0"
 
 
 [build-system]

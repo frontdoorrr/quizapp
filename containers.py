@@ -8,6 +8,8 @@ from answer.application.answer_service import AnswerService
 from answer.infra.repository.answer_repo import AnswerRepository
 from inquiry.application.inquiry_service import InquiryService
 from inquiry.infra.repository.inquiry_repo import InquiryRepository
+from common.redis.client import RedisClient
+from common.redis.config import RedisSettings
 
 
 class Container(containers.DeclarativeContainer):
@@ -35,9 +37,15 @@ class Container(containers.DeclarativeContainer):
 
     # Game
     game_repo = providers.Singleton(GameRepository)
-    game_service = providers.Singleton(
+    redis_settings = providers.Singleton(RedisSettings)
+    redis_client = providers.Singleton(
+        RedisClient,
+        settings=redis_settings
+    )
+    game_service = providers.Factory(
         GameService,
         game_repo=game_repo,
+        redis_client=redis_client
     )
 
     # Answer

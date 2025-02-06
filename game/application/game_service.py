@@ -5,12 +5,14 @@ from dependency_injector.wiring import inject
 
 from game.domain.game import Game, GameStatus
 from game.domain.repository.game_repo import IGameRepository
+from common.redis.client import RedisClient
 
 
 class GameService:
     @inject
-    def __init__(self, game_repo: IGameRepository):
+    def __init__(self, game_repo: IGameRepository, redis_client: RedisClient):
         self.game_repo = game_repo
+        self.redis_client = redis_client
         self.ulid = ULID()
 
     def create_game(
@@ -129,4 +131,23 @@ class GameService:
         game = self.game_repo.find_latest()
         if not game:
             raise Exception("No games found")
+        return game
+
+    def close_game(self, game_id: str) -> Game:
+        """게임을 종료하고 점수 계산을 큐에 추가"""
+        game = self.game_repo.find_by_id(game_id)
+        if not game:
+            raise ValueError(f"Game not found: {game_id}")
+        
+        if game.status == GameStatus.CLOSED:
+            raise ValueError("Game is already closed")
+        
+        # 게임 상태 업데이트
+        game.status = GameStatus.CLOSED
+        game.closed_at = datetime.now()
+        self.game_repo.update(game)
+        
+        # 점수 계산 작업을 큐에 추가
+        self.redis_client.enqueue({"game_id": game_id})
+        
         return game

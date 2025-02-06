@@ -96,7 +96,7 @@ class GameResponse(BaseModel):
     status: str
     memo: str | None
     question: str
-    answer: str
+    answer: str | None
     question_link: str | None
     answer_link: str | None
 
@@ -229,3 +229,28 @@ def get_current_game(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=str(e),
         )
+
+
+@router.post("/{game_id}/close", response_model=GameResponse)
+@inject
+async def close_game(
+    game_id: str,
+    game_service: GameService = Depends(Provide[Container.game_service]),
+) -> GameResponse:
+    """게임을 종료하고 점수 계산을 시작"""
+    game = game_service.close_game(game_id)
+    return GameResponse(
+        id=game.id,
+        number=game.number,
+        title=game.title,
+        description=game.description,
+        status=game.status,
+        created_at=game.created_at,
+        modified_at=game.modified_at,
+        opened_at=game.opened_at,
+        closed_at=game.closed_at,
+        question=game.question,
+        answer=game.answer if game.status == GameStatus.CLOSED else None,
+        question_link=game.question_link,
+        answer_link=game.answer_link if game.status == GameStatus.CLOSED else None,
+    )
