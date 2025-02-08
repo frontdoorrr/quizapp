@@ -95,6 +95,7 @@ class UserRepository(IUserRepository):
                 memo=user.memo,
                 point=user.point,
                 coin=user.coin,
+                role=user.role,
             )
 
     def find_by_verification_token(self, token: str) -> UserVO:

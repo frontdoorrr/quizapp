@@ -27,6 +27,19 @@ Authorization: Bearer <token>
   ```
 - **Error Response**: `401 Unauthorized`
 
+### Check Email Availability
+- **URL**: `/user/check-email/{email}`
+- **Method**: `GET`
+- **URL Parameters**:
+  - `email`: Email address to check
+- **Success Response**: `200 OK`
+  ```json
+  {
+    "exists": false  // false if email is available, true if already in use
+  }
+  ```
+- **Error Response**: `400 Bad Request`
+
 ### Create User
 - **URL**: `/user`
 - **Method**: `POST`

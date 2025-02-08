@@ -1,7 +1,8 @@
 from typing import Annotated
 from datetime import datetime, date
+import logging
 
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, status, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
 from pydantic import BaseModel, EmailStr, Field
 from dependency_injector.wiring import inject, Provide
@@ -10,6 +11,8 @@ from containers import Container
 from user.application.user_service import UserService
 from common.auth import CurrentUser, get_current_user, get_admin_user, Role
 
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
 
 router = APIRouter(prefix="/user", tags=["user"])
 
@@ -69,12 +72,13 @@ class GetUserResponse(BaseModel):
     users: list[UserResponse]
 
 
-@router.post("", status_code=status.HTTP_201_CREATED)
+@router.post("/register", status_code=status.HTTP_201_CREATED)
 @inject
 def create_user(
     user: CreateUserBody,
     user_service: UserService = Depends(Provide[Container.user_service]),
 ) -> UserResponse:
+    logger.debug(f"Received user data: {user.dict()}")
 
     created_user = user_service.create_user(
         name=user.name,
@@ -162,7 +166,6 @@ def login(
     user_service: UserService = Depends(Provide[Container.user_service]),
 ):
 
-
     return user_service.login(email=form_data.username, password=form_data.password)
 
 
@@ -228,6 +231,23 @@ async def check_nickname(
     return {"exists": exists}
 
 
+@router.get("/check-email/{email}")
+@inject
+async def check_email(
+    email: str,
+    user_service: UserService = Depends(Provide[Container.user_service]),
+):
+    """
+    Check if an email is available
+    """
+    try:
+        exists = user_service.check_email_exists(email)
+        return {"exists": exists}
+    except Exception as e:
+        logger.error(f"Error checking email availability: {str(e)}", exc_info=True)
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+
+
 @router.post("/send-verification-email")
 @inject
 async def send_verification_email(
@@ -237,18 +257,10 @@ async def send_verification_email(
     """
     Send verification email to current user
     """
-    user_service.send_verification_email(current_user.id)
-    return {"message": "Verification email sent"}
-
-
-@router.post("/verify-email")
-@inject
-async def verify_email(
-    email: str,
-    user_service: UserService = Depends(Provide[Container.user_service]),
-):
-    """
-    Verify current user's email
-    """
-    user_service.verify_email(email)
-    return {"message": "Email verified successfully"}
+    try:
+        user_service.send_verification_email(current_user.id)
+        logger.debug(f"Verification email sent successfully")
+        return {"message": "Verification email sent"}
+    except Exception as e:
+        logger.error(f"Error sending verification email: {str(e)}", exc_info=True)
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))

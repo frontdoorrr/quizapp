@@ -137,6 +137,23 @@ class UserService:
                 return False
             raise e
 
+    def check_email_exists(self, email: str) -> bool:
+        """Check if an email already exists
+
+        Args:
+            email (str): Email to check
+
+        Returns:
+            bool: True if email exists, False otherwise
+        """
+        try:
+            self.user_repo.find_by_email(email)
+            return True
+        except HTTPException as e:
+            if e.status_code == 422:  # User not found
+                return False
+            raise e
+
     def send_verification_email(self, user_id: str) -> None:
         """Send verification email to user
 
@@ -166,21 +183,6 @@ class UserService:
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail=str(e),
             )
-
-    def verify_email(self, email: str) -> None:
-        """Verify user's email
-
-        Args:
-            user_id (str): User ID to verify
-        """
-        user = self.user_repo.find_by_email(email=email)
-        if user:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Email already exists",
-            )
-
-        # self.user_repo.update(user)
 
     def login(self, email: str, password: str) -> dict:
         try:
