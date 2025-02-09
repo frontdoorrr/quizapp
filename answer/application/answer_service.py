@@ -48,7 +48,7 @@ class AnswerService:
             solved_at=now if is_correct else None,
             created_at=now,
             updated_at=now,
-            point=point,
+            point=0,
         )
 
         user.coin -= 1
