@@ -195,17 +195,7 @@ async def get_games(
 def get_current_game(
     game_service: GameService = Depends(Provide[Container.game_service]),
 ):
-    """Get the most recently created game
 
-    Args:
-        game_service (GameService): Game service
-
-    Returns:
-        GameResponse: The most recent game response
-
-    Raises:
-        HTTPException: 404 if no games found
-    """
     try:
         game = game_service.get_current_game()
         return GameResponse(
