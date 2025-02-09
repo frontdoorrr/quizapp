@@ -52,7 +52,7 @@ class AnswerService:
         )
 
         user.coin -= 1
-        user.point += point
+        # user.point += point
         self.user_repo.update(user)
 
         return self.answer_repo.save(answer)
