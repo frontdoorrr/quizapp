@@ -72,3 +72,10 @@ class AnswerRepository(IAnswerRepository):
             # raise ValueError(f"Answer not found with game_id: {game_id} and user_id: {user_id}")
             return None
         return self._to_domain(model)
+
+    def delete_by_id(self, id: str) -> None:
+        model = self.db.query(AnswerModel).filter(AnswerModel.id == id).first()
+        if not model:
+            raise ValueError(f"Answer not found with id: {id}")
+        self.db.delete(model)
+        self.db.commit()

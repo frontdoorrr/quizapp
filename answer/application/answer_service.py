@@ -68,3 +68,18 @@ class AnswerService:
 
     def get_answer_by_game_and_user(self, game_id: str, user_id: str) -> Answer:
         return self.answer_repo.find_by_game_id_and_user_id(game_id, user_id)
+
+    def delete_answer_by_game_and_user(self, game_id: str, user_id: str) -> None:
+        """Delete answer by game_id and user_id
+
+        Args:
+            game_id (str): Game ID
+            user_id (str): User ID
+
+        Raises:
+            ValueError: If answer not found
+        """
+        answer = self.get_answer_by_game_and_user(game_id, user_id)
+        if not answer:
+            raise ValueError(f"Answer not found for game_id: {game_id} and user_id: {user_id}")
+        self.answer_repo.delete_by_id(answer.id)
