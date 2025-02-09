@@ -6,6 +6,7 @@ from dependency_injector.wiring import inject, Provide
 
 from containers import Container
 from answer.application.answer_service import AnswerService
+from game.application.game_service import GameService
 from common.auth import get_current_user, CurrentUser
 from answer.domain.exceptions import InsufficientCoinError
 
@@ -186,7 +187,4 @@ async def delete_answer_by_game_and_user(
         answer_service.delete_answer_by_game_and_user(game.id, current_user.id)
         return {"message": "Answer deleted successfully"}
     except ValueError as e:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=str(e)
-        )
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
