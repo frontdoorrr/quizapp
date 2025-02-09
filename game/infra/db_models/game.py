@@ -11,7 +11,12 @@ class Game(Base):
 
     id: Mapped[str] = Column(String(36), primary_key=True)
     number: Mapped[int] = Column(
-        Integer, primary_key=False, autoincrement=True, unique=True, nullable=False, index=True
+        Integer,
+        primary_key=False,
+        autoincrement=True,
+        unique=True,
+        nullable=False,
+        index=True,
     )
     created_at: Mapped[datetime] = Column(DateTime, nullable=False)
     modified_at: Mapped[datetime] = Column(DateTime, nullable=False)
@@ -29,4 +34,6 @@ class Game(Base):
     answer_link: Mapped[str] = Column(String(256), nullable=True)
 
     # Relationships
-    answers = relationship("Answer", back_populates="game")
+    answers = relationship(
+        "Answer", back_populates="game", cascade="all, delete-orphan"
+    )
