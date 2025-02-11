@@ -37,6 +37,10 @@ class UpdateUserBody(BaseModel):
     nickname: str | None = Field(min_length=2, max_length=32, default=None)
 
 
+class EmailVerificationBody(BaseModel):
+    email: EmailStr = Field(max_length=64)
+
+
 class UpdateMeRequest(BaseModel):
     name: str | None = None
     nickname: str | None = None
@@ -251,14 +255,15 @@ async def check_email(
 @router.post("/send-verification-email")
 @inject
 async def send_verification_email(
-    current_user: CurrentUser = Depends(get_current_user),
+    body: EmailVerificationBody,
     user_service: UserService = Depends(Provide[Container.user_service]),
 ):
     """
     Send verification email to current user
     """
+
     try:
-        user_service.send_verification_email(current_user.id)
+        user_service.send_verification_email(body.email)
         logger.debug(f"Verification email sent successfully")
         return {"message": "Verification email sent"}
     except Exception as e:

@@ -154,30 +154,18 @@ class UserService:
                 return False
             raise e
 
-    def send_verification_email(self, user_id: str) -> None:
-        """Send verification email to user
+    def send_verification_email(self, email: str) -> None:
+        """Send verification email to the given email address
 
         Args:
-            user_id (str): User ID
+            email (str): Email address to send verification to
         """
-        user = self.user_repo.find_by_id(user_id)
-        if user.email_verified:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Email already verified",
-            )
-
         # Generate verification token
         token = secrets.token_urlsafe(32)
-        now = datetime.now()
-
-        # Update user with verification token
-        user.email_verified = True
-        self.user_repo.update(user)
 
         # Send verification email
         try:
-            self.email_sender.send_verification_email(user.email, token)
+            self.email_sender.send_verification_email(email, token)
         except Exception as e:
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
