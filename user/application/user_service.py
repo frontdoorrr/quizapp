@@ -26,10 +26,10 @@ class UserService:
     ):
         self.user_repo = user_repo
         self.login_history_repo = login_history_repo
-        self.settings = RedisSettings()
+        self.redis_settings = RedisSettings()
         self.crypto = Crypto()
         self.email_sender = EmailSender()
-        self.redis = RedisClient(self.settings)
+        self.redis = RedisClient(self.redis_settings)
         self.ulid = ULID()
 
     def create_user(
@@ -172,7 +172,7 @@ class UserService:
         self.redis.set(
             f"email_verify:{token}",
             {"email": email},
-            ttl=self.settings.EMAIL_VERIFICATION_TTL,
+            ttl=self.redis_settings.EMAIL_VERIFICATION_TTL,
         )
 
         # Send verification email
@@ -186,7 +186,7 @@ class UserService:
                 detail=str(e),
             )
 
-    def verify_email(self, token: str) -> None:
+    def verify_email(self, email: str, token: str) -> None:
         """Verify email with the given token
 
         Args:
@@ -195,7 +195,7 @@ class UserService:
         Raises:
             HTTPException: If token is invalid or expired
         """
-        verification_data = self.redis.get(f"email_verify:{token}")
+        verification_data = self.redis.get(f"{email}:{token}")
         if not verification_data:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
