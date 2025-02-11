@@ -41,6 +41,11 @@ class EmailVerificationBody(BaseModel):
     email: EmailStr = Field(max_length=64)
 
 
+class TokenVerificationBody(BaseModel):
+    token: str = Field(max_length=64)
+    email: EmailStr = Field(max_length=64)
+
+
 class UpdateMeRequest(BaseModel):
     name: str | None = None
     nickname: str | None = None
@@ -271,9 +276,11 @@ async def send_verification_email(
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
 
 
-@router.get("/verify-token")
+@router.post("/verify-token")
+@inject
 def verify_token(
-    token: str, user_service: UserService = Depends(Provide[Container.user_service])
+    body: TokenVerificationBody,
+    user_service: UserService = Depends(Provide[Container.user_service]),
 ):
     """Verify email with token
 
@@ -282,7 +289,7 @@ def verify_token(
         user_service (UserService): User service instance
     """
     try:
-        user_service.verify_token(email=email, token=token)
+        user_service.verify_token(email=body.email, token=body.token)
         return {"message": "Email verified successfully"}
     except Exception as e:
         logger.error(f"Failed to verify email: {str(e)}")

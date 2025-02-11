@@ -19,4 +19,4 @@ class RedisSettings(BaseSettings):
     QUEUE_TIMEOUT: int = 3600  # 1시간
 
     # 이메일 인증 관련 설정
-    EMAIL_VERIFICATION_TTL: int = 86400  # 24시간
+    EMAIL_VERIFICATION_TTL: int = 180  # 3분
