@@ -13,6 +13,9 @@ from user.infra.db_models.user import LoginHistory
 from utils.crypto import Crypto
 from utils.email import EmailSender
 from user.domain.repository.user_repo import IUserRepository, ILoginHistoryRepository
+from common.redis.client import RedisClient
+from common.redis.config import RedisSettings
+
 from user.domain.user import User
 
 
@@ -23,9 +26,11 @@ class UserService:
     ):
         self.user_repo = user_repo
         self.login_history_repo = login_history_repo
-        self.ulid = ULID()
+        self.settings = RedisSettings()
         self.crypto = Crypto()
         self.email_sender = EmailSender()
+        self.redis = RedisClient(self.settings)
+        self.ulid = ULID()
 
     def create_user(
         self,
@@ -163,14 +168,49 @@ class UserService:
         # Generate verification token
         token = secrets.token_urlsafe(32)
 
+        # Save verification token in Redis
+        self.redis.set(
+            f"email_verify:{token}",
+            {"email": email},
+            ttl=self.settings.EMAIL_VERIFICATION_TTL,
+        )
+
         # Send verification email
         try:
             self.email_sender.send_verification_email(email, token)
         except Exception as e:
+            # 이메일 전송 실패시 토큰 삭제
+            self.redis.delete(f"email_verify:{token}")
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail=str(e),
             )
+
+    def verify_email(self, token: str) -> None:
+        """Verify email with the given token
+
+        Args:
+            token (str): Verification token
+
+        Raises:
+            HTTPException: If token is invalid or expired
+        """
+        verification_data = self.redis.get(f"email_verify:{token}")
+        if not verification_data:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Invalid or expired verification token",
+            )
+
+        # 토큰 검증 성공 시 삭제
+        self.redis.delete(f"email_verify:{token}")
+
+        # 해당 이메일로 가입된 유저가 있다면 이메일 인증 상태 업데이트
+        email = verification_data["email"]
+        user = self.user_repo.find_by_email(email)
+        if user:
+            user.email_verified = True
+            self.user_repo.update(user)
 
     def login(self, email: str, password: str) -> dict:
         try:
