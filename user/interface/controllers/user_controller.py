@@ -271,8 +271,8 @@ async def send_verification_email(
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
 
 
-@router.get("/verify-email")
-def verify_email(
+@router.get("/verify-token")
+def verify_token(
     token: str, user_service: UserService = Depends(Provide[Container.user_service])
 ):
     """Verify email with token
@@ -282,7 +282,7 @@ def verify_email(
         user_service (UserService): User service instance
     """
     try:
-        user_service.verify_email(email=email, token=token)
+        user_service.verify_token(email=email, token=token)
         return {"message": "Email verified successfully"}
     except Exception as e:
         logger.error(f"Failed to verify email: {str(e)}")

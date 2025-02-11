@@ -186,8 +186,8 @@ class UserService:
                 detail=str(e),
             )
 
-    def verify_email(self, email: str, token: str) -> None:
-        """Verify email with the given token
+    def verify_token(self, email: str, token: str) -> None:
+        """Verify token
 
         Args:
             token (str): Verification token
