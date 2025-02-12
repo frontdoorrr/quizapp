@@ -166,12 +166,14 @@ class UserService:
             email (str): Email address to send verification to
         """
         # Generate verification token
-        token = secrets.token_urlsafe(32)
+        token = secrets.token_urlsafe(8)
 
         # Save verification token in Redis
+        if self.redis.get(key=email):
+            self.redis.delete(key=email)
         self.redis.set(
-            f"email_verify:{token}",
-            {"email": email},
+            email,
+            token,
             ttl=self.redis_settings.EMAIL_VERIFICATION_TTL,
         )
 
@@ -180,7 +182,7 @@ class UserService:
             self.email_sender.send_verification_email(email, token)
         except Exception as e:
             # 이메일 전송 실패시 토큰 삭제
-            self.redis.delete(f"email_verify:{token}")
+            self.redis.delete(f"{email}:{token}")
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail=str(e),
@@ -190,27 +192,33 @@ class UserService:
         """Verify token
 
         Args:
-            token (str): Verification token
+            redis key = email
+            redis value = token
 
         Raises:
             HTTPException: If token is invalid or expired
         """
-        verification_data = self.redis.get(f"{email}:{token}")
-        if not verification_data:
+        cached_token = self.redis.get(key=email)
+        print(cached_token, token)
+        print(cached_token, token)
+        print(cached_token, token)
+        print(cached_token, token)
+        print(cached_token, token)
+        print("-----------------         -----------------")
+        print("-----------------         -----------------")
+        print("-----------------         -----------------")
+        if not cached_token:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Invalid or expired verification token",
             )
 
         # 토큰 검증 성공 시 삭제
-        self.redis.delete(f"email_verify:{token}")
+        self.redis.delete(key=email)
 
         # 해당 이메일로 가입된 유저가 있다면 이메일 인증 상태 업데이트
-        email = verification_data["email"]
-        user = self.user_repo.find_by_email(email)
-        if user:
-            user.email_verified = True
-            self.user_repo.update(user)
+        if token == cached_token:
+            return True
 
     def login(self, email: str, password: str) -> dict:
         try:

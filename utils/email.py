@@ -27,7 +27,7 @@ class EmailSender:
         msg = MIMEMultipart()
         msg["From"] = self.sender_email
         msg["To"] = to_email
-        msg["Subject"] = "[Genius Game] 이메일 인증"
+        msg["Subject"] = "[Genius Game] 이메일 인증번호"
 
         html_content = f"""
         <html>
@@ -36,18 +36,20 @@ class EmailSender:
             </head>
             <body style="font-family: sans-serif;">
                 <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
-                    <h2 style="color: #333;">이메일 인증</h2>
-                    <p style="color: #666;">아래 버튼을 클릭하여 이메일 인증을 완료해주세요:</p>
-                    <a href="{verification_link}"
-                       style="display: inline-block;
-                              padding: 12px 24px;
-                              background-color: #4CAF50;
-                              color: white;
-                              text-decoration: none;
-                              border-radius: 5px;
-                              margin: 20px 0;">
-                        이메일 인증하기
-                    </a>
+                    <h2 style="color: #333;">이메일 인증번호</h2>
+                    <p style="color: #666;">아래의 인증번호를 입력하여 이메일 인증을 완료해주세요:</p>
+                    <div style="background-color: #f5f5f5;
+                                padding: 20px;
+                                border-radius: 5px;
+                                margin: 20px 0;
+                                text-align: center;
+                                font-size: 24px;
+                                letter-spacing: 5px;
+                                font-weight: bold;
+                                color: #333;">
+                        {verification_token}
+                    </div>
+                    <p style="color: #666; font-size: 14px;">* 이 인증번호는 3분 동안만 유효합니다.</p>
                 </div>
             </body>
         </html>
