@@ -1,5 +1,11 @@
 from dataclasses import dataclass
 from datetime import datetime
+from enum import Enum
+
+
+class AnswerStatus(str, Enum):
+    NOT_USED = "not_used"
+    SUBMITTED = "submitted"
 
 
 @dataclass
@@ -14,3 +20,4 @@ class Answer:
     created_at: datetime
     updated_at: datetime
     point: int
+    status: AnswerStatus

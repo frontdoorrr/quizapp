@@ -4,6 +4,8 @@ from sqlalchemy.orm import Mapped, relationship
 
 from database import Base
 
+from answer.domain.answer import AnswerStatus
+
 
 class Answer(Base):
     __tablename__ = "answer"  # DB 테이블 이름은 소문자
@@ -17,6 +19,9 @@ class Answer(Base):
     created_at: Mapped[datetime] = Column(DateTime, nullable=False)
     updated_at: Mapped[datetime] = Column(DateTime, nullable=False)
     point: Mapped[int] = Column(Integer, nullable=False)
+    status: Mapped[AnswerStatus] = Column(
+        Enum(AnswerStatus), nullable=False, default=AnswerStatus.NOT_USED
+    )
 
 
 # Late binding: relationship을 클래스 정의 후에 설정
