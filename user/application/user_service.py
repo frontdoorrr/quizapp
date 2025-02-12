@@ -199,14 +199,6 @@ class UserService:
             HTTPException: If token is invalid or expired
         """
         cached_token = self.redis.get(key=email)
-        print(cached_token, token)
-        print(cached_token, token)
-        print(cached_token, token)
-        print(cached_token, token)
-        print(cached_token, token)
-        print("-----------------         -----------------")
-        print("-----------------         -----------------")
-        print("-----------------         -----------------")
         if not cached_token:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
