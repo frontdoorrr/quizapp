@@ -105,7 +105,7 @@ class CoinService:
     def get_coins(self, user_id: str) -> List[Coin]:
         """사용자의 모든 코인을 조회합니다."""
         wallet = self.get_wallet(user_id)
-        return self.coin_repository.find_by_wallet_id(wallet.id)
+        return self.coin_repo.find_by_wallet_id(wallet.id)
 
     def get_active_coins(self, user_id: str) -> List[Coin]:
         """사용자의 사용 가능한 코인을 조회합니다."""
