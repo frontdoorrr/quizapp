@@ -9,6 +9,7 @@ from dependency_injector.wiring import inject, Provide
 
 from containers import Container
 from user.application.user_service import UserService
+from user.application.coin_service import CoinService
 from common.auth import CurrentUser, get_current_user, get_admin_user, Role
 
 logger = logging.getLogger(__name__)
@@ -86,6 +87,7 @@ class GetUserResponse(BaseModel):
 def create_user(
     user: CreateUserBody,
     user_service: UserService = Depends(Provide[Container.user_service]),
+    coin_service: CoinService = Depends(Provide[CoinService]),
 ) -> UserResponse:
     logger.debug(f"Received user data: {user.dict()}")
 
@@ -100,6 +102,8 @@ def create_user(
         nickname=user.nickname,
         coin=0,
     )
+
+    coin_service.create_wallet(created_user.id, max_balance=20)
     return created_user
 
 

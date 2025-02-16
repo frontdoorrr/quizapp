@@ -186,7 +186,11 @@ async def get_unused_answer_by_game_and_user(
     current_user: CurrentUser = Depends(get_current_user),
     answer_service: AnswerService = Depends(Provide[Container.answer_service]),
 ):
-    answers = answer_service.get_unused_answers_by_game_and_user(game_id, current_user.id)
+    answers = answer_service.get_unused_answers_by_game_and_user(
+        game_id, current_user.id
+    )
+    if answers is None:
+        return []
     return [
         AnswerResponse(
             id=answer.id,

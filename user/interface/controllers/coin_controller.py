@@ -1,7 +1,7 @@
 from typing import List, Optional
 from datetime import datetime
 from fastapi import APIRouter, Depends, HTTPException
-from dependency_injector.wiring import inject, Provider
+from dependency_injector.wiring import inject, Provide
 from pydantic import BaseModel, Field
 
 from user.application.coin_service import CoinService
@@ -42,6 +42,11 @@ class UpdateCoinRequest(BaseModel):
     memo: Optional[str] = None
 
 
+class CoinHistoryResponse(BaseModel):
+    coins: List[CoinResponse]
+    total_count: int
+
+
 router = APIRouter(
     prefix="/users/{user_id}/coins",
     tags=["coins"],
@@ -52,7 +57,7 @@ router = APIRouter(
 @inject
 async def get_wallet(
     user_id: str,
-    coin_service: CoinService = Depends(Provider[CoinService]),
+    coin_service: CoinService = Depends(Provide[CoinService]),
 ) -> WalletResponse:
     """사용자의 코인 지갑 정보를 조회합니다."""
     try:
@@ -96,7 +101,7 @@ async def get_wallet(
 async def add_coin(
     user_id: str,
     request: AddCoinRequest,
-    coin_service: CoinService = Depends(Provider[CoinService]),
+    coin_service: CoinService = Depends(Provide[CoinService]),
 ) -> CoinResponse:
     """사용자의 지갑에 코인을 추가합니다."""
     try:
@@ -123,7 +128,7 @@ async def add_coin(
 async def use_coin(
     user_id: str,
     request: AddCoinRequest,
-    coin_service: CoinService = Depends(Provider[CoinService]),
+    coin_service: CoinService = Depends(Provide[CoinService]),
 ) -> CoinResponse:
     """사용자의 지갑에서 코인을 사용합니다."""
     try:
@@ -140,3 +145,50 @@ async def use_coin(
         raise HTTPException(status_code=400, detail="Insufficient coins")
     except UserWalletNotFoundError:
         raise HTTPException(status_code=404, detail="User wallet not found")
+
+
+@router.get("/history", response_model=CoinHistoryResponse)
+@inject
+async def get_coin_history(
+    user_id: str,
+    status: Optional[CoinStatus] = None,
+    coin_service: CoinService = Depends(Provide[CoinService]),
+):
+    """사용자의 코인 사용/획득 내역을 조회합니다."""
+    try:
+        wallet = coin_service.get_wallet(user_id)
+        if not wallet:
+            raise HTTPException(
+                status_code=404,
+                detail=f"Wallet not found for user {user_id}",
+            )
+
+        coins = coin_service.get_coins(user_id)
+        if status:
+            coins = [coin for coin in coins if coin.status == status]
+
+        return CoinHistoryResponse(
+            coins=[
+                CoinResponse(
+                    id=coin.id,
+                    wallet_id=coin.wallet_id,
+                    status=coin.status,
+                    created_at=coin.created_at,
+                    updated_at=coin.updated_at,
+                    memo=coin.memo,
+                )
+                for coin in coins
+            ],
+            total_count=len(coins),
+        )
+
+    except WalletNotFoundError:
+        raise HTTPException(
+            status_code=404,
+            detail=f"Wallet not found for user {user_id}",
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=str(e),
+        )

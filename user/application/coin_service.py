@@ -27,7 +27,7 @@ class CoinService:
             return existing_wallet
 
         # 새 지갑 생성
-        now = datetime.utcnow()
+        now = datetime.now()
         wallet = CoinWallet(
             id=str(uuid4()),
             user_id=user_id,

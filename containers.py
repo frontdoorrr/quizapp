@@ -1,7 +1,10 @@
 from dependency_injector import containers, providers
 
 from user.application.user_service import UserService
-from user.infra.repository.user_repo import UserRepository, LoginHistoryRepository
+from user.infra.repository.user_repo import UserRepository
+from user.infra.repository.user_repo import LoginHistoryRepository
+from user.infra.repository.coin_repo import CoinWalletRepository, CoinRepository
+from user.application.coin_service import CoinService
 from game.application.game_service import GameService
 from game.infra.repository.game_repo import GameRepository
 from answer.application.answer_service import AnswerService
@@ -35,17 +38,21 @@ class Container(containers.DeclarativeContainer):
         login_history_repo=login_history_repo,
     )
 
+    # CoinWallet
+    coin_wallet_repo = providers.Singleton(CoinWalletRepository)
+    coin_repo = providers.Singleton(CoinRepository)
+    coin_service = providers.Factory(
+        CoinService,
+        wallet_repository=coin_wallet_repo,
+        coin_repository=coin_repo,
+    )
+
     # Game
     game_repo = providers.Singleton(GameRepository)
     redis_settings = providers.Singleton(RedisSettings)
-    redis_client = providers.Singleton(
-        RedisClient,
-        settings=redis_settings
-    )
+    redis_client = providers.Singleton(RedisClient, settings=redis_settings)
     game_service = providers.Factory(
-        GameService,
-        game_repo=game_repo,
-        redis_client=redis_client
+        GameService, game_repo=game_repo, redis_client=redis_client
     )
 
     # Answer
