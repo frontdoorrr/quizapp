@@ -38,8 +38,16 @@ async def submit_answer(
     user: CurrentUser = Depends(get_current_user),
     answer_service: AnswerService = Depends(Provide[Container.answer_service]),
 ):
-    submitted_answer = answer_service.get_answer_by_game_and_user(body.game_id, user.id)
-    if submitted_answer:
+    submitted_answers = answer_service.get_answers_by_game_and_user(
+        body.game_id, user.id
+    )
+    if not submitted_answers:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="You have already submitted an answer for this game",
+        )
+
+    for submitted_answer in submitted_answers:
         if submitted_answer.is_correct:
             raise HTTPException(
                 status_code=status.HTTP_409_CONFLICT,

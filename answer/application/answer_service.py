@@ -94,8 +94,15 @@ class AnswerService:
     def get_answers_by_user(self, user_id: str) -> list[Answer]:
         return self.answer_repo.find_by_user_id(user_id)
 
-    def get_answer_by_game_and_user(self, game_id: str, user_id: str) -> Answer:
-        return self.answer_repo.find_true_by_game_id_and_user_id(game_id, user_id)
+    def get_answers_by_game_and_user(
+        self, game_id: str, user_id: str
+    ) -> list[Answer] | Answer:
+        return self.answer_repo.find_unused_by_game_id_and_user_id(game_id, user_id)
+
+    def get_corrected_answer_by_game_and_user(
+        self, game_id: str, user_id: str
+    ) -> Answer:
+        return self.answer_repo.find_corrected_by_game_id_and_user_id(game_id, user_id)
 
     def delete_answer_by_game_and_user(self, game_id: str, user_id: str) -> None:
         """Delete answer by game_id and user_id
@@ -107,7 +114,8 @@ class AnswerService:
         Raises:
             ValueError: If answer not found
         """
-        answer = self.get_answer_by_game_and_user(game_id, user_id)
+        # answer = self.get_answer_by_game_and_user(game_id, user_id)
+
         if not answer:
             raise ValueError(
                 f"Answer not found for game_id: {game_id} and user_id: {user_id}"

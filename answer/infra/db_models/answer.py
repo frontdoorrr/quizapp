@@ -1,5 +1,14 @@
 from datetime import datetime
-from sqlalchemy import Column, String, DateTime, Integer, Boolean, ForeignKey, Text
+from sqlalchemy import (
+    Column,
+    String,
+    DateTime,
+    Integer,
+    Boolean,
+    ForeignKey,
+    Text,
+    Enum,
+)
 from sqlalchemy.orm import Mapped, relationship
 
 from database import Base

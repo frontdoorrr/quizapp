@@ -58,7 +58,21 @@ class AnswerRepository(IAnswerRepository):
         models = self.db.query(AnswerModel).filter(AnswerModel.user_id == user_id).all()
         return [self._to_domain(model) for model in models]
 
-    def find_true_by_game_id_and_user_id(
+    def find_unused_by_game_id_and_user_id(
+        self, game_id: str, user_id: str
+    ) -> list[AnswerDomain] | AnswerDomain:
+        models = (
+            self.db.query(AnswerModel)
+            .filter(
+                AnswerModel.game_id == game_id,
+                AnswerModel.user_id == user_id,
+                AnswerModel.status == AnswerStatus.UNUSED,
+            )
+            .all()
+        )
+        return [self._to_domain(model) for model in models] if models else None
+
+    def find_corrected_by_game_id_and_user_id(
         self, game_id: str, user_id: str
     ) -> AnswerDomain:
         model = (
