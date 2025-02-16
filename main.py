@@ -6,6 +6,7 @@ import logging
 
 from containers import Container
 from user.interface.controllers.user_controller import router as user_router
+from user.interface.controllers.coin_controller import router as coin_router
 from game.interface.controllers.game_controller import router as game_router
 from answer.interface.controllers.answer_controller import router as answer_router
 from inquiry.interface.controllers.inquiry_controller import router as inquiry_router
@@ -19,6 +20,7 @@ container.wire(packages=["user"])
 app.container = container
 
 app.include_router(router=user_router)
+app.include_router(router=coin_router)
 app.include_router(router=game_router)
 app.include_router(router=answer_router)
 app.include_router(router=inquiry_router)

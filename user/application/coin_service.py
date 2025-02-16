@@ -54,7 +54,7 @@ class CoinService:
             raise MaxBalanceExceededError(wallet.id, wallet.max_balance)
 
         # 코인 생성
-        now = datetime.utcnow()
+        now = datetime.now()
         coin = Coin(
             id=str(uuid4()),
             wallet_id=wallet.id,

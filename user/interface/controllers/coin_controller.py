@@ -12,7 +12,7 @@ from user.domain.exceptions import (
     InsufficientCoinsError,
     MaxBalanceExceededError,
 )
-
+from containers import Container
 
 class CoinResponse(BaseModel):
     id: str
@@ -48,7 +48,7 @@ class CoinHistoryResponse(BaseModel):
 
 
 router = APIRouter(
-    prefix="/users/{user_id}/coins",
+    prefix="/user/{user_id}/coin",
     tags=["coins"],
 )
 
@@ -57,7 +57,7 @@ router = APIRouter(
 @inject
 async def get_wallet(
     user_id: str,
-    coin_service: CoinService = Depends(Provide[CoinService]),
+    coin_service: CoinService = Depends(Provide[Container.coin_service]),
 ) -> WalletResponse:
     """사용자의 코인 지갑 정보를 조회합니다."""
     try:
@@ -101,7 +101,7 @@ async def get_wallet(
 async def add_coin(
     user_id: str,
     request: AddCoinRequest,
-    coin_service: CoinService = Depends(Provide[CoinService]),
+    coin_service: CoinService = Depends(Provide[Container.coin_service]),
 ) -> CoinResponse:
     """사용자의 지갑에 코인을 추가합니다."""
     try:
@@ -128,7 +128,7 @@ async def add_coin(
 async def use_coin(
     user_id: str,
     request: AddCoinRequest,
-    coin_service: CoinService = Depends(Provide[CoinService]),
+    coin_service: CoinService = Depends(Provide[Container.coin_service]),
 ) -> CoinResponse:
     """사용자의 지갑에서 코인을 사용합니다."""
     try:
@@ -152,7 +152,7 @@ async def use_coin(
 async def get_coin_history(
     user_id: str,
     status: Optional[CoinStatus] = None,
-    coin_service: CoinService = Depends(Provide[CoinService]),
+    coin_service: CoinService = Depends(Provide[Container.coin_service]),
 ):
     """사용자의 코인 사용/획득 내역을 조회합니다."""
     try:
