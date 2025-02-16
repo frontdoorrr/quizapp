@@ -133,21 +133,29 @@ class GameService:
             raise Exception("No games found")
         return game
 
+    def updating_game_closing_time(self, game_id: str, closed_at: datetime):
+        game = self.game_repo.find_by_id(game_id)
+        if not game:
+            raise ValueError(f"Game not found: {game_id}")
+        game.closed_at = closed_at
+        self.game_repo.update(game)
+        return game
+
     def close_game(self, game_id: str) -> Game:
         """게임을 종료하고 점수 계산을 큐에 추가"""
         game = self.game_repo.find_by_id(game_id)
         if not game:
             raise ValueError(f"Game not found: {game_id}")
-        
+
         if game.status == GameStatus.CLOSED:
             raise ValueError("Game is already closed")
-        
+
         # 게임 상태 업데이트
         game.status = GameStatus.CLOSED
         game.closed_at = datetime.now()
         self.game_repo.update(game)
-        
+
         # 점수 계산 작업을 큐에 추가
         self.redis_client.enqueue({"game_id": game_id})
-        
+
         return game

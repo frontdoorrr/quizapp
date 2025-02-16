@@ -95,7 +95,7 @@ class AnswerService:
     def get_answers_by_user(self, user_id: str) -> list[Answer]:
         return self.answer_repo.find_by_user_id(user_id)
 
-    def get_answers_by_game_and_user(
+    def get_unused_answers_by_game_and_user(
         self, game_id: str, user_id: str
     ) -> list[Answer] | Answer:
         return self.answer_repo.find_unused_by_game_id_and_user_id(game_id, user_id)

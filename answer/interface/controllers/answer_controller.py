@@ -37,8 +37,9 @@ async def submit_answer(
     body: SubmitAnswerBody,
     user: CurrentUser = Depends(get_current_user),
     answer_service: AnswerService = Depends(Provide[Container.answer_service]),
+    game_service: GameService = Depends(Provide[Container.game_service]),
 ):
-    submitted_answers = answer_service.get_answers_by_game_and_user(
+    submitted_answers = answer_service.get_unused_answers_by_game_and_user(
         body.game_id, user.id
     )
     if not submitted_answers:
@@ -60,6 +61,12 @@ async def submit_answer(
             user_id=user.id,
             answer_text=body.answer,
         )
+        if answer.is_correct:
+            game = game_service.updating_game_closing_time(
+                game_id=body.game_id,
+                closed_at=answer.solved_at,
+            )
+
         return AnswerResponse(
             id=answer.id,
             game_id=answer.game_id,
@@ -71,11 +78,7 @@ async def submit_answer(
             updated_at=answer.updated_at,
             point=answer.point,
         )
-    except InsufficientCoinError:
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail="Insufficient coins to submit answer",
-        )
+
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))
     except Exception as e:
@@ -165,7 +168,7 @@ async def get_answers_by_user(
 
 @router.get("/game/{game_id}/user", response_model=AnswerResponse | None)
 @inject
-async def get_answer_by_game_and_user(
+async def get_corrected_answer_by_game_and_user(
     game_id: str,
     current_user: CurrentUser = Depends(get_current_user),
     answer_service: AnswerService = Depends(Provide[Container.answer_service]),
@@ -174,6 +177,30 @@ async def get_answer_by_game_and_user(
     return answer_service.get_corrected_answer_by_game_and_user(
         game_id, current_user.id
     )
+
+
+@router.get("/game/{game_id}/user/unused", response_model=list[AnswerResponse])
+@inject
+async def get_unused_answer_by_game_and_user(
+    game_id: str,
+    current_user: CurrentUser = Depends(get_current_user),
+    answer_service: AnswerService = Depends(Provide[Container.answer_service]),
+):
+    answers = answer_service.get_unused_answers_by_game_and_user(game_id, current_user.id)
+    return [
+        AnswerResponse(
+            id=answer.id,
+            game_id=answer.game_id,
+            user_id=answer.user_id,
+            answer=answer.answer,
+            is_correct=answer.is_correct,
+            solved_at=answer.solved_at,
+            created_at=answer.created_at,
+            updated_at=answer.updated_at,
+            point=answer.point,
+        )
+        for answer in answers
+    ]
 
 
 @router.delete("/game/current/user")
