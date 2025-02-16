@@ -3,11 +3,10 @@ from ulid import ULID
 
 from dependency_injector.wiring import inject
 
-from answer.domain.answer import Answer
+from answer.domain.answer import Answer, AnswerStatus
 from answer.domain.repository.answer_repo import IAnswerRepository
 from game.domain.repository.game_repo import IGameRepository
 from user.domain.repository.user_repo import IUserRepository
-from answer.domain.exceptions import InsufficientCoinError
 
 
 class AnswerService:
@@ -23,7 +22,9 @@ class AnswerService:
         self.user_repo = user_repo
         self.ulid = ULID()
 
-    def create_answer(self, game_id: str, user_id: str, answer_text: str) -> Answer:
+    def create_answer(
+        self, game_id: str, user_id: str, answer_text: str = ""
+    ) -> Answer:
         return self.answer_repo.save(
             Answer(
                 id=self.ulid.generate(),
@@ -83,7 +84,7 @@ class AnswerService:
 
         self.user_repo.update(user)
 
-        return self.answer_repo.save(answer)
+        return self.answer_repo.update(answer)
 
     def get_answer(self, id: str) -> Answer:
         return self.answer_repo.find_by_id(id)
@@ -121,3 +122,16 @@ class AnswerService:
                 f"Answer not found for game_id: {game_id} and user_id: {user_id}"
             )
         self.answer_repo.delete_by_id(answer.id)
+
+    # def create_empty_answer(self, game_id: str, user_id: str) -> Answer:
+    #     # Check if game exists
+    #     game = self.game_repo.find_by_id(game_id)
+    #     if not game:
+    #         raise ValueError("Game not found")
+
+    #     # Check if user exists
+    #     user = self.user_repo.find_by_id(user_id)
+    #     if not user:
+    #         raise ValueError("User not found")
+
+    #     return self.answer_repo.create_answer(game_id, user_id)

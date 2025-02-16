@@ -198,3 +198,28 @@ async def delete_answer_by_game_and_user(
         return {"message": "Answer deleted successfully"}
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+
+
+@router.post("/empty", response_model=AnswerResponse)
+@inject
+async def create_empty_answer(
+    game_id: str,
+    user_id: str,
+    answer_service: AnswerService = Depends(Provide[Container.answer_service]),
+):
+    """
+    Create an empty answer for admin purposes.
+    This endpoint should be protected and only accessible by admin users.
+    """
+    answer = answer_service.create_answer(game_id=game_id, user_id=user_id)
+    return AnswerResponse(
+        id=answer.id,
+        game_id=answer.game_id,
+        user_id=answer.user_id,
+        answer=answer.answer,
+        is_correct=answer.is_correct,
+        solved_at=answer.solved_at,
+        created_at=answer.created_at,
+        updated_at=answer.updated_at,
+        point=answer.point,
+    )

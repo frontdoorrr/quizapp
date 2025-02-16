@@ -48,6 +48,22 @@ class AnswerRepository(IAnswerRepository):
         self.db.refresh(model)
         return self._to_domain(model)
 
+    def update(self, answer: AnswerDomain) -> AnswerDomain:
+        model = self.db.query(AnswerModel).filter(AnswerModel.id == answer.id).first()
+        if not model:
+            raise ValueError(f"Answer with id {answer.id} not found")
+
+        model.answer = answer.answer
+        model.is_correct = answer.is_correct
+        model.solved_at = answer.solved_at
+        model.updated_at = answer.updated_at
+        model.point = answer.point
+        model.status = answer.status
+
+        self.db.commit()
+        self.db.refresh(model)
+        return self._to_domain(model)
+
     def find_by_id(self, id: str) -> AnswerDomain:
         model = self.db.query(AnswerModel).filter(AnswerModel.id == id).first()
         if not model:
