@@ -2,8 +2,10 @@ from datetime import datetime
 from sqlalchemy.orm import Session
 
 from answer.domain.answer import Answer as AnswerDomain
+from answer.domain.answer import AnswerStatus
 from answer.domain.repository.answer_repo import IAnswerRepository
 from answer.infra.db_models.answer import Answer as AnswerModel
+
 from database import SessionLocal
 
 
@@ -22,6 +24,7 @@ class AnswerRepository(IAnswerRepository):
             created_at=model.created_at,
             updated_at=model.updated_at,
             point=model.point,
+            status=model.status,
         )
 
     def _to_model(self, domain: AnswerDomain) -> AnswerModel:
@@ -35,6 +38,7 @@ class AnswerRepository(IAnswerRepository):
             created_at=domain.created_at,
             updated_at=domain.updated_at,
             point=domain.point,
+            status=domain.status,
         )
 
     def save(self, answer: AnswerDomain) -> AnswerDomain:
@@ -66,7 +70,7 @@ class AnswerRepository(IAnswerRepository):
             .filter(
                 AnswerModel.game_id == game_id,
                 AnswerModel.user_id == user_id,
-                AnswerModel.status == AnswerStatus.UNUSED,
+                AnswerModel.status == AnswerStatus.NOT_USED,
             )
             .all()
         )
