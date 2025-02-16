@@ -171,7 +171,9 @@ async def get_answer_by_game_and_user(
     answer_service: AnswerService = Depends(Provide[Container.answer_service]),
 ):
 
-    return answer_service.get_answer_by_game_and_user(game_id, current_user.id)
+    return answer_service.get_corrected_answer_by_game_and_user(
+        game_id, current_user.id
+    )
 
 
 @router.delete("/game/current/user")

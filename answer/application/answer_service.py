@@ -45,8 +45,8 @@ class AnswerService:
 
         # 유저 정보 조회
         user = self.user_repo.find_by_id(user_id)
-        if user.coin < 1:
-            raise InsufficientCoinError()
+        # if user.coin < 1:
+        #     raise InsufficientCoinError()
 
         # 정답 여부 확인
         is_correct = game.answer.strip().lower() == answer_text.strip().lower()
