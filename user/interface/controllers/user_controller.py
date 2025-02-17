@@ -1,10 +1,11 @@
 from typing import Annotated
 from datetime import datetime, date
 import logging
+import re
 
 from fastapi import APIRouter, Depends, status, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, EmailStr, Field, validator
 from dependency_injector.wiring import inject, Provide
 
 from containers import Container
@@ -28,6 +29,18 @@ class CreateUserBody(BaseModel):
     phone: str = Field(max_length=32)
     nickname: str = Field(min_length=2, max_length=32)
 
+    @validator('password')
+    def validate_password(cls, v):
+        if not re.search(r'[A-Z]', v):
+            raise ValueError('비밀번호는 최소 1개의 대문자를 포함해야 합니다')
+        if not re.search(r'[a-z]', v):
+            raise ValueError('비밀번호는 최소 1개의 소문자를 포함해야 합니다')
+        if not re.search(r'[0-9]', v):
+            raise ValueError('비밀번호는 최소 1개의 숫자를 포함해야 합니다')
+        if not re.search(r'[!@#$%^&*(),.?":{}|<>]', v):
+            raise ValueError('비밀번호는 최소 1개의 특수문자를 포함해야 합니다')
+        return v
+
 
 class UpdateUserBody(BaseModel):
     name: str | None = Field(min_length=2, max_length=32, default=None)
@@ -36,6 +49,20 @@ class UpdateUserBody(BaseModel):
     address: str | None = Field(max_length=32, default=None)
     phone: str | None = Field(max_length=32, default=None)
     nickname: str | None = Field(min_length=2, max_length=32, default=None)
+
+    @validator('password')
+    def validate_password(cls, v):
+        if v is None:  # password가 None이면 검증 스킵
+            return v
+        if not re.search(r'[A-Z]', v):
+            raise ValueError('비밀번호는 최소 1개의 대문자를 포함해야 합니다')
+        if not re.search(r'[a-z]', v):
+            raise ValueError('비밀번호는 최소 1개의 소문자를 포함해야 합니다')
+        if not re.search(r'[0-9]', v):
+            raise ValueError('비밀번호는 최소 1개의 숫자를 포함해야 합니다')
+        if not re.search(r'[!@#$%^&*(),.?":{}|<>]', v):
+            raise ValueError('비밀번호는 최소 1개의 특수문자를 포함해야 합니다')
+        return v
 
 
 class EmailVerificationBody(BaseModel):
