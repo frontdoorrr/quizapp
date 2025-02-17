@@ -1,11 +1,22 @@
 from datetime import datetime, date
 from typing import List
-from sqlalchemy import Column, String, DateTime, Text, Date, Enum, Integer, Boolean, ForeignKey
+from sqlalchemy import (
+    Column,
+    String,
+    DateTime,
+    Text,
+    Date,
+    Enum,
+    Integer,
+    Boolean,
+    ForeignKey,
+)
 from sqlalchemy.orm import Mapped, relationship
 
 from database import Base
 from common.auth import Role
 from user.domain.user import CoinStatus
+
 
 class User(Base):
     __tablename__ = "user"
@@ -27,14 +38,18 @@ class User(Base):
     coin: Mapped[int] = Column(Integer, nullable=False, default=0)
     email_verified: Mapped[bool] = Column(Boolean, nullable=False, default=False)
 
-    login_histories = relationship("LoginHistory", back_populates="user")
+    login_histories = relationship(
+        "LoginHistory", back_populates="user", cascade="all, delete-orphan"
+    )
 
 
 class LoginHistory(Base):
     __tablename__ = "login_history"
 
     id: Mapped[str] = Column(String(36), primary_key=True)
-    user_id: Mapped[str] = Column(String(36), ForeignKey("user.id"), nullable=False)
+    user_id: Mapped[str] = Column(
+        String(36), ForeignKey("user.id", ondelete="CASCADE"), nullable=False
+    )
     login_at: Mapped[datetime] = Column(DateTime, nullable=False)
 
     user = relationship("User", back_populates="login_histories")
@@ -67,7 +82,9 @@ class Coin(Base):
     __tablename__ = "coin"
 
     id: Mapped[str] = Column(String(36), primary_key=True)
-    wallet_id: Mapped[str] = Column(String(36), ForeignKey("coin_wallet.id"), nullable=False)
+    wallet_id: Mapped[str] = Column(
+        String(36), ForeignKey("coin_wallet.id"), nullable=False
+    )
     created_at: Mapped[datetime] = Column(DateTime, nullable=False)
     updated_at: Mapped[datetime] = Column(DateTime, nullable=False)
     status: Mapped[CoinStatus] = Column(
