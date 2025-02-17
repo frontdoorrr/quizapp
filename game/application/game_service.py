@@ -133,7 +133,7 @@ class GameService:
             raise Exception("No games found")
         return game
 
-    def updating_game_closing_time(self, game_id: str, closed_at: datetime):
+    def update_game_closing_time(self, game_id: str, closed_at: datetime):
         game = self.game_repo.find_by_id(game_id)
         if not game:
             raise ValueError(f"Game not found: {game_id}")
