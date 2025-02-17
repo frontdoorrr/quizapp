@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from fastapi import APIRouter, Depends, HTTPException, status
 from game.application import game_service
 from pydantic import BaseModel, Field
@@ -61,10 +61,10 @@ async def submit_answer(
             user_id=user.id,
             answer_text=body.answer,
         )
-        if answer.is_correct:
-            game = game_service.updating_game_closing_time(
+        if answer.is_correct and game_service.get_game(body.game_id).closed_at is None:
+            game = game_service.update_game_closing_time(
                 game_id=body.game_id,
-                closed_at=answer.solved_at,
+                closed_at=answer.solved_at + timedelta(hours=2),
             )
 
         return AnswerResponse(
