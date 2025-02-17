@@ -87,7 +87,7 @@ class GetUserResponse(BaseModel):
 def create_user(
     user: CreateUserBody,
     user_service: UserService = Depends(Provide[Container.user_service]),
-    coin_service: CoinService = Depends(Provide[CoinService]),
+    coin_service: CoinService = Depends(Provide[Container.coin_service]),
 ) -> UserResponse:
     logger.debug(f"Received user data: {user.dict()}")
 
