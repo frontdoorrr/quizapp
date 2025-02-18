@@ -11,9 +11,6 @@ from user.infra.db_models.user import Coin as CoinModel
 
 
 class CoinWalletRepository(ICoinWalletRepository):
-    def __init__(self):
-        self.db: Session = SessionLocal()
-
     def _to_domain(self, model: CoinWalletModel) -> CoinWallet:
         return CoinWallet(
             id=model.id,
@@ -36,31 +33,32 @@ class CoinWalletRepository(ICoinWalletRepository):
 
     def create(self, wallet: CoinWallet) -> CoinWallet:
         model = self._to_model(wallet)
-        self.db.add(model)
-        self.db.commit()
-        return self._to_domain(model)
+        with SessionLocal() as db:
+            db.add(model)
+            db.commit()
+            return self._to_domain(model)
 
     def find_by_id(self, wallet_id: str) -> Optional[CoinWallet]:
-        stmt = select(CoinWalletModel).where(CoinWalletModel.id == wallet_id)
-        result = self.db.execute(stmt).scalar_one_or_none()
-        return self._to_domain(result) if result else None
+        with SessionLocal() as db:
+            stmt = select(CoinWalletModel).where(CoinWalletModel.id == wallet_id)
+            result = db.execute(stmt).scalar_one_or_none()
+            return self._to_domain(result) if result else None
 
     def find_by_user_id(self, user_id: str) -> Optional[CoinWallet]:
-        stmt = select(CoinWalletModel).where(CoinWalletModel.user_id == user_id)
-        result = self.db.execute(stmt).scalar_one_or_none()
-        return self._to_domain(result) if result else None
+        with SessionLocal() as db:
+            stmt = select(CoinWalletModel).where(CoinWalletModel.user_id == user_id)
+            result = db.execute(stmt).scalar_one_or_none()
+            return self._to_domain(result) if result else None
 
     def update(self, wallet: CoinWallet) -> CoinWallet:
         model = self._to_model(wallet)
-        self.db.merge(model)
-        self.db.commit()
-        return wallet
+        with SessionLocal() as db:
+            db.merge(model)
+            db.commit()
+            return wallet
 
 
 class CoinRepository(ICoinRepository):
-    def __init__(self):
-        self.db: Session = SessionLocal()
-
     def _to_domain(self, model: CoinModel) -> Coin:
         return Coin(
             id=model.id,
@@ -83,22 +81,26 @@ class CoinRepository(ICoinRepository):
 
     def create(self, coin: Coin) -> Coin:
         model = self._to_model(coin)
-        self.db.add(model)
-        self.db.commit()
-        return self._to_domain(model)
+        with SessionLocal() as db:
+            db.add(model)
+            db.commit()
+            return self._to_domain(model)
 
     def find_by_id(self, coin_id: str) -> Optional[Coin]:
-        stmt = select(CoinModel).where(CoinModel.id == coin_id)
-        result = self.db.execute(stmt).scalar_one_or_none()
-        return self._to_domain(result) if result else None
+        with SessionLocal() as db:
+            stmt = select(CoinModel).where(CoinModel.id == coin_id)
+            result = db.execute(stmt).scalar_one_or_none()
+            return self._to_domain(result) if result else None
 
     def find_by_wallet_id(self, wallet_id: str) -> List[Coin]:
-        stmt = select(CoinModel).where(CoinModel.wallet_id == wallet_id)
-        results = self.db.execute(stmt).scalars().all()
-        return [self._to_domain(result) for result in results]
+        with SessionLocal() as db:
+            stmt = select(CoinModel).where(CoinModel.wallet_id == wallet_id)
+            results = db.execute(stmt).scalars().all()
+            return [self._to_domain(result) for result in results]
 
     def update(self, coin: Coin) -> Coin:
         model = self._to_model(coin)
-        self.db.merge(model)
-        self.db.commit()
-        return coin
+        with SessionLocal() as db:
+            db.merge(model)
+            db.commit()
+            return coin
