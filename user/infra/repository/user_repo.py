@@ -177,8 +177,7 @@ class UserRepository(IUserRepository):
         order_by: str | None = None,
         order: str | None = "asc",
     ) -> list[UserVO]:
-        db = SessionLocal()
-        try:
+        with SessionLocal() as db:
             query = db.query(User)
 
             # 필터 적용
@@ -218,8 +217,6 @@ class UserRepository(IUserRepository):
                 )
                 for user in users
             ]
-        finally:
-            db.close()
 
 
 class LoginHistoryRepository(ILoginHistoryRepository):

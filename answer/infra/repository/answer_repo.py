@@ -10,9 +10,6 @@ from database import SessionLocal
 
 
 class AnswerRepository(IAnswerRepository):
-    def __init__(self):
-        self.db: Session = SessionLocal()
-
     def _to_domain(self, model: AnswerModel) -> AnswerDomain:
         return AnswerDomain(
             id=model.id,
@@ -43,91 +40,99 @@ class AnswerRepository(IAnswerRepository):
 
     def save(self, answer: AnswerDomain) -> AnswerDomain:
         model = self._to_model(answer)
-        self.db.add(model)
-        self.db.commit()
-        self.db.refresh(model)
-        return self._to_domain(model)
+        with SessionLocal() as db:
+            db.add(model)
+            db.commit()
+            db.refresh(model)
+            return self._to_domain(model)
 
     def update(self, answer: AnswerDomain) -> AnswerDomain:
-        model = self.db.query(AnswerModel).filter(AnswerModel.id == answer.id).first()
-        if not model:
-            raise ValueError(f"Answer with id {answer.id} not found")
+        with SessionLocal() as db:
+            model = db.query(AnswerModel).filter(AnswerModel.id == answer.id).first()
+            if not model:
+                raise ValueError(f"Answer with id {answer.id} not found")
 
-        model.answer = answer.answer
-        model.is_correct = answer.is_correct
-        model.solved_at = answer.solved_at
-        model.updated_at = answer.updated_at
-        model.point = answer.point
-        model.status = answer.status
+            model.answer = answer.answer
+            model.is_correct = answer.is_correct
+            model.solved_at = answer.solved_at
+            model.updated_at = answer.updated_at
+            model.point = answer.point
+            model.status = answer.status
 
-        self.db.commit()
-        self.db.refresh(model)
-        return self._to_domain(model)
+            db.commit()
+            db.refresh(model)
+            return self._to_domain(model)
 
     def find_by_id(self, id: str) -> AnswerDomain:
-        model = self.db.query(AnswerModel).filter(AnswerModel.id == id).first()
-        if not model:
-            raise ValueError(f"Answer not found with id: {id}")
-        return self._to_domain(model)
+        with SessionLocal() as db:
+            model = db.query(AnswerModel).filter(AnswerModel.id == id).first()
+            if not model:
+                raise ValueError(f"Answer not found with id: {id}")
+            return self._to_domain(model)
 
     def find_by_game_id(self, game_id: str) -> list[AnswerDomain]:
-        models = self.db.query(AnswerModel).filter(AnswerModel.game_id == game_id).all()
-        return [self._to_domain(model) for model in models]
+        with SessionLocal() as db:
+            models = db.query(AnswerModel).filter(AnswerModel.game_id == game_id).all()
+            return [self._to_domain(model) for model in models]
 
     def find_by_user_id(self, user_id: str) -> list[AnswerDomain]:
-        models = self.db.query(AnswerModel).filter(AnswerModel.user_id == user_id).all()
-        return [self._to_domain(model) for model in models]
+        with SessionLocal() as db:
+            models = db.query(AnswerModel).filter(AnswerModel.user_id == user_id).all()
+            return [self._to_domain(model) for model in models]
 
     def find_unused_by_game_id_and_user_id(
         self, game_id: str, user_id: str
     ) -> list[AnswerDomain] | AnswerDomain:
-        models = (
-            self.db.query(AnswerModel)
-            .filter(
-                AnswerModel.game_id == game_id,
-                AnswerModel.user_id == user_id,
-                AnswerModel.status == AnswerStatus.NOT_USED,
+        with SessionLocal() as db:
+            models = (
+                db.query(AnswerModel)
+                .filter(
+                    AnswerModel.game_id == game_id,
+                    AnswerModel.user_id == user_id,
+                    AnswerModel.status == AnswerStatus.NOT_USED,
+                )
+                .all()
             )
-            .all()
-        )
-        return [self._to_domain(model) for model in models] if models else None
+            return [self._to_domain(model) for model in models] if models else None
 
     def find_corrected_by_game_id_and_user_id(
         self, game_id: str, user_id: str
     ) -> AnswerDomain:
-        model = (
-            self.db.query(AnswerModel)
-            .filter(
-                AnswerModel.game_id == game_id,
-                AnswerModel.user_id == user_id,
-                AnswerModel.is_correct == True,
+        with SessionLocal() as db:
+            model = (
+                db.query(AnswerModel)
+                .filter(
+                    AnswerModel.game_id == game_id,
+                    AnswerModel.user_id == user_id,
+                    AnswerModel.is_correct == True,
+                )
+                .first()
             )
-            .first()
-        )
-        if not model:
-            # raise ValueError(f"Answer not found with game_id: {game_id} and user_id: {user_id}")
-            return None
-        return self._to_domain(model)
+            if not model:
+                return None
+            return self._to_domain(model)
 
     def find_not_used_by_game_id_and_user_id(
         self, game_id: str, user_id: str
     ) -> AnswerDomain:
-        model = (
-            self.db.query(AnswerModel)
-            .filter(
-                AnswerModel.game_id == game_id,
-                AnswerModel.user_id == user_id,
-                AnswerModel.is_correct == False,
+        with SessionLocal() as db:
+            model = (
+                db.query(AnswerModel)
+                .filter(
+                    AnswerModel.game_id == game_id,
+                    AnswerModel.user_id == user_id,
+                    AnswerModel.is_correct == False,
+                )
+                .first()
             )
-            .first()
-        )
-        if not model:
-            return None
-        return self._to_domain(model)
+            if not model:
+                return None
+            return self._to_domain(model)
 
     def delete_by_id(self, id: str) -> None:
-        model = self.db.query(AnswerModel).filter(AnswerModel.id == id).first()
-        if not model:
-            raise ValueError(f"Answer not found with id: {id}")
-        self.db.delete(model)
-        self.db.commit()
+        with SessionLocal() as db:
+            model = db.query(AnswerModel).filter(AnswerModel.id == id).first()
+            if not model:
+                raise ValueError(f"Answer not found with id: {id}")
+            db.delete(model)
+            db.commit()
