@@ -14,20 +14,26 @@ class Settings(BaseSettings):
     LOG_LEVEL: str = "INFO"
 
     # Database Settings
+    DATABASE_USERNAME: str = "postgres"
+    DATABASE_PASSWORD: str = "postgres"
     DB_HOST: str = "localhost"
     DB_PORT: int = 5432
-    DB_USER: str = "postgres"
-    DB_PASSWORD: str = "postgres"
     DB_NAME: str = "quizapp"
 
     @property
     def database_url(self) -> str:
-        return f"postgresql://{self.DB_USER}:{self.DB_PASSWORD}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"
+        return f"postgresql://{self.DATABASE_USERNAME}:{self.DATABASE_PASSWORD}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"
 
     # JWT Settings
     JWT_SECRET: str
     JWT_ALGORITHM: str = "HS256"
     JWT_ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
+
+    # Redis Settings
+    REDIS_HOST: str = "localhost"
+    REDIS_PORT: int = 6379
+    REDIS_DB: int = 0
+    REDIS_PASSWORD: str | None = None
 
 
 @lru_cache

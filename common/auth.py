@@ -11,9 +11,8 @@ from config import get_settings
 
 settings = get_settings()
 
-
-SECRET_KEY = settings.jwt_secret
-ALGORITHM = "HS256"
+SECRET_KEY = settings.JWT_SECRET
+ALGORITHM = settings.JWT_ALGORITHM
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/user/login")
 
