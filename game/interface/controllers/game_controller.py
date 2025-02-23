@@ -7,6 +7,7 @@ from fastapi import HTTPException
 
 from containers import Container
 from game.application.game_service import GameService
+from game.domain.game import GameStatus
 from common.auth import get_current_user
 
 router = APIRouter(prefix="/game", tags=["game"])

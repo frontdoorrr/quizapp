@@ -6,6 +6,7 @@ from dependency_injector.wiring import inject
 from game.domain.game import Game, GameStatus
 from game.domain.repository.game_repo import IGameRepository
 from common.redis.client import RedisClient
+from datetime import timedelta
 
 
 class GameService:
@@ -152,7 +153,7 @@ class GameService:
 
         # 게임 상태 업데이트
         game.status = GameStatus.CLOSED
-        game.closed_at = datetime.now()
+        game.closed_at = datetime.now() + timedelta(hours=2)
         self.game_repo.update(game)
 
         # 점수 계산 작업을 큐에 추가
