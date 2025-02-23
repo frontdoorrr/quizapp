@@ -16,7 +16,7 @@ class Settings(BaseSettings):
     # Database Settings
     DATABASE_USERNAME: str = "postgres"
     DATABASE_PASSWORD: str = "postgres"
-    DB_HOST: str = "localhost"
+    DB_HOST: str = "db"
     DB_PORT: int = 5432
     DB_NAME: str = "quizapp"
 
