@@ -17,6 +17,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    env_file:
+      - .env
     environment:
       - APP_ENV=production
       - DATABASE_USERNAME=${RDS_USERNAME}
