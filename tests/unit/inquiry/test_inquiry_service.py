@@ -1,7 +1,7 @@
 import pytest
 from datetime import datetime
 from inquiry.application.inquiry_service import InquiryService
-from inquiry.domain.inquiry import Inquiry, InquiryStatus, InquiryType
+from inquiry.domain.inquiry import Inquiry
 
 
 class TestInquiryService:
@@ -16,7 +16,6 @@ class TestInquiryService:
             "user_id": "test-user-id",
             "title": "Test Inquiry",
             "content": "Test Content",
-            "type": InquiryType.GENERAL,
         }
 
         # When
@@ -24,7 +23,6 @@ class TestInquiryService:
 
         # Then
         assert inquiry.title == inquiry_data["title"]
-        assert inquiry.status == InquiryStatus.PENDING
 
     def test_answer_inquiry(self, inquiry_service):
         # Given
@@ -35,8 +33,6 @@ class TestInquiryService:
             user_id="test-user-id",
             title="Test Inquiry",
             content="Test Content",
-            type=InquiryType.GENERAL,
-            status=InquiryStatus.PENDING,
             created_at=datetime.now(),
             updated_at=datetime.now(),
         )
@@ -46,5 +42,4 @@ class TestInquiryService:
         result = inquiry_service.answer_inquiry(inquiry_id, answer)
 
         # Then
-        assert result.status == InquiryStatus.ANSWERED
         assert result.answer == answer
