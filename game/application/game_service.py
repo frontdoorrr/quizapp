@@ -104,31 +104,31 @@ class GameService:
         """
         game = self.game_repo.find_by_id(id)
         if not game:
-            raise Exception(f"Game {id} not found")
+            raise Exception(f"Game { id} not found")
         return game
 
     def get_games(self, status: GameStatus | None = None) -> list[Game]:
-        """Get all games with optional status filter
+        """Get games with optional status filter
 
         Args:
             status (GameStatus | None, optional): Game status filter. Defaults to None.
 
         Returns:
-            list[Game]: List of games
+            list[Game]: List of games with the specified status, or all games if status is None
         """
         if status:
             return self.game_repo.find_by_status(status)
         return self.game_repo.find_all()
 
     def get_current_game(self) -> Game:
-        """Get the game with the highest number (most recent)
+        # """Get the game with the highest number (most recent)
 
-        Returns:
-            Game: The most recent game
+        # Returns:
+        #     Game: The most recent game
 
-        Raises:
-            Exception: If no games found
-        """
+        # Raises:
+        #     Exception: If no games found
+        # """
         game = self.game_repo.find_latest()
         if not game:
             raise Exception("No games found")

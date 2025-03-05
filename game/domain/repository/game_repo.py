@@ -27,3 +27,15 @@ class IGameRepository(metaclass=ABCMeta):
             Game | None: The game with the highest number, or None if no games exist
         """
         raise NotImplementedError
+
+    @abstractmethod
+    def find_by_number(self, number: int) -> Game | None:
+        raise NotImplementedError
+
+    @abstractmethod
+    def find_by_status(self, status: str) -> list[Game]:
+        raise NotImplementedError
+
+    @abstractmethod
+    def delete(self, game: Game):
+        raise NotImplementedError

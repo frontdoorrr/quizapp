@@ -152,4 +152,24 @@ class GameRepository(IGameRepository):
         raise NotImplementedError
 
     def find_by_status(self, status):
-        raise NotImplementedError
+        with SessionLocal() as db:
+            games = db.query(Game).filter(Game.status == status).all()
+            return [
+                GameVO(
+                    id=game.id,
+                    number=game.number,
+                    created_at=game.created_at,
+                    modified_at=game.modified_at,
+                    opened_at=game.opened_at,
+                    closed_at=game.closed_at,
+                    title=game.title,
+                    description=game.description,
+                    status=game.status,
+                    memo=game.memo,
+                    question=game.question,
+                    answer=game.answer,
+                    question_link=game.question_link,
+                    answer_link=game.answer_link,
+                )
+                for game in games
+            ]
