@@ -8,7 +8,6 @@ from containers import Container
 from answer.application.answer_service import AnswerService
 from game.application.game_service import GameService
 from common.auth import get_current_user, CurrentUser
-from answer.domain.exceptions import InsufficientCoinError
 
 
 router = APIRouter(prefix="/answer", tags=["answer"])
@@ -254,3 +253,19 @@ async def create_empty_answer(
         updated_at=answer.updated_at,
         point=answer.point,
     )
+
+
+@router.post("/all")
+@inject
+def create_answer_for_all_users_per_game(
+    game_id: str,
+    answer_service: AnswerService = Depends(Provide[Container.answer_service]),
+):
+    """
+    Create Answers for every users.
+    If you want make 2 chances, you need to use this api twice.
+    """
+    res = answer_service.create_answer_for_all_users_per_game(game_id)
+    if res:
+        return {200: "Success"}
+    return {500: "Failed"}

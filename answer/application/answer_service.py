@@ -40,6 +40,31 @@ class AnswerService:
             )
         )
 
+    def create_answer_for_all_users_per_game(
+        self,
+        game_id: str,
+    ):
+        users = self.user_repo.find_all()  # TODO 활성화된 user 대상으로만 좁혀야 함
+        now = datetime.now()
+        for user in users:
+            # TODO bulk하여 save할지 고민 필요
+            self.answer_repo.save(
+                Answer(
+                    id=self.ulid.generate(),
+                    game_id=game_id,
+                    user_id=user.id,
+                    answer="-",
+                    is_correct=False,
+                    solved_at=None,
+                    created_at=now,
+                    updated_at=now,
+                    point=0,
+                    status=AnswerStatus.NOT_USED,
+                )
+            )
+
+        return True
+
     def submit_answer(self, game_id: str, user_id: str, answer_text: str) -> Answer:
         # 게임 정보 조회
         game = self.game_repo.find_by_id(game_id)
