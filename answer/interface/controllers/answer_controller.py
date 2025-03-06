@@ -266,6 +266,8 @@ def create_answer_for_all_users_per_game(
     If you want make 2 chances, you need to use this api twice.
     """
     res = answer_service.create_answer_for_all_users_per_game(game_id)
+
+    # TODO Response 수정해두기
     if res:
         return {200: "Success"}
     return {500: "Failed"}
