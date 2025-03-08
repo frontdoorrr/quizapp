@@ -24,3 +24,13 @@ class IAnswerRepository(metaclass=ABCMeta):
         self, game_id: str, user_id: str
     ) -> Answer:
         raise NotImplementedError
+
+    @abstractmethod
+    def find_corrected_by_game_id(self, game_id: str) -> list[Answer]:
+        raise NotImplementedError
+
+    @abstractmethod
+    def find_unused_by_game_id_and_user_id(
+        self, game_id: str, user_id: str
+    ) -> list[Answer]:
+        raise NotImplementedError

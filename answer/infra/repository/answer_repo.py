@@ -1,6 +1,3 @@
-from datetime import datetime
-from sqlalchemy.orm import Session
-
 from answer.domain.answer import Answer as AnswerDomain
 from answer.domain.answer import AnswerStatus
 from answer.domain.repository.answer_repo import IAnswerRepository
@@ -79,6 +76,24 @@ class AnswerRepository(IAnswerRepository):
         with SessionLocal() as db:
             models = db.query(AnswerModel).filter(AnswerModel.user_id == user_id).all()
             return [self._to_domain(model) for model in models]
+
+    def find_corrected_by_game_id(self, game_id: str) -> list[AnswerDomain]:
+        try:
+            with SessionLocal() as db:
+                models = (
+                    db.query(AnswerModel)
+                    .filter(
+                        AnswerModel.game_id == game_id,
+                        AnswerModel.is_correct == True,
+                        AnswerModel.solved_at != None,
+                        AnswerModel.status == AnswerStatus.SUBMITTED,
+                    )
+                    .order_by(AnswerModel.point)
+                    .all()
+                )
+                return [self._to_domain(model) for model in models]
+        except Exception as e:
+            raise e
 
     def find_unused_by_game_id_and_user_id(
         self, game_id: str, user_id: str

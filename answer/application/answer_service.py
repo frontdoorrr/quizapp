@@ -130,6 +130,9 @@ class AnswerService:
     ) -> Answer:
         return self.answer_repo.find_corrected_by_game_id_and_user_id(game_id, user_id)
 
+    def get_corrected_answers_by_game(self, game_id: str) -> list[Answer]:
+        return self.answer_repo.find_corrected_by_game_id(game_id)
+
     def delete_answer_by_game_and_user(self, game_id: str, user_id: str) -> None:
         """Delete answer by game_id and user_id
 

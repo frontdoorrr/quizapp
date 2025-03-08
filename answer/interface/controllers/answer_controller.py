@@ -271,3 +271,12 @@ def create_answer_for_all_users_per_game(
     if res:
         return {200: "Success"}
     return {500: "Failed"}
+
+
+@router.get("/{game_id}/ranking")
+@inject
+def get_game_ranking(
+    game_id: str,
+    answer_service: AnswerService = Depends(Provide[Container.answer_service]),
+):
+    return answer_service.get_corrected_answers_by_game(game_id=game_id)
