@@ -1,8 +1,7 @@
-from typing import List, Optional
-from datetime import datetime
+from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException
 from dependency_injector.wiring import inject, Provide
-from pydantic import BaseModel, Field
+
 
 from user.application.coin_service import CoinService
 from user.domain.user import CoinStatus
