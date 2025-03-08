@@ -5,7 +5,15 @@ from pydantic import BaseModel, Field
 from user.domain.user import CoinStatus
 
 
-class CoinResponse(BaseModel):
+class CoinBase(BaseModel):
+    pass
+
+
+class WalletBase(BaseModel):
+    pass
+
+
+class CoinResponseDTO(BaseModel):
     id: str
     wallet_id: str
     status: CoinStatus
@@ -14,20 +22,30 @@ class CoinResponse(BaseModel):
     memo: Optional[str] = None
 
 
-class WalletResponse(BaseModel):
+class CoinUpdateDTO(CoinBase):
+    status: CoinStatus
+    memo: Optional[str] = None
+
+
+class WalletResponseDTO(BaseModel):
     id: str
     user_id: str
     balance: int = Field(ge=0)
     max_balance: int = Field(ge=1)
     created_at: datetime
     updated_at: datetime
-    coins: List[CoinResponse]
+    coins: List[CoinResponseDTO]
 
 
-class AddCoinRequest(BaseModel):
+class CoinCreateDTO(CoinBase):
     memo: Optional[str] = None
 
 
-class UpdateCoinRequest(BaseModel):
+class CoinUpdateDTO(CoinBase):
     status: CoinStatus
     memo: Optional[str] = None
+
+
+class CoinResponseListDTO(BaseModel):
+    coins: List[CoinResponseDTO]
+    total_count: int
