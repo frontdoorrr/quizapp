@@ -1,5 +1,5 @@
 from datetime import datetime
-
+from typing import List
 from pydantic import BaseModel, Field
 
 
@@ -22,3 +22,8 @@ class AnswerRequestDTO(BaseModel):
 
 class AnswerResponseDTO(AnswerBase):
     pass
+
+
+class AnswerResponseListDTO(BaseModel):
+    total_count: int
+    answers: List[AnswerResponseDTO]

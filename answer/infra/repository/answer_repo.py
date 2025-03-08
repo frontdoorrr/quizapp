@@ -88,10 +88,11 @@ class AnswerRepository(IAnswerRepository):
                         AnswerModel.solved_at != None,
                         AnswerModel.status == AnswerStatus.SUBMITTED,
                     )
-                    .order_by(AnswerModel.point)
+                    .order_by(AnswerModel.solved_at)
                     .all()
                 )
-                return [self._to_domain(model) for model in models]
+            return [self._to_domain(model) for model in models]
+
         except Exception as e:
             raise e
 

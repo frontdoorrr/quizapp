@@ -5,7 +5,11 @@ from dependency_injector.wiring import inject, Provide
 from containers import Container
 from answer.application.answer_service import AnswerService
 from game.application.game_service import GameService
-from answer.interface.dtos.answer_dtos import AnswerRequestDTO, AnswerResponseDTO
+from answer.interface.dtos.answer_dtos import (
+    AnswerRequestDTO,
+    AnswerResponseDTO,
+    AnswerResponseListDTO,
+)
 from common.auth import get_current_user, CurrentUser
 
 
@@ -101,20 +105,24 @@ async def get_answers_by_game(
 ):
     try:
         answers = answer_service.get_answers_by_game(game_id)
-        return [
-            AnswerResponseDTO(
-                id=answer.id,
-                game_id=answer.game_id,
-                user_id=answer.user_id,
-                answer=answer.answer,
-                is_correct=answer.is_correct,
-                solved_at=answer.solved_at,
-                created_at=answer.created_at,
-                updated_at=answer.updated_at,
-                point=answer.point,
-            )
-            for answer in answers
-        ]
+        # return [
+        #     AnswerResponseDTO(
+        #         id=answer.id,
+        #         game_id=answer.game_id,
+        #         user_id=answer.user_id,
+        #         answer=answer.answer,
+        #         is_correct=answer.is_correct,
+        #         solved_at=answer.solved_at,
+        #         created_at=answer.created_at,
+        #         updated_at=answer.updated_at,
+        #         point=answer.point,
+        #     )
+        #     for answer in answers
+        # ]
+        return AnswerResponseListDTO(
+            answers=answers,
+            total_count=len(answers),
+        )
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -261,4 +269,12 @@ def get_game_ranking(
     game_id: str,
     answer_service: AnswerService = Depends(Provide[Container.answer_service]),
 ):
-    return answer_service.get_corrected_answers_by_game(game_id=game_id)
+    answers = answer_service.get_corrected_answers_by_game(game_id=game_id)
+    return answers
+    # answer_dtos = [
+    #     AnswerResponseDTO.model_validate(answer.__dict__) for answer in answers
+    # ]
+    # return AnswerResponseListDTO(
+    #     total_count=len(answers),
+    #     answers=answer_dtos,
+    # )
