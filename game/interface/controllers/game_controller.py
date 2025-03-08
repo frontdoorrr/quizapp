@@ -1,10 +1,9 @@
-from datetime import datetime
-
 from fastapi import APIRouter, Depends, status, HTTPException
 
-from common.auth import get_current_user
+
 from dependency_injector.wiring import inject, Provide
 from containers import Container
+
 from game.application.game_service import GameService
 from game.domain.game import GameStatus
 from game.interface.dtos.game_dtos import GameCreateDTO, GameResponseDTO, GameUpdateDTO
