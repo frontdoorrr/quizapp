@@ -1,32 +1,21 @@
-from fastapi import APIRouter, Depends, status
-from pydantic import BaseModel, Field
-from dependency_injector.wiring import inject, Provide
 from datetime import datetime
-from enum import Enum
-from fastapi import HTTPException
 
+from fastapi import APIRouter, Depends, status, HTTPException
+
+from common.auth import get_current_user
+from dependency_injector.wiring import inject, Provide
 from containers import Container
 from game.application.game_service import GameService
 from game.domain.game import GameStatus
-from common.auth import get_current_user
+from game.interface.dtos.game_dtos import GameCreateDTO, GameResponseDTO, GameUpdateDTO
 
 router = APIRouter(prefix="/game", tags=["game"])
-
-
-class CreateGameBody(BaseModel):
-    title: str = Field(min_length=2, max_length=32)
-    number: int = Field(gt=0)
-    description: str = Field(max_length=64)
-    question: str = Field(max_length=64)
-    answer: str = Field(max_length=64)
-    question_link: str = Field(max_length=128)
-    answer_link: str = Field(max_length=128)
 
 
 @router.post("", status_code=status.HTTP_201_CREATED)
 @inject
 async def create_game(
-    body: CreateGameBody,
+    body: GameCreateDTO,
     game_service: GameService = Depends(Provide[Container.game_service]),
 ):
 
@@ -40,7 +29,7 @@ async def create_game(
         answer_link=body.answer_link,
     )
 
-    return GameResponse(
+    return GameResponseDTO(
         id=game.id,
         number=game.number,
         created_at=game.created_at,
@@ -58,20 +47,11 @@ async def create_game(
     )
 
 
-class UpdateGameBody(BaseModel):
-    title: str = Field(min_length=2, max_length=32)
-    description: str = Field(max_length=64)
-    question: str = Field(max_length=64)
-    answer: str = Field(max_length=64)
-    question_link: str = Field(max_length=128)
-    answer_link: str = Field(max_length=128)
-
-
 @router.put("/{game_id}")
 @inject
 async def update_game(
     game_id: str,
-    body: UpdateGameBody,
+    body: GameUpdateDTO,
     game_service: GameService = Depends(Provide[Container.game_service]),
 ):
     return game_service.update_game(
@@ -85,40 +65,7 @@ async def update_game(
     )
 
 
-class GameResponse(BaseModel):
-    id: str
-    number: int
-    created_at: datetime
-    modified_at: datetime
-    opened_at: datetime | None
-    closed_at: datetime | None
-    title: str
-    description: str
-    status: str
-    memo: str | None
-    question: str
-    answer: str | None
-    question_link: str | None
-    answer_link: str | None
-
-
-class GetGameResponse(BaseModel):
-    id: str
-    created_at: datetime
-    modified_at: datetime
-    opened_at: datetime | None
-    closed_at: datetime | None
-    title: str
-    description: str
-    status: str
-    memo: str | None
-    question: str
-    answer: str
-    question_link: str | None
-    answer_link: str | None
-
-
-@router.get("/{game_id}", response_model=GameResponse)
+@router.get("/{game_id}", response_model=GameResponseDTO)
 @inject
 async def get_game(
     game_id: str,
@@ -131,10 +78,10 @@ async def get_game(
         game_service (GameService): Game service
 
     Returns:
-        GameResponse: Game response
+        GameResponseDTO: Game response
     """
     game = game_service.get_game(game_id)
-    return GameResponse(
+    return GameResponseDTO(
         id=game.id,
         number=game.number,
         created_at=game.created_at,
@@ -152,7 +99,7 @@ async def get_game(
     )
 
 
-@router.get("", response_model=list[GameResponse])
+@router.get("", response_model=list[GameResponseDTO])
 @inject
 async def get_games(
     status: str | None = None,
@@ -165,13 +112,13 @@ async def get_games(
         game_service (GameService): Game service
 
     Returns:
-        list[GameResponse]: List of games
+        list[GameResponseDTO]: List of games
     """
 
     game_status = GameStatus(status.upper()) if status else None
     games = game_service.get_games(game_status)
     return [
-        GameResponse(
+        GameResponseDTO(
             id=game.id,
             number=game.number,
             created_at=game.created_at,
@@ -191,7 +138,7 @@ async def get_games(
     ]
 
 
-@router.get("/current/", response_model=GameResponse)
+@router.get("/current/", response_model=GameResponseDTO)
 @inject
 def get_current_game(
     game_service: GameService = Depends(Provide[Container.game_service]),
@@ -199,7 +146,7 @@ def get_current_game(
 
     try:
         game = game_service.get_current_game()
-        return GameResponse(
+        return GameResponseDTO(
             id=game.id,
             number=game.number,
             created_at=game.created_at,
@@ -222,15 +169,15 @@ def get_current_game(
         )
 
 
-@router.post("/{game_id}/close", response_model=GameResponse)
+@router.post("/{game_id}/close", response_model=GameResponseDTO)
 @inject
 async def close_game(
     game_id: str,
     game_service: GameService = Depends(Provide[Container.game_service]),
-) -> GameResponse:
+) -> GameResponseDTO:
     """게임을 종료하고 점수 계산을 시작"""
     game = game_service.close_game(game_id)
-    return GameResponse(
+    return GameResponseDTO(
         id=game.id,
         number=game.number,
         title=game.title,
