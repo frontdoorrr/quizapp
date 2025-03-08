@@ -5,17 +5,17 @@ from dependency_injector.wiring import inject, Provide
 from containers import Container
 from answer.application.answer_service import AnswerService
 from game.application.game_service import GameService
-from answer.interface.dtos.answer_dtos import AnswerRequest, AnswerResponse
+from answer.interface.dtos.answer_dtos import AnswerRequestDTO, AnswerResponseDTO
 from common.auth import get_current_user, CurrentUser
 
 
 router = APIRouter(prefix="/answer", tags=["answer"])
 
 
-@router.post("", response_model=AnswerResponse)
+@router.post("", response_model=AnswerResponseDTO)
 @inject
 async def submit_answer(
-    body: AnswerRequest,
+    body: AnswerRequestDTO,
     user: CurrentUser = Depends(get_current_user),
     answer_service: AnswerService = Depends(Provide[Container.answer_service]),
     game_service: GameService = Depends(Provide[Container.game_service]),
@@ -48,7 +48,7 @@ async def submit_answer(
                 closed_at=answer.solved_at + timedelta(hours=2),
             )
 
-        return AnswerResponse(
+        return AnswerResponseDTO(
             id=answer.id,
             game_id=answer.game_id,
             user_id=answer.user_id,
@@ -66,7 +66,7 @@ async def submit_answer(
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.get("/{answer_id}", response_model=AnswerResponse)
+@router.get("/{answer_id}", response_model=AnswerResponseDTO)
 @inject
 async def get_answer(
     answer_id: str,
@@ -75,7 +75,7 @@ async def get_answer(
 ):
     try:
         answer = answer_service.get_answer(answer_id)
-        return AnswerResponse(
+        return AnswerResponseDTO(
             id=answer.id,
             game_id=answer.game_id,
             user_id=answer.user_id,
@@ -92,7 +92,7 @@ async def get_answer(
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.get("/game/{game_id}", response_model=list[AnswerResponse])
+@router.get("/game/{game_id}", response_model=list[AnswerResponseDTO])
 @inject
 async def get_answers_by_game(
     game_id: str,
@@ -102,7 +102,7 @@ async def get_answers_by_game(
     try:
         answers = answer_service.get_answers_by_game(game_id)
         return [
-            AnswerResponse(
+            AnswerResponseDTO(
                 id=answer.id,
                 game_id=answer.game_id,
                 user_id=answer.user_id,
@@ -119,7 +119,7 @@ async def get_answers_by_game(
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.get("/user/{user_id}", response_model=list[AnswerResponse])
+@router.get("/user/{user_id}", response_model=list[AnswerResponseDTO])
 @inject
 async def get_answers_by_user(
     current_user: CurrentUser = Depends(get_current_user),
@@ -130,7 +130,7 @@ async def get_answers_by_user(
     try:
         answers = answer_service.get_answers_by_user(current_user.id)
         return [
-            AnswerResponse(
+            AnswerResponseDTO(
                 id=answer.id,
                 game_id=answer.game_id,
                 user_id=answer.user_id,
@@ -147,7 +147,7 @@ async def get_answers_by_user(
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.get("/game/{game_id}/user", response_model=AnswerResponse | None)
+@router.get("/game/{game_id}/user", response_model=AnswerResponseDTO | None)
 @inject
 async def get_corrected_answer_by_game_and_user(
     game_id: str,
@@ -160,7 +160,7 @@ async def get_corrected_answer_by_game_and_user(
     )
 
 
-@router.get("/game/{game_id}/user/unused", response_model=list[AnswerResponse])
+@router.get("/game/{game_id}/user/unused", response_model=list[AnswerResponseDTO])
 @inject
 async def get_unused_answer_by_game_and_user(
     game_id: str,
@@ -173,7 +173,7 @@ async def get_unused_answer_by_game_and_user(
     if answers is None:
         return []
     return [
-        AnswerResponse(
+        AnswerResponseDTO(
             id=answer.id,
             game_id=answer.game_id,
             user_id=answer.user_id,
@@ -212,7 +212,7 @@ async def delete_answer_by_game_and_user(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
 
 
-@router.post("/empty", response_model=AnswerResponse)
+@router.post("/empty", response_model=AnswerResponseDTO)
 @inject
 async def create_empty_answer(
     game_id: str,
@@ -224,7 +224,7 @@ async def create_empty_answer(
     This endpoint should be protected and only accessible by admin users.
     """
     answer = answer_service.create_answer(game_id=game_id, user_id=user_id)
-    return AnswerResponse(
+    return AnswerResponseDTO(
         id=answer.id,
         game_id=answer.game_id,
         user_id=answer.user_id,

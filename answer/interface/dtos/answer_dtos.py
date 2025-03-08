@@ -15,10 +15,10 @@ class AnswerBase(BaseModel):
     point: int
 
 
-class AnswerRequest(BaseModel):
+class AnswerRequestDTO(BaseModel):
     game_id: str = Field(min_length=1)
     answer: str = Field(min_length=1)
 
 
-class AnswerResponse(AnswerBase):
+class AnswerResponseDTO(AnswerBase):
     pass
