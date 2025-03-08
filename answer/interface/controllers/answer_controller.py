@@ -1,39 +1,21 @@
-from datetime import datetime, timedelta
+from datetime import timedelta
 from fastapi import APIRouter, Depends, HTTPException, status
-from game.application import game_service
-from pydantic import BaseModel, Field
 from dependency_injector.wiring import inject, Provide
 
 from containers import Container
 from answer.application.answer_service import AnswerService
 from game.application.game_service import GameService
+from answer.interface.dtos.answer_dtos import AnswerRequest, AnswerResponse
 from common.auth import get_current_user, CurrentUser
 
 
 router = APIRouter(prefix="/answer", tags=["answer"])
 
 
-class SubmitAnswerBody(BaseModel):
-    game_id: str = Field(min_length=1)
-    answer: str = Field(min_length=1)
-
-
-class AnswerResponse(BaseModel):
-    id: str
-    game_id: str
-    user_id: str
-    answer: str
-    is_correct: bool
-    solved_at: datetime | None
-    created_at: datetime
-    updated_at: datetime
-    point: int
-
-
 @router.post("", response_model=AnswerResponse)
 @inject
 async def submit_answer(
-    body: SubmitAnswerBody,
+    body: AnswerRequest,
     user: CurrentUser = Depends(get_current_user),
     answer_service: AnswerService = Depends(Provide[Container.answer_service]),
     game_service: GameService = Depends(Provide[Container.game_service]),
