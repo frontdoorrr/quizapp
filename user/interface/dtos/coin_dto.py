@@ -13,7 +13,7 @@ class WalletBase(BaseModel):
     pass
 
 
-class CoinResponseDTO(BaseModel):
+class CoinResponseDTO(CoinBase):
     id: str
     wallet_id: str
     status: CoinStatus
@@ -27,7 +27,7 @@ class CoinUpdateDTO(CoinBase):
     memo: Optional[str] = None
 
 
-class WalletResponseDTO(BaseModel):
+class WalletResponseDTO(WalletBase):
     id: str
     user_id: str
     balance: int = Field(ge=0)

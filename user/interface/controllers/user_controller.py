@@ -1,17 +1,22 @@
 from typing import Annotated
-from datetime import datetime, date
 import logging
-import re
 
 from fastapi import APIRouter, Depends, status, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
-from pydantic import BaseModel, EmailStr, Field, validator
+from pydantic import BaseModel
 from dependency_injector.wiring import inject, Provide
 
 from containers import Container
 from user.application.user_service import UserService
 from user.application.coin_service import CoinService
-from common.auth import CurrentUser, get_current_user, get_admin_user, Role
+from user.interface.dtos.user_dto import (
+    UserResponseDTO,
+    UserCreateDTO,
+    UserUpdateDTO,
+    TokenVerificationDTO,
+    EmailVerficationDTO,
+)
+from common.auth import CurrentUser, get_current_user
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -19,103 +24,17 @@ logger.setLevel(logging.DEBUG)
 router = APIRouter(prefix="/user", tags=["user"])
 
 
-class CreateUserBody(BaseModel):
-    name: str = Field(min_length=2, max_length=32)
-    email: EmailStr = Field(max_length=64)
-    password: str = Field(min_length=8, max_length=32)
-    role: Role = Field(default=Role.USER)
-    birth: date = Field(...)  # 명시적으로 필수 필드로 지정
-    address: str | None = Field(max_length=32, default=None)
-    phone: str = Field(max_length=32)
-    nickname: str = Field(min_length=2, max_length=32)
-
-    @validator('password')
-    def validate_password(cls, v):
-        if not re.search(r'[A-Z]', v):
-            raise ValueError('비밀번호는 최소 1개의 대문자를 포함해야 합니다')
-        if not re.search(r'[a-z]', v):
-            raise ValueError('비밀번호는 최소 1개의 소문자를 포함해야 합니다')
-        if not re.search(r'[0-9]', v):
-            raise ValueError('비밀번호는 최소 1개의 숫자를 포함해야 합니다')
-        if not re.search(r'[!@#$%^&*(),.?":{}|<>]', v):
-            raise ValueError('비밀번호는 최소 1개의 특수문자를 포함해야 합니다')
-        return v
-
-
-class UpdateUserBody(BaseModel):
-    name: str | None = Field(min_length=2, max_length=32, default=None)
-    password: str | None = Field(min_length=8, max_length=32, default=None)
-    birth: date | None = None
-    address: str | None = Field(max_length=32, default=None)
-    phone: str | None = Field(max_length=32, default=None)
-    nickname: str | None = Field(min_length=2, max_length=32, default=None)
-
-    @validator('password')
-    def validate_password(cls, v):
-        if v is None:  # password가 None이면 검증 스킵
-            return v
-        if not re.search(r'[A-Z]', v):
-            raise ValueError('비밀번호는 최소 1개의 대문자를 포함해야 합니다')
-        if not re.search(r'[a-z]', v):
-            raise ValueError('비밀번호는 최소 1개의 소문자를 포함해야 합니다')
-        if not re.search(r'[0-9]', v):
-            raise ValueError('비밀번호는 최소 1개의 숫자를 포함해야 합니다')
-        if not re.search(r'[!@#$%^&*(),.?":{}|<>]', v):
-            raise ValueError('비밀번호는 최소 1개의 특수문자를 포함해야 합니다')
-        return v
-
-
-class EmailVerificationBody(BaseModel):
-    email: EmailStr = Field(max_length=64)
-
-
-class TokenVerificationBody(BaseModel):
-    token: str = Field(max_length=64)
-    email: EmailStr = Field(max_length=64)
-
-
-class UpdateMeRequest(BaseModel):
-    name: str | None = None
-    nickname: str | None = None
-    phone: str | None = None
-    address: str | None = None
-    memo: str | None = None
-
-
-class UserResponse(BaseModel):
-    id: str
-    name: str
-    email: str
-    role: Role
-    birth: date
-    address: str | None
-    phone: str
-    nickname: str
-    created_at: datetime
-    updated_at: datetime
-    memo: str | None
-    point: int
-
-
-class GetUsersRequest(BaseModel):
-    nickname: str | None = None
-    min_point: int | None = None
-    max_point: int | None = None
-    order_by: str | None = None  # 'point' or 'nickname'
-    order: str | None = "asc"  # 'asc' or 'desc'
-
-
-class GetUserResponse(BaseModel):
-    users: list[UserResponse]
+class UserResponseListDTO(BaseModel):
+    users: list[UserResponseDTO]
 
 
 @router.post("/register", status_code=status.HTTP_201_CREATED)
 @inject
 def create_user(
-    user: CreateUserBody,
+    user: UserCreateDTO,
     user_service: UserService = Depends(Provide[Container.user_service]),
     coin_service: CoinService = Depends(Provide[Container.coin_service]),
-) -> UserResponse:
+) -> UserResponseDTO:
     logger.debug(f"Received user data: {user.dict()}")
 
     created_user = user_service.create_user(
@@ -138,10 +57,10 @@ def create_user(
 @inject
 def update_user(
     user_id: str,
-    user: UpdateUserBody,
+    user: UserUpdateDTO,
     current_user: Annotated[CurrentUser, Depends(get_current_user)],
     user_service: UserService = Depends(Provide[Container.user_service]),
-) -> UserResponse:
+) -> UserResponseDTO:
     updated_user = user_service.update_user(
         user_id=user_id,
         name=user.name,
@@ -154,13 +73,13 @@ def update_user(
     return updated_user
 
 
-@router.get("", response_model=GetUserResponse)
+@router.get("", response_model=UserResponseListDTO)
 @inject
 async def get_users(
-    request: GetUsersRequest = Depends(),
+    request: UserResponseListDTO = Depends(),
     current_user: CurrentUser = Depends(get_current_user),
     user_service: UserService = Depends(Provide[Container.user_service]),
-) -> GetUserResponse:
+) -> UserResponseListDTO:
     users = user_service.get_users(
         nickname=request.nickname,
         min_point=request.min_point,
@@ -168,9 +87,9 @@ async def get_users(
         order_by=request.order_by,
         order=request.order,
     )
-    return GetUserResponse(
+    return UserResponseListDTO(
         users=[
-            UserResponse(
+            UserResponseDTO(
                 id=user.id,
                 name=user.name,
                 email=user.email,
@@ -194,7 +113,7 @@ async def get_users(
 def get_my_info(
     current_user: Annotated[CurrentUser, Depends(get_current_user)],
     user_service: UserService = Depends(Provide[Container.user_service]),
-) -> UserResponse:
+) -> UserResponseDTO:
 
     return user_service.get_user_by_id(current_user.id)
 
@@ -212,10 +131,10 @@ def login(
 @router.put("/me")
 @inject
 def update_my_info(
-    body: UpdateUserBody,
+    body: UserUpdateDTO,
     current_user: Annotated[CurrentUser, Depends(get_current_user)],
     user_service: UserService = Depends(Provide[Container.user_service]),
-) -> UserResponse:
+) -> UserResponseDTO:
     updated_user = user_service.update_user(
         user_id=current_user.id,
         name=body.name,
@@ -228,13 +147,13 @@ def update_my_info(
     return updated_user
 
 
-@router.patch("/me", response_model=UserResponse)
+@router.patch("/me", response_model=UserResponseDTO)
 @inject
 async def update_me(
-    request: UpdateMeRequest,
+    request: UserUpdateDTO,
     current_user: CurrentUser = Depends(get_current_user),
     user_service: UserService = Depends(Provide[Container.user_service]),
-) -> UserResponse:
+) -> UserResponseDTO:
     updated_user = user_service.update_user(
         user_id=current_user.id,
         name=request.name,
@@ -242,7 +161,7 @@ async def update_me(
         phone=request.phone,
         address=request.address,
     )
-    return UserResponse(
+    return UserResponseDTO(
         id=updated_user.id,
         name=updated_user.name,
         email=updated_user.email,
@@ -291,7 +210,7 @@ async def check_email(
 @router.post("/send-verification-email")
 @inject
 async def send_verification_email(
-    body: EmailVerificationBody,
+    body: EmailVerficationDTO,
     user_service: UserService = Depends(Provide[Container.user_service]),
 ):
     """
@@ -310,7 +229,7 @@ async def send_verification_email(
 @router.post("/verify-token")
 @inject
 def verify_token(
-    body: TokenVerificationBody,
+    body: TokenVerificationDTO,
     user_service: UserService = Depends(Provide[Container.user_service]),
 ):
     """Verify email with token
