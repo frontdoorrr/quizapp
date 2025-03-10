@@ -240,8 +240,12 @@ def verify_token(
         user_service (UserService): User service instance
     """
     try:
-        user_service.verify_token(email=body.email, token=body.token)
-        return {"message": "Email verified successfully"}
+        if user_service.verify_token(email=body.email, token=body.token):
+            return {"message": "Email verified successfully"}
+        else:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid token"
+            )
     except Exception as e:
         logger.error(f"Failed to verify email: {str(e)}")
         raise e
