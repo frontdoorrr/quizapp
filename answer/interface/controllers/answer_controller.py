@@ -268,7 +268,7 @@ def create_answer_for_all_users_per_game(
 def get_game_ranking(
     game_id: str,
     answer_service: AnswerService = Depends(Provide[Container.answer_service]),
-):
+) -> list[AnswerResponseDTO]:
     answers = answer_service.get_corrected_answers_by_game(game_id=game_id)
     return answers
     # answer_dtos = [

@@ -10,6 +10,7 @@ from containers import Container
 from user.application.user_service import UserService
 from user.application.coin_service import CoinService
 from user.interface.dtos.user_dto import (
+    UserRequestDTO,
     UserResponseDTO,
     UserCreateDTO,
     UserUpdateDTO,
@@ -76,7 +77,7 @@ def update_user(
 @router.get("", response_model=UserResponseListDTO)
 @inject
 async def get_users(
-    request: UserResponseListDTO = Depends(),
+    request: UserRequestDTO = Depends(),
     current_user: CurrentUser = Depends(get_current_user),
     user_service: UserService = Depends(Provide[Container.user_service]),
 ) -> UserResponseListDTO:

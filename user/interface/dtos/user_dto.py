@@ -9,6 +9,14 @@ class UserBase(BaseModel):
     pass
 
 
+class UserRequestDTO(UserBase):
+    nickname: str | None = None
+    min_point: int | None = None
+    max_point: int | None = None
+    order_by: str | None = None  # 'point' or 'nickname'
+    order: str | None = "asc"  # 'asc' or 'desc'
+
+
 class UserCreateDTO(UserBase):
     name: str = Field(min_length=2, max_length=32)
     email: EmailStr = Field(max_length=64)
