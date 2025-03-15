@@ -16,6 +16,7 @@ from user.interface.dtos.user_dto import (
     UserUpdateDTO,
     TokenVerificationDTO,
     EmailVerficationDTO,
+    ChangePasswordDTO,
 )
 from common.auth import CurrentUser, get_current_user
 
@@ -245,3 +246,24 @@ def verify_token(
     except Exception as e:
         logger.error(f"Failed to verify email: {str(e)}")
         raise e
+
+
+@router.post("/change-password")
+@inject
+async def change_password(
+    request: ChangePasswordDTO,
+    current_user: CurrentUser = Depends(get_current_user),
+    user_service: UserService = Depends(Provide[Container.user_service]),
+) -> None:
+    """비밀번호 변경 API
+
+    Args:
+        request: 비밀번호 변경 요청 DTO
+        current_user: 현재 로그인한 사용자
+        user_service: 사용자 서비스
+    """
+    await user_service.change_password(
+        user_id=current_user.id,
+        current_password=request.current_password,
+        new_password=request.new_password,
+    )

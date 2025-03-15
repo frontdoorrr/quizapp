@@ -245,3 +245,38 @@ class UserService:
             "access_token": access_token,
             "token_type": "bearer",
         }
+
+    def change_password(
+        self,
+        user_id: str,
+        current_password: str,
+        new_password: str,
+        new_password2: str,
+    ) -> None:
+        """사용자 비밀번호 변경
+
+        Args:
+            user_id: 사용자 ID
+            current_password: 현재 비밀번호
+            new_password: 새 비밀번호
+
+        Raises:
+            InvalidPasswordError: 현재 비밀번호가 일치하지 않는 경우
+            InvalidPasswordFormatError: 새 비밀번호가 유효하지 않은 경우
+        """
+        user = self.user_repo.get_by_id(user_id)
+        if not self.crypto.verify(current_password, user.password):
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="현재 비밀번호가 일치하지 않습니다",
+            )
+
+        if new_password != new_password2:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="비밀번호가 일치하지 않습니다",
+            )
+
+        hashed_password = self.crypto.encrypt(new_password)
+        user.password = hashed_password
+        self.user_repo.save(user)
