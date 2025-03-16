@@ -1,7 +1,8 @@
 from typing import Annotated
 import logging
 
-from fastapi import APIRouter, Depends, status, HTTPException
+from fastapi import APIRouter, Depends, status, HTTPException, Response
+from fastapi.exceptions import RequestValidationError
 from fastapi.security import OAuth2PasswordRequestForm
 from pydantic import BaseModel
 from dependency_injector.wiring import inject, Provide
@@ -266,8 +267,20 @@ async def change_password(
         current_user: 현재 로그인한 사용자
         user_service: 사용자 서비스
     """
-    await user_service.change_password(
-        user_id=current_user.id,
-        current_password=request.current_password,
-        new_password=request.new_password,
-    )
+    try:
+        user_service.change_password(
+            user_id=current_user.id,
+            current_password=request.current_password,
+            new_password=request.new_password,
+            new_password2=request.new_password2,
+        )
+        return Response(status_code=status.HTTP_200_OK)
+    except ValueError as e:
+        logger.error(f"비밀번호 변경 유효성 검사 실패: {str(e)}", exc_info=True)
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+    except Exception as e:
+        logger.error(f"비밀번호 변경 실패: {str(e)}", exc_info=True)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="비밀번호 변경 중 오류가 발생했습니다",
+        )

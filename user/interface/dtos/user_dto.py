@@ -58,6 +58,7 @@ class UserCreateDTO(UserBase):
 class UserResponseDTO(UserBase):
     id: str
     name: str
+    nickname: str | None = None
 
 
 class UserResponseListDTO(BaseModel):
@@ -97,4 +98,10 @@ class ChangePasswordDTO(BaseModel):
             raise ValueError("비밀번호는 최소 1개의 숫자를 포함해야 합니다")
         if not re.search(r'[!@#$%^&*(),.?":{}|<>]', v):
             raise ValueError("비밀번호는 최소 1개의 특수문자를 포함해야 합니다")
+        return v
+
+    @validator("new_password2")
+    def passwords_match(cls, v, values):
+        if "new_password" in values and v != values["new_password"]:
+            raise ValueError("새 비밀번호가 일치하지 않습니다")
         return v

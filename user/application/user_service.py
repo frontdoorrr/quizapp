@@ -264,7 +264,7 @@ class UserService:
             InvalidPasswordError: 현재 비밀번호가 일치하지 않는 경우
             InvalidPasswordFormatError: 새 비밀번호가 유효하지 않은 경우
         """
-        user = self.user_repo.get_by_id(user_id)
+        user = self.user_repo.find_by_id(user_id)
         if not self.crypto.verify(current_password, user.password):
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
@@ -279,4 +279,4 @@ class UserService:
 
         hashed_password = self.crypto.encrypt(new_password)
         user.password = hashed_password
-        self.user_repo.save(user)
+        self.user_repo.update(user)
