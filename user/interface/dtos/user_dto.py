@@ -3,6 +3,7 @@ import re
 from datetime import date
 
 from user.domain.user import Role
+from dataclasses import dataclass
 
 
 class UserBase(BaseModel):
@@ -79,3 +80,21 @@ class EmailVerficationDTO(BaseModel):
 class TokenVerificationDTO(BaseModel):
     token: str = Field(max_length=64)
     email: EmailStr = Field(max_length=64)
+
+
+class ChangePasswordDTO(BaseModel):
+    current_password: str = Field(min_length=8, max_length=32)
+    new_password: str = Field(min_length=8, max_length=32)
+    new_password2: str = Field(min_length=8, max_length=32)
+
+    @validator("new_password")
+    def validate_password(cls, v):
+        if not re.search(r"[A-Z]", v):
+            raise ValueError("비밀번호는 최소 1개의 대문자를 포함해야 합니다")
+        if not re.search(r"[a-z]", v):
+            raise ValueError("비밀번호는 최소 1개의 소문자를 포함해야 합니다")
+        if not re.search(r"[0-9]", v):
+            raise ValueError("비밀번호는 최소 1개의 숫자를 포함해야 합니다")
+        if not re.search(r'[!@#$%^&*(),.?":{}|<>]', v):
+            raise ValueError("비밀번호는 최소 1개의 특수문자를 포함해야 합니다")
+        return v
