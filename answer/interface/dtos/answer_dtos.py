@@ -1,6 +1,8 @@
 from datetime import datetime
-from typing import List
+from typing import List, Dict, Any
 from pydantic import BaseModel, Field
+
+from user.interface.dtos.user_dto import UserResponseDTO
 
 
 class AnswerBase(BaseModel):
@@ -21,7 +23,7 @@ class AnswerRequestDTO(BaseModel):
 
 
 class AnswerResponseDTO(AnswerBase):
-    pass
+    user: UserResponseDTO | None = None
 
 
 class AnswerResponseListDTO(BaseModel):

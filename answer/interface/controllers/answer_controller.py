@@ -269,12 +269,25 @@ def get_game_ranking(
     game_id: str,
     answer_service: AnswerService = Depends(Provide[Container.answer_service]),
 ) -> list[AnswerResponseDTO]:
-    answers = answer_service.get_corrected_answers_by_game(game_id=game_id)
-    return answers
-    # answer_dtos = [
-    #     AnswerResponseDTO.model_validate(answer.__dict__) for answer in answers
-    # ]
-    # return AnswerResponseListDTO(
-    #     total_count=len(answers),
-    #     answers=answer_dtos,
-    # )
+    domain_answers = answer_service.get_corrected_answers_by_game(game_id=game_id)
+    
+    # 도메인 모델을 DTO로 변환
+    answer_dtos = []
+    for answer in domain_answers:
+        answer_dict = answer.__dict__.copy()
+        
+        # user 정보가 있으면 처리
+        if hasattr(answer, 'user') and answer.user is not None:
+            from user.interface.dtos.user_dto import UserResponseDTO
+            
+            # user 정보를 UserResponseDTO로 변환
+            user_dto = UserResponseDTO(
+                id=answer.user.get('id'),
+                name="",  # 이름 정보가 없으므로 빈 문자열로 설정
+                nickname=answer.user.get('nickname')
+            )
+            answer_dict['user'] = user_dto
+        
+        answer_dtos.append(AnswerResponseDTO.model_validate(answer_dict))
+    
+    return answer_dtos

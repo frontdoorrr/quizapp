@@ -8,7 +8,7 @@ from database import SessionLocal
 
 class AnswerRepository(IAnswerRepository):
     def _to_domain(self, model: AnswerModel) -> AnswerDomain:
-        return AnswerDomain(
+        domain = AnswerDomain(
             id=model.id,
             game_id=model.game_id,
             user_id=model.user_id,
@@ -20,6 +20,17 @@ class AnswerRepository(IAnswerRepository):
             point=model.point,
             status=model.status,
         )
+        
+        # User 정보가 로드되어 있으면 user 속성에 추가
+        if hasattr(model, 'user') and model.user is not None:
+            # 필요한 user 정보만 선택적으로 추가
+            user_info = {
+                'id': model.user.id,
+                'nickname': model.user.nickname
+            }
+            domain.user = user_info
+            
+        return domain
 
     def _to_model(self, domain: AnswerDomain) -> AnswerModel:
         return AnswerModel(
@@ -80,8 +91,11 @@ class AnswerRepository(IAnswerRepository):
     def find_corrected_by_game_id(self, game_id: str) -> list[AnswerDomain]:
         try:
             with SessionLocal() as db:
+                from user.infra.db_models.user import User
+                
                 models = (
                     db.query(AnswerModel)
+                    .join(User, AnswerModel.user_id == User.id)
                     .filter(
                         AnswerModel.game_id == game_id,
                         AnswerModel.is_correct == True,
@@ -91,7 +105,34 @@ class AnswerRepository(IAnswerRepository):
                     .order_by(AnswerModel.solved_at)
                     .all()
                 )
-            return [self._to_domain(model) for model in models]
+                
+                # 세션이 닫히기 전에 도메인 객체로 변환하고 필요한 user 정보 추출
+                result = []
+                for model in models:
+                    domain = AnswerDomain(
+                        id=model.id,
+                        game_id=model.game_id,
+                        user_id=model.user_id,
+                        answer=model.answer,
+                        is_correct=model.is_correct,
+                        solved_at=model.solved_at,
+                        created_at=model.created_at,
+                        updated_at=model.updated_at,
+                        point=model.point,
+                        status=model.status,
+                    )
+                    
+                    # User 정보를 세션이 열려있을 때 추출
+                    if model.user is not None:
+                        user_info = {
+                            'id': model.user.id,
+                            'nickname': model.user.nickname
+                        }
+                        domain.user = user_info
+                    
+                    result.append(domain)
+                
+            return result
 
         except Exception as e:
             raise e

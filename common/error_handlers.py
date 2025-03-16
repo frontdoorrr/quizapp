@@ -32,11 +32,18 @@ async def quiz_app_exception_handler(request: Request, exc: QuizAppException):
 
 async def validation_exception_handler(request: Request, exc: RequestValidationError):
     """입력값 검증 실패 예외 핸들러"""
+    errors = []
+    for error in exc.errors():
+        # ValueError 객체를 문자열로 변환
+        if 'ctx' in error and 'error' in error['ctx'] and isinstance(error['ctx']['error'], ValueError):
+            error['ctx']['error'] = str(error['ctx']['error'])
+        errors.append(error)
+    
     logger.error(
         f"Validation error",
         extra={
             "error_type": "ValidationError",
-            "error_detail": exc.errors(),
+            "error_detail": errors,
             "body": await request.body(),
             "path": request.url.path
         }
@@ -47,7 +54,7 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
         content={
             "success": False,
             "message": "Validation error",
-            "detail": exc.errors()
+            "detail": errors
         }
     )
 
