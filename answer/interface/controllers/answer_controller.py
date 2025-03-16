@@ -5,10 +5,11 @@ from dependency_injector.wiring import inject, Provide
 from containers import Container
 from answer.application.answer_service import AnswerService
 from game.application.game_service import GameService
-from answer.interface.dtos.answer_dtos import (
+from answer.interface.dtos.answer_dto import (
     AnswerRequestDTO,
     AnswerResponseDTO,
     AnswerResponseListDTO,
+    AnswerUserResponseDTO,
 )
 from common.auth import get_current_user, CurrentUser
 
@@ -155,7 +156,7 @@ async def get_answers_by_user(
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.get("/game/{game_id}/user", response_model=AnswerResponseDTO | None)
+@router.get("/game/{game_id}/user", response_model=AnswerUserResponseDTO | None)
 @inject
 async def get_corrected_answer_by_game_and_user(
     game_id: str,
@@ -268,26 +269,26 @@ def create_answer_for_all_users_per_game(
 def get_game_ranking(
     game_id: str,
     answer_service: AnswerService = Depends(Provide[Container.answer_service]),
-) -> list[AnswerResponseDTO]:
+) -> list[AnswerUserResponseDTO]:
     domain_answers = answer_service.get_corrected_answers_by_game(game_id=game_id)
-    
+
     # 도메인 모델을 DTO로 변환
     answer_dtos = []
     for answer in domain_answers:
         answer_dict = answer.__dict__.copy()
-        
+
         # user 정보가 있으면 처리
-        if hasattr(answer, 'user') and answer.user is not None:
+        if hasattr(answer, "user") and answer.user is not None:
             from user.interface.dtos.user_dto import UserResponseDTO
-            
+
             # user 정보를 UserResponseDTO로 변환
             user_dto = UserResponseDTO(
-                id=answer.user.get('id'),
+                id=answer.user.get("id"),
                 name="",  # 이름 정보가 없으므로 빈 문자열로 설정
-                nickname=answer.user.get('nickname')
+                nickname=answer.user.get("nickname"),
             )
-            answer_dict['user'] = user_dto
-        
-        answer_dtos.append(AnswerResponseDTO.model_validate(answer_dict))
-    
+            answer_dict["user"] = user_dto
+
+        answer_dtos.append(AnswerUserResponseDTO.model_validate(answer_dict))
+
     return answer_dtos

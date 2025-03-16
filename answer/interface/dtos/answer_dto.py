@@ -23,6 +23,10 @@ class AnswerRequestDTO(BaseModel):
 
 
 class AnswerResponseDTO(AnswerBase):
+    pass
+
+
+class AnswerUserResponseDTO(AnswerBase):
     user: UserResponseDTO | None = None
 
 
