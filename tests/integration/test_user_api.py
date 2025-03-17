@@ -31,9 +31,12 @@ class TestUserAPI:
     @pytest.fixture
     def user_token(self, client, test_user_data):
         # 사용자 로그인
-        login_data = {"username": test_user_data["email"], "password": test_user_data["password"]}
+        login_data = {
+            "username": test_user_data["email"],
+            "password": test_user_data["password"],
+        }
         response = client.post("/user/login", data=login_data)
-        return response.json()["access_token"]
+        return response.json().get("access_token")
 
     def test_register_user(self, client, test_user_data):
         # 설정 및 실행
@@ -47,7 +50,9 @@ class TestUserAPI:
         assert data["nickname"] == test_user_data["nickname"]
         assert "password" not in data  # 비밀번호는 응답에 포함되지 않아야 함
 
-    def test_register_user_duplicate_email(self, client, registered_user, test_user_data):
+    def test_register_user_duplicate_email(
+        self, client, registered_user, test_user_data
+    ):
         # 설정 - 이미 등록된 이메일로 다시 등록 시도
         duplicate_user_data = test_user_data.copy()
         duplicate_user_data["nickname"] = "different_nickname"
@@ -58,7 +63,9 @@ class TestUserAPI:
         # 검증
         assert response.status_code == 400  # 이메일 중복으로 인한 오류
 
-    def test_register_user_duplicate_nickname(self, client, registered_user, test_user_data):
+    def test_register_user_duplicate_nickname(
+        self, client, registered_user, test_user_data
+    ):
         # 설정 - 이미 등록된 닉네임으로 다시 등록 시도
         duplicate_user_data = test_user_data.copy()
         duplicate_user_data["email"] = "different_email@example.com"
@@ -71,7 +78,10 @@ class TestUserAPI:
 
     def test_login_user(self, client, registered_user, test_user_data):
         # 설정
-        login_data = {"username": test_user_data["email"], "password": test_user_data["password"]}
+        login_data = {
+            "username": test_user_data["email"],
+            "password": test_user_data["password"],
+        }
 
         # 실행
         response = client.post("/user/login", data=login_data)
@@ -84,12 +94,17 @@ class TestUserAPI:
 
         # 토큰 검증
         token = data["access_token"]
-        payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
+        payload = jwt.decode(
+            token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM]
+        )
         assert payload["email"] == test_user_data["email"]
 
     def test_login_user_invalid_credentials(self, client, registered_user):
         # 설정 - 잘못된 비밀번호
-        login_data = {"username": registered_user["email"], "password": "WrongPassword1234!"}
+        login_data = {
+            "username": registered_user["email"],
+            "password": "WrongPassword1234!",
+        }
 
         # 실행
         response = client.post("/user/login", data=login_data)
@@ -125,7 +140,7 @@ class TestUserAPI:
         update_data = {
             "name": "Updated Name",
             "nickname": "updated_nickname",
-            "phone": "010-9876-5432"
+            "phone": "010-9876-5432",
         }
 
         # 실행
@@ -151,17 +166,22 @@ class TestUserAPI:
         headers = {"Authorization": f"Bearer {user_token}"}
         password_data = {
             "old_password": test_user_data["password"],
-            "new_password": "NewPassword1234!"
+            "new_password": "NewPassword1234!",
         }
 
         # 실행
-        response = client.post("/user/change-password", json=password_data, headers=headers)
+        response = client.post(
+            "/user/change-password", json=password_data, headers=headers
+        )
 
         # 검증
         assert response.status_code == 200
-        
+
         # 새 비밀번호로 로그인 시도
-        login_data = {"username": test_user_data["email"], "password": "NewPassword1234!"}
+        login_data = {
+            "username": test_user_data["email"],
+            "password": "NewPassword1234!",
+        }
         login_response = client.post("/user/login", data=login_data)
         assert login_response.status_code == 200
 
@@ -170,11 +190,13 @@ class TestUserAPI:
         headers = {"Authorization": f"Bearer {user_token}"}
         password_data = {
             "old_password": "WrongPassword1234!",
-            "new_password": "NewPassword1234!"
+            "new_password": "NewPassword1234!",
         }
 
         # 실행
-        response = client.post("/user/change-password", json=password_data, headers=headers)
+        response = client.post(
+            "/user/change-password", json=password_data, headers=headers
+        )
 
         # 검증
         assert response.status_code == 401  # 인증 실패
@@ -227,7 +249,7 @@ class TestUserAPI:
         # 관리자 로그인
         admin_login_data = {"username": "admin@example.com", "password": "Admin1234!"}
         admin_login_response = client.post("/user/login", data=admin_login_data)
-        admin_token = admin_login_response.json()["access_token"]
+        admin_token = admin_login_response.json().get("access_token")
         admin_headers = {"Authorization": f"Bearer {admin_token}"}
 
         # 사용자 등록
@@ -255,10 +277,10 @@ class TestUserAPI:
     def test_get_user_by_id_forbidden(self, client, user_token, registered_user):
         # 일반 사용자가 다른 사용자 정보 조회 시도 (권한 없음)
         headers = {"Authorization": f"Bearer {user_token}"}
-        
+
         # 관리자 ID로 가정
         admin_id = "01HADMIN12345678ABCDEFGHJK"
-        
+
         response = client.get(f"/user/{admin_id}", headers=headers)
 
         # 검증
@@ -268,7 +290,7 @@ class TestUserAPI:
         # 관리자 로그인
         admin_login_data = {"username": "admin@example.com", "password": "Admin1234!"}
         admin_login_response = client.post("/user/login", data=admin_login_data)
-        admin_token = admin_login_response.json()["access_token"]
+        admin_token = admin_login_response.json().get("access_token")
         admin_headers = {"Authorization": f"Bearer {admin_token}"}
 
         # 관리자가 모든 사용자 조회

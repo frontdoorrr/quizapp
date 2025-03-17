@@ -14,16 +14,16 @@ class TestAnswerAPI:
         login_data = {"username": "user@example.com", "password": "User1234!"}
         response = client.post("/user/login", data=login_data)
         print("--------------------------------")
-        print(response.json()["access_token"])
+        print(response.json().get("access_token"))
         print("--------------------------------")
-        return response.json()["access_token"]
+        return response.json().get("access_token")
 
     @pytest.fixture
     def admin_token(self, client):
         # 관리자 로그인
         login_data = {"username": "admin@example.com", "password": "Admin1234!"}
         response = client.post("/user/login", data=login_data)
-        return response.json()["access_token"]
+        return response.json().get("access_token")
 
     @pytest.fixture
     def test_game(self, client, admin_token):
@@ -36,7 +36,7 @@ class TestAnswerAPI:
             "question": "What is the test answer?",
             "answer": "test answer",
             "question_link": "https://example.com/test-question",
-            "answer_link": "https://example.com/test-answer"
+            "answer_link": "https://example.com/test-answer",
         }
         response = client.post("/game/", json=game_data, headers=admin_headers)
         return response.json()
@@ -47,7 +47,9 @@ class TestAnswerAPI:
         game_id = test_game["id"]
 
         # 실행
-        response = client.post(f"/answer/game/{game_id}/participate", headers=user_headers)
+        response = client.post(
+            f"/answer/game/{game_id}/participate", headers=user_headers
+        )
 
         # 검증
         assert response.status_code == 201
@@ -70,7 +72,9 @@ class TestAnswerAPI:
 
         # 정답 제출
         answer_data = {"answer": "test answer"}
-        response = client.post(f"/answer/game/{game_id}", json=answer_data, headers=user_headers)
+        response = client.post(
+            f"/answer/game/{game_id}", json=answer_data, headers=user_headers
+        )
 
         # 검증
         assert response.status_code == 200
@@ -92,7 +96,9 @@ class TestAnswerAPI:
 
         # 오답 제출
         answer_data = {"answer": "wrong answer"}
-        response = client.post(f"/answer/game/{game_id}", json=answer_data, headers=user_headers)
+        response = client.post(
+            f"/answer/game/{game_id}", json=answer_data, headers=user_headers
+        )
 
         # 검증
         assert response.status_code == 200
@@ -141,7 +147,9 @@ class TestAnswerAPI:
         assert data["answer"] == "test answer"
         assert data["is_correct"] is True
 
-    def test_get_all_answers_by_game_admin(self, client, admin_token, user_token, test_game):
+    def test_get_all_answers_by_game_admin(
+        self, client, admin_token, user_token, test_game
+    ):
         # 설정
         admin_headers = {"Authorization": f"Bearer {admin_token}"}
         user_headers = {"Authorization": f"Bearer {user_token}"}
@@ -162,7 +170,9 @@ class TestAnswerAPI:
         assert len(data) > 0
         assert data[0]["game_id"] == game_id
 
-    def test_get_all_answers_by_game_user_forbidden(self, client, user_token, test_game):
+    def test_get_all_answers_by_game_user_forbidden(
+        self, client, user_token, test_game
+    ):
         # 설정
         user_headers = {"Authorization": f"Bearer {user_token}"}
         game_id = test_game["id"]
@@ -173,7 +183,9 @@ class TestAnswerAPI:
         # 검증
         assert response.status_code == 403  # 접근 거부
 
-    def test_participate_in_closed_game(self, client, user_token, admin_token, test_game):
+    def test_participate_in_closed_game(
+        self, client, user_token, admin_token, test_game
+    ):
         # 설정
         user_headers = {"Authorization": f"Bearer {user_token}"}
         admin_headers = {"Authorization": f"Bearer {admin_token}"}
@@ -183,7 +195,9 @@ class TestAnswerAPI:
         client.post(f"/game/{game_id}/close", headers=admin_headers)
 
         # 종료된 게임에 참여 시도
-        response = client.post(f"/answer/game/{game_id}/participate", headers=user_headers)
+        response = client.post(
+            f"/answer/game/{game_id}/participate", headers=user_headers
+        )
 
         # 검증
         assert response.status_code == 400  # 게임이 이미 종료됨
@@ -208,12 +222,16 @@ class TestAnswerAPI:
 
         # 참여 없이 바로 답변 제출 시도
         answer_data = {"answer": "test answer"}
-        response = client.post(f"/answer/game/{game_id}", json=answer_data, headers=user_headers)
+        response = client.post(
+            f"/answer/game/{game_id}", json=answer_data, headers=user_headers
+        )
 
         # 검증
         assert response.status_code == 404  # 참여 기록을 찾을 수 없음
 
-    def test_submit_answer_to_closed_game(self, client, user_token, admin_token, test_game):
+    def test_submit_answer_to_closed_game(
+        self, client, user_token, admin_token, test_game
+    ):
         # 설정
         user_headers = {"Authorization": f"Bearer {user_token}"}
         admin_headers = {"Authorization": f"Bearer {admin_token}"}
@@ -230,7 +248,9 @@ class TestAnswerAPI:
 
         # 종료된 게임에 답변 제출 시도
         answer_data = {"answer": "test answer"}
-        response = client.post(f"/answer/game/{game_id}", json=answer_data, headers=user_headers)
+        response = client.post(
+            f"/answer/game/{game_id}", json=answer_data, headers=user_headers
+        )
 
         # 검증
         assert response.status_code == 400  # 게임이 이미 종료됨

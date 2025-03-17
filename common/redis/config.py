@@ -14,3 +14,6 @@ class RedisSettings(BaseSettings):
     REDIS_DB: int = 0
     REDIS_PASSWORD: str | None = None
     EMAIL_VERIFICATION_TTL: int = 300  # 5 minutes
+    CACHE_TTL: int = 3600  # 1 hour
+    QUEUE_NAME: str = "tasks_queue"
+    QUEUE_TIMEOUT: int = 0  # 0은 무한 대기

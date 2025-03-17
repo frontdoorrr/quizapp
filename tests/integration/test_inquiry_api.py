@@ -13,7 +13,7 @@ class TestInquiryAPI:
         # 사용자 로그인
         login_data = {"username": "test@example.com", "password": "Test1234!"}
         response = client.post("/user/login", data=login_data)
-        token = response.json()["access_token"]
+        token = response.json().get("access_token")
         return {"Authorization": f"Bearer {token}"}
 
     def test_create_inquiry(self, client, auth_headers):

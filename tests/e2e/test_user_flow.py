@@ -25,7 +25,7 @@ class TestUserFlow:
         login_data = {"username": "test@example.com", "password": "Test1234!"}
         login_response = client.post("/user/login", data=login_data)
         assert login_response.status_code == 200
-        token = login_response.json()["access_token"]
+        token = login_response.json().get("access_token")
 
         # 3. 프로필 조회
         headers = {"Authorization": f"Bearer {token}"}
@@ -36,7 +36,7 @@ class TestUserFlow:
         # 1. 로그인 및 토큰 획득
         login_data = {"username": "test@example.com", "password": "Test1234!"}
         login_response = client.post("/user/login", data=login_data)
-        token = login_response.json()["access_token"]
+        token = login_response.json().get("access_token")
         headers = {"Authorization": f"Bearer {token}"}
 
         # 2. 게임 참여
