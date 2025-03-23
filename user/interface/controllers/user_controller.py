@@ -18,6 +18,8 @@ from user.interface.dtos.user_dto import (
     TokenVerificationDTO,
     EmailVerficationDTO,
     ChangePasswordDTO,
+    PasswordResetRequestDTO,
+    PasswordResetDTO,
 )
 from common.auth import CurrentUser, get_current_user
 
@@ -284,3 +286,28 @@ async def change_password(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="비밀번호 변경 중 오류가 발생했습니다",
         )
+
+
+@router.post("/password-reset-request", status_code=status.HTTP_200_OK)
+def request_password_reset(
+    request: PasswordResetRequestDTO,
+    user_service: UserService = Depends(Provide[Container.user_service]),
+):
+    """비밀번호 재설정 요청"""
+    user_service.request_password_reset(request.email)
+    return {"message": "Password reset email sent"}
+
+
+@router.post("/password-reset", status_code=status.HTTP_200_OK)
+def reset_password(
+    request: PasswordResetDTO,
+    user_service: UserService = Depends(Provide[Container.user_service]),
+):
+    """비밀번호 재설정"""
+    user_service.reset_password(
+        request.email,
+        request.token,
+        request.new_password,
+        request.new_password2,
+    )
+    return {"message": "Password reset successful"}

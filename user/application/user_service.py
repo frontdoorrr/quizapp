@@ -17,6 +17,8 @@ from common.redis.client import RedisClient
 from common.redis.config import RedisSettings
 
 from user.domain.user import User
+import os
+from utils.password import is_valid_password, InvalidPasswordFormatError
 
 
 class UserService:
@@ -280,3 +282,72 @@ class UserService:
         hashed_password = self.crypto.encrypt(new_password)
         user.password = hashed_password
         self.user_repo.update(user)
+
+    def request_password_reset(self, email: str) -> None:
+        """비밀번호 재설정 요청
+        
+        Args:
+            email: 사용자 이메일
+            
+        Raises:
+            HTTPException: 사용자가 존재하지 않는 경우
+        """
+        try:
+            user = self.user_repo.find_by_email(email)
+        except HTTPException:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="User not found",
+            )
+            
+        # 임시 토큰 생성
+        token = self.ulid.generate()
+        
+        # Redis에 토큰 저장 (30분 만료)
+        key = f"password_reset:{email}"
+        self.redis.set(key, token, ex=1800)
+        
+        # 이메일 발송
+        reset_link = f"{os.getenv('FRONTEND_URL', 'http://localhost:3000')}/reset-password?email={email}&token={token}"
+        self.email_sender.send_email(
+            to_email=email,
+            subject="비밀번호 재설정",
+            content=f"아래 링크를 클릭하여 비밀번호를 재설정하세요:\n\n{reset_link}\n\n이 링크는 30분 동안 유효합니다.",
+        )
+
+    def reset_password(self, email: str, token: str, new_password: str, new_password2: str) -> None:
+        """비밀번호 재설정
+        
+        Args:
+            email: 사용자 이메일
+            token: 비밀번호 재설정 토큰
+            new_password: 새 비밀번호
+            new_password2: 새 비밀번호 확인
+            
+        Raises:
+            HTTPException: 토큰이 유효하지 않거나 만료된 경우
+            InvalidPasswordFormatError: 새 비밀번호가 유효하지 않은 경우
+        """
+        # 토큰 검증
+        key = f"password_reset:{email}"
+        stored_token = self.redis.get(key)
+        if not stored_token or stored_token != token:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Invalid or expired token",
+            )
+            
+        # 비밀번호 유효성 검사
+        if new_password != new_password2:
+            raise InvalidPasswordFormatError("Passwords do not match")
+            
+        if not is_valid_password(new_password):
+            raise InvalidPasswordFormatError("Invalid password format")
+            
+        # 비밀번호 업데이트
+        user = self.user_repo.find_by_email(email)
+        user.password = self.crypto.encrypt(new_password)
+        self.user_repo.update(user)
+        
+        # 토큰 삭제
+        self.redis.delete(key)

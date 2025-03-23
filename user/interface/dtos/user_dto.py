@@ -105,3 +105,16 @@ class ChangePasswordDTO(BaseModel):
         if "new_password" in values and v != values["new_password"]:
             raise ValueError("새 비밀번호가 일치하지 않습니다")
         return v
+
+
+class PasswordResetRequestDTO(BaseModel):
+    """비밀번호 재설정 요청 DTO"""
+    email: str
+
+
+class PasswordResetDTO(BaseModel):
+    """비밀번호 재설정 DTO"""
+    email: str
+    token: str
+    new_password: str
+    new_password2: str
