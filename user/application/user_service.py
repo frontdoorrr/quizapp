@@ -18,6 +18,9 @@ from common.redis.config import RedisSettings
 
 from user.domain.user import User
 import os
+import re
+import uuid
+from datetime import datetime, timedelta
 from utils.password import is_valid_password, InvalidPasswordFormatError
 
 
@@ -309,10 +312,109 @@ class UserService:
 
         # 이메일 발송
         reset_link = f"{os.getenv('FRONTEND_URL', 'http://localhost:3000')}/reset-password?email={email}&token={token}"
+
+        # HTML 형식의 이메일 내용 생성
+        html_content = f"""
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>비밀번호 재설정</title>
+            <style>
+                body {{
+                    font-family: 'CGF Locust Resistance', 'Helvetica Neue', Arial, sans-serif;
+                    line-height: 1.6;
+                    color: #333;
+                    background-color: #f9f9f9;
+                    margin: 0;
+                    padding: 0;
+                }}
+                .container {{
+                    max-width: 600px;
+                    margin: 0 auto;
+                    padding: 20px;
+                    background-color: #ffffff;
+                    border-radius: 8px;
+                    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+                }}
+                .header {{
+                    text-align: center;
+                    padding: 20px 0;
+                    border-bottom: 1px solid #eee;
+                }}
+                .logo {{
+                    font-size: 24px;
+                    font-weight: bold;
+                    color: #d8c27c;
+                }}
+                .content {{
+                    padding: 30px 20px;
+                }}
+                h1 {{
+                    color: #333;
+                    font-size: 22px;
+                    margin-top: 0;
+                }}
+                p {{
+                    margin-bottom: 20px;
+                }}
+                .button {{
+                    display: inline-block;
+                    background-color: #d8c27c;
+                    color: white;
+                    text-decoration: none;
+                    padding: 12px 25px;
+                    border-radius: 4px;
+                    font-weight: bold;
+                    margin: 20px 0;
+                }}
+                .button:hover {{
+                    background-color: #3A5FEF;
+                }}
+                .footer {{
+                    text-align: center;
+                    padding-top: 20px;
+                    border-top: 1px solid #eee;
+                    font-size: 12px;
+                    color: #999;
+                }}
+                .note {{
+                    font-size: 13px;
+                    color: #888;
+                    font-style: italic;
+                }}
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <div class="header">
+                    <div class="logo">Genius Game</div>
+                </div>
+                <div class="content">
+                    <h1>비밀번호 재설정 요청</h1>
+                    <p>안녕하세요,</p>
+                    <p>귀하의 계정에 대한 비밀번호 재설정 요청이 접수되었습니다. 아래 버튼을 클릭하여 비밀번호를 재설정하세요.</p>
+                    <div style="text-align: center;">
+                        <a href="{reset_link}" class="button">비밀번호 재설정</a>
+                    </div>
+                    <p class="note">* 이 링크는 30분 동안 유효합니다. 만약 비밀번호 재설정을 요청하지 않으셨다면, 이 이메일을 무시하셔도 됩니다.</p>
+                    <p>버튼이 작동하지 않는 경우, 아래 링크를 브라우저에 복사하여 붙여넣으세요:</p>
+                    <p style="word-break: break-all; font-size: 13px; color: #666;">{reset_link}</p>
+                </div>
+                <div class="footer">
+                    <p>&copy; {datetime.now().year} Genius Game. All rights reserved.</p>
+                </div>
+            </div>
+        </body>
+        </html>
+        """
+
         self.email_sender.send_email(
             to_email=email,
             subject="비밀번호 재설정",
-            content=f"아래 링크를 클릭하여 비밀번호를 재설정하세요:\n\n{reset_link}\n\n이 링크는 30분 동안 유효합니다.",
+            content=html_content,
+            is_html=True,
         )
 
     def verify_password_reset_token(self, email: str, token: str) -> bool:
