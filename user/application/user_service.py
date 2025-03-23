@@ -313,7 +313,12 @@ class UserService:
 
         # 이메일 발송
         settings = get_settings()
-        reset_link = f"{settings.FRONTEND_URL}/reset-password?email={email}&token={token}"
+        # 프로토콜을 포함한 완전한 URL 형식으로 변경
+        frontend_url = settings.FRONTEND_URL
+        if not frontend_url.startswith(('http://', 'https://')):
+            frontend_url = f"http://{frontend_url}"
+        
+        reset_link = f"{frontend_url}/reset-password?email={email}&token={token}"
 
         # HTML 형식의 이메일 내용 생성
         html_content = f"""
