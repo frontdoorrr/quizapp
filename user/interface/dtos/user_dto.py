@@ -109,12 +109,21 @@ class ChangePasswordDTO(BaseModel):
 
 class PasswordResetRequestDTO(BaseModel):
     """비밀번호 재설정 요청 DTO"""
+
     email: str
 
 
 class PasswordResetDTO(BaseModel):
     """비밀번호 재설정 DTO"""
+
     email: str
     token: str
     new_password: str
     new_password2: str
+
+
+class PasswordResetVerifyDTO(BaseModel):
+    """비밀번호 재설정 토큰 검증 DTO"""
+
+    email: str
+    token: str

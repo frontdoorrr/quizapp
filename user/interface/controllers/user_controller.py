@@ -20,6 +20,7 @@ from user.interface.dtos.user_dto import (
     ChangePasswordDTO,
     PasswordResetRequestDTO,
     PasswordResetDTO,
+    PasswordResetVerifyDTO,
 )
 from common.auth import CurrentUser, get_current_user
 
@@ -255,40 +256,41 @@ def verify_token(
         raise e
 
 
-@router.post("/change-password")
+# @router.post("/change-password")
+# @inject
+# async def change_password(
+#     request: ChangePasswordDTO,
+#     current_user: CurrentUser = Depends(get_current_user),
+#     user_service: UserService = Depends(Provide[Container.user_service]),
+# ) -> None:
+#     """비밀번호 변경 API
+
+#     Args:
+#         request: 비밀번호 변경 요청 DTO
+#         current_user: 현재 로그인한 사용자
+#         user_service: 사용자 서비스
+#     """
+#     try:
+#         user_service.change_password(
+#             user_id=current_user.id,
+#             current_password=request.current_password,
+#             new_password=request.new_password,
+#             new_password2=request.new_password2,
+#         )
+#         return Response(status_code=status.HTTP_200_OK)
+#     except ValueError as e:
+#         logger.error(f"비밀번호 변경 유효성 검사 실패: {str(e)}", exc_info=True)
+#         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+#     except Exception as e:
+#         logger.error(f"비밀번호 변경 실패: {str(e)}", exc_info=True)
+#         raise HTTPException(
+#             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+#             detail="비밀번호 변경 중 오류가 발생했습니다",
+#         )
+
+
+@router.post("/password-reset/request", status_code=status.HTTP_200_OK)
 @inject
-async def change_password(
-    request: ChangePasswordDTO,
-    current_user: CurrentUser = Depends(get_current_user),
-    user_service: UserService = Depends(Provide[Container.user_service]),
-) -> None:
-    """비밀번호 변경 API
-
-    Args:
-        request: 비밀번호 변경 요청 DTO
-        current_user: 현재 로그인한 사용자
-        user_service: 사용자 서비스
-    """
-    try:
-        user_service.change_password(
-            user_id=current_user.id,
-            current_password=request.current_password,
-            new_password=request.new_password,
-            new_password2=request.new_password2,
-        )
-        return Response(status_code=status.HTTP_200_OK)
-    except ValueError as e:
-        logger.error(f"비밀번호 변경 유효성 검사 실패: {str(e)}", exc_info=True)
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
-    except Exception as e:
-        logger.error(f"비밀번호 변경 실패: {str(e)}", exc_info=True)
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="비밀번호 변경 중 오류가 발생했습니다",
-        )
-
-
-@router.post("/password-reset-request", status_code=status.HTTP_200_OK)
 def request_password_reset(
     request: PasswordResetRequestDTO,
     user_service: UserService = Depends(Provide[Container.user_service]),
@@ -299,6 +301,7 @@ def request_password_reset(
 
 
 @router.post("/password-reset", status_code=status.HTTP_200_OK)
+@inject
 def reset_password(
     request: PasswordResetDTO,
     user_service: UserService = Depends(Provide[Container.user_service]),
@@ -311,3 +314,19 @@ def reset_password(
         request.new_password2,
     )
     return {"message": "Password reset successful"}
+
+
+@router.post("/password-reset/verify", status_code=status.HTTP_200_OK)
+@inject
+def verify_password_reset_token(
+    request: PasswordResetVerifyDTO,
+    user_service: UserService = Depends(Provide[Container.user_service]),
+):
+    """비밀번호 재설정 토큰 검증"""
+    is_valid = user_service.verify_password_reset_token(request.email, request.token)
+    if not is_valid:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid or expired token",
+        )
+    return {"message": "Token is valid"}

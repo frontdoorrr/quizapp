@@ -15,6 +15,26 @@ class EmailSender:
         self.smtp_password = os.getenv("SMTP_PASSWORD", "kfzk hpsl dhmb ethd")
         self.sender_email = os.getenv("SENDER_EMAIL", "geniusgamekorea@gmail.com")
 
+    def send_email(self, to_email: str, subject: str, content: str):
+        """Send general email
+
+        Args:
+            to_email (str): Recipient email
+            subject (str): Email subject
+            content (str): Email content
+        """
+        msg = MIMEMultipart()
+        msg["From"] = self.sender_email
+        msg["To"] = to_email
+        msg["Subject"] = Header(subject, "utf-8")
+
+        msg.attach(MIMEText(content, "plain", "utf-8"))
+
+        with smtplib.SMTP(self.smtp_server, self.smtp_port) as server:
+            server.starttls()
+            server.login(self.smtp_username, self.smtp_password)
+            server.send_message(msg)
+
     def send_verification_email(self, to_email: str, verification_token: str):
         """Send verification email
 
