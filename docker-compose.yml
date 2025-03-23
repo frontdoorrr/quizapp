@@ -14,6 +14,8 @@ services:
 
   web:
     build: .
+    env_file:
+      - .env
     environment:
       - database_url=postgresql://postgres:postgres@db:5432/quizapp
       - DATABASE_USERNAME=postgres
@@ -38,6 +40,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.worker
+    env_file:
+      - .env
     environment:
       - database_url=postgresql://postgres:postgres@db:5432/quizapp
       - DATABASE_USERNAME=postgres
