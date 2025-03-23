@@ -15,6 +15,7 @@ from utils.email import EmailSender
 from user.domain.repository.user_repo import IUserRepository, ILoginHistoryRepository
 from common.redis.client import RedisClient
 from common.redis.config import RedisSettings
+from config import get_settings
 
 from user.domain.user import User
 import os
@@ -311,7 +312,8 @@ class UserService:
         self.redis.set(key, token, ttl=1800)
 
         # 이메일 발송
-        reset_link = f"{os.getenv('FRONTEND_URL', 'http://localhost:3000')}/reset-password?email={email}&token={token}"
+        settings = get_settings()
+        reset_link = f"{settings.FRONTEND_URL}/reset-password?email={email}&token={token}"
 
         # HTML 형식의 이메일 내용 생성
         html_content = f"""
