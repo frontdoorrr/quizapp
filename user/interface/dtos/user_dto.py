@@ -59,7 +59,7 @@ class UserResponseDTO(UserBase):
     id: str
     name: str
     nickname: str | None = None
-    email: EmailStr
+    email: EmailStr | None = None
 
 
 class UserResponseListDTO(BaseModel):
