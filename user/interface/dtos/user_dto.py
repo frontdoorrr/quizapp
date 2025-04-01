@@ -57,7 +57,7 @@ class UserCreateDTO(UserBase):
 
 class UserResponseDTO(UserBase):
     id: str
-    name: str
+    name: str | None = None
     nickname: str | None = None
     email: EmailStr | None = None
 
