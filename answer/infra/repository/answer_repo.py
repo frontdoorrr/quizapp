@@ -20,16 +20,13 @@ class AnswerRepository(IAnswerRepository):
             point=model.point,
             status=model.status,
         )
-        
+
         # User 정보가 로드되어 있으면 user 속성에 추가
-        if hasattr(model, 'user') and model.user is not None:
+        if hasattr(model, "user") and model.user is not None:
             # 필요한 user 정보만 선택적으로 추가
-            user_info = {
-                'id': model.user.id,
-                'nickname': model.user.nickname
-            }
+            user_info = {"id": model.user.id, "nickname": model.user.nickname}
             domain.user = user_info
-            
+
         return domain
 
     def _to_model(self, domain: AnswerDomain) -> AnswerModel:
@@ -92,7 +89,7 @@ class AnswerRepository(IAnswerRepository):
         try:
             with SessionLocal() as db:
                 from user.infra.db_models.user import User
-                
+
                 models = (
                     db.query(AnswerModel)
                     .join(User, AnswerModel.user_id == User.id)
@@ -101,11 +98,12 @@ class AnswerRepository(IAnswerRepository):
                         AnswerModel.is_correct == True,
                         AnswerModel.solved_at != None,
                         AnswerModel.status == AnswerStatus.SUBMITTED,
+                        User.role == Role.USER,
                     )
                     .order_by(AnswerModel.solved_at)
                     .all()
                 )
-                
+
                 # 세션이 닫히기 전에 도메인 객체로 변환하고 필요한 user 정보 추출
                 result = []
                 for model in models:
@@ -121,17 +119,17 @@ class AnswerRepository(IAnswerRepository):
                         point=model.point,
                         status=model.status,
                     )
-                    
+
                     # User 정보를 세션이 열려있을 때 추출
                     if model.user is not None:
                         user_info = {
-                            'id': model.user.id,
-                            'nickname': model.user.nickname
+                            "id": model.user.id,
+                            "nickname": model.user.nickname,
                         }
                         domain.user = user_info
-                    
+
                     result.append(domain)
-                
+
             return result
 
         except Exception as e:

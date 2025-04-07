@@ -11,7 +11,7 @@ from answer.interface.dtos.answer_dto import (
     AnswerResponseListDTO,
     AnswerUserResponseDTO,
 )
-from common.auth import get_current_user, CurrentUser
+from common.auth import get_current_user, CurrentUser, Role
 
 
 router = APIRouter(prefix="/answer", tags=["answer"])
@@ -281,14 +281,15 @@ def get_game_ranking(
         if hasattr(answer, "user") and answer.user is not None:
             from user.interface.dtos.user_dto import UserResponseDTO
 
-            # user 정보를 UserResponseDTO로 변환
-            user_dto = UserResponseDTO(
-                id=answer.user.get("id"),
-                name="",  # 이름 정보가 없으므로 빈 문자열로 설정
-                nickname=answer.user.get("nickname"),
-            )
-            answer_dict["user"] = user_dto
-
-        answer_dtos.append(AnswerUserResponseDTO.model_validate(answer_dict))
+            # Role이 USER인 사용자만 포함
+            if answer.user.get("role") == Role.USER:
+                # user 정보를 UserResponseDTO로 변환
+                user_dto = UserResponseDTO(
+                    id=answer.user.get("id"),
+                    name="",  # 이름 정보가 없으므로 빈 문자열로 설정
+                    nickname=answer.user.get("nickname"),
+                )
+                answer_dict["user"] = user_dto
+                answer_dtos.append(AnswerUserResponseDTO.model_validate(answer_dict))
 
     return answer_dtos
