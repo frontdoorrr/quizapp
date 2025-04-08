@@ -143,7 +143,8 @@ class AnswerService:
         Raises:
             ValueError: If answer not found
         """
-        answer = self.get_answer_by_game_and_user(game_id, user_id)
+        # TODO
+        # answer = self.get_answer_by_game_and_user(game_id, user_id)
 
         if not answer:
             raise ValueError(
