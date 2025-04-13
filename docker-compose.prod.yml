@@ -50,17 +50,19 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.worker
-    environment:
-      - APP_ENV=production
-      - DATABASE_USERNAME=${RDS_USERNAME}
-      - DATABASE_PASSWORD=${RDS_PASSWORD}
-      - DB_HOST=${RDS_HOST}
-      - DB_PORT=${RDS_PORT}
-      - DB_NAME=${RDS_DB_NAME}
-      - JWT_SECRET=${JWT_SECRET}
-      - REDIS_HOST=redis
-      - REDIS_PORT=6379
-      - REDIS_DB=0
+    env_file:
+      - .env
+    # environment:
+    #   - APP_ENV=production
+    #   - DATABASE_USERNAME=${DATABASE_USERNAME}
+    #   - DATABASE_PASSWORD=${DATABASE_PASSWORD}
+    #   - DB_HOST=${DB_HOST}
+    #   - DB_PORT=${DB_PORT}
+    #   - DB_NAME=${DB_NAME}
+    #   - JWT_SECRET=${JWT_SECRET}
+    #   - REDIS_HOST=${REDIS_HOST}
+    #   - REDIS_PORT=${REDIS_PORT}
+    #   - REDIS_DB=0
     depends_on:
       redis:
         condition: service_started
