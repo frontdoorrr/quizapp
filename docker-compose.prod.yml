@@ -30,6 +30,8 @@ services:
     #   - REDIS_HOST=redis
     #   - REDIS_PORT=6379
     #   - REDIS_DB=0
+    volumes:
+      - .:/app
     expose:
       - 8000
     depends_on:
