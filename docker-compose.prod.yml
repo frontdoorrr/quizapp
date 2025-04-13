@@ -19,17 +19,17 @@ services:
       dockerfile: Dockerfile
     env_file:
       - .env
-    environment:
-      - APP_ENV=production
-      - DATABASE_USERNAME=postgres
-      - DATABASE_PASSWORD=Geniusgame123!#
-      - DB_HOST=prod-db-1.cfai06kw6v89.ap-northeast-2.rds.amazonaws.com
-      - DB_PORT=5432
-      - DB_NAME=quizapp
-      - JWT_SECRET=THISISKEY
-      - REDIS_HOST=redis
-      - REDIS_PORT=6379
-      - REDIS_DB=0
+    # environment:
+    #   - APP_ENV=production
+    #   - DATABASE_USERNAME=postgres
+    #   - DATABASE_PASSWORD=Geniusgame123!#
+    #   - DB_HOST=prod-db-1.cfai06kw6v89.ap-northeast-2.rds.amazonaws.com
+    #   - DB_PORT=5432
+    #   - DB_NAME=quizapp
+    #   - JWT_SECRET=THISISKEY
+    #   - REDIS_HOST=redis
+    #   - REDIS_PORT=6379
+    #   - REDIS_DB=0
     expose:
       - 8000
     depends_on:
