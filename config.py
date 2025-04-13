@@ -34,9 +34,10 @@ class Settings(BaseSettings):
     REDIS_PORT: int = 6379
     REDIS_DB: int = 0
     REDIS_PASSWORD: str | None = None
-    
+    EMAIL_VERIFICATION_TTL: int = 300  # 1시간 (초 단위)
+
     # Frontend Settings
-    FRONTEND_URL: str = "http://localhost:3000"
+    FRONTEND_URL: str
 
 
 @lru_cache
