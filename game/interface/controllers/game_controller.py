@@ -64,6 +64,37 @@ async def update_game(
     )
 
 
+@router.get("/current/", response_model=GameResponseDTO)
+@inject
+def get_current_game(
+    game_service: GameService = Depends(Provide[Container.game_service]),
+):
+
+    try:
+        game = game_service.get_current_game()
+        return GameResponseDTO(
+            id=game.id,
+            number=game.number,
+            created_at=game.created_at,
+            modified_at=game.modified_at,
+            opened_at=game.opened_at,
+            closed_at=game.closed_at,
+            title=game.title,
+            description=game.description,
+            status=game.status,
+            memo=game.memo,
+            question=game.question,
+            answer=game.answer,
+            question_link=game.question_link,
+            answer_link=game.answer_link,
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=str(e),
+        )
+
+
 @router.get("/{game_id}", response_model=GameResponseDTO)
 @inject
 async def get_game(
@@ -135,37 +166,6 @@ async def get_games(
         )
         for game in games
     ]
-
-
-@router.get("/current/", response_model=GameResponseDTO)
-@inject
-def get_current_game(
-    game_service: GameService = Depends(Provide[Container.game_service]),
-):
-
-    try:
-        game = game_service.get_current_game()
-        return GameResponseDTO(
-            id=game.id,
-            number=game.number,
-            created_at=game.created_at,
-            modified_at=game.modified_at,
-            opened_at=game.opened_at,
-            closed_at=game.closed_at,
-            title=game.title,
-            description=game.description,
-            status=game.status,
-            memo=game.memo,
-            question=game.question,
-            answer=game.answer,
-            question_link=game.question_link,
-            answer_link=game.answer_link,
-        )
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=str(e),
-        )
 
 
 @router.post("/{game_id}/close", response_model=GameResponseDTO)
