@@ -1,4 +1,5 @@
 from datetime import timedelta
+import pytz
 from fastapi import APIRouter, Depends, HTTPException, status
 from dependency_injector.wiring import inject, Provide
 
@@ -50,7 +51,7 @@ async def submit_answer(
         if answer.is_correct and game_service.get_game(body.game_id).closed_at is None:
             game = game_service.update_game_closing_time(
                 game_id=body.game_id,
-                closed_at=answer.solved_at + timedelta(hours=2),
+                closed_at=answer.solved_at.astimezone(pytz.timezone('Asia/Seoul')) + timedelta(hours=2),
             )
 
         return AnswerResponseDTO(

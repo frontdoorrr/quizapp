@@ -1,6 +1,6 @@
 from datetime import datetime
 from ulid import ULID
-
+import pytz
 from dependency_injector.wiring import inject
 
 from game.domain.game import Game, GameStatus
@@ -41,7 +41,7 @@ class GameService:
         Returns:
             Game: The created game object.
         """
-        now = datetime.now()
+        now = datetime.now(pytz.timezone('Asia/Seoul'))
         game = Game(
             id=self.ulid.generate(),
             number=number,
@@ -85,7 +85,7 @@ class GameService:
         if answer_link:
             game.answer_link = answer_link
 
-        game.modified_at = datetime.now()
+        game.modified_at = datetime.now(pytz.timezone('Asia/Seoul'))
 
         self.game_repo.update(game)
         return game
@@ -153,7 +153,7 @@ class GameService:
 
         # 게임 상태 업데이트
         game.status = GameStatus.CLOSED
-        game.closed_at = datetime.now() + timedelta(hours=2)
+        game.closed_at = datetime.now(pytz.timezone('Asia/Seoul')) + timedelta(hours=2)
         self.game_repo.update(game)
 
         # 점수 계산 작업을 큐에 추가

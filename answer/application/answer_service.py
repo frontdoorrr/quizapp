@@ -1,4 +1,5 @@
 from datetime import datetime
+import pytz
 from ulid import ULID
 
 from dependency_injector.wiring import inject
@@ -33,8 +34,8 @@ class AnswerService:
                 answer=answer_text,
                 is_correct=False,
                 solved_at=None,
-                created_at=datetime.now(),
-                updated_at=datetime.now(),
+                created_at=datetime.now(pytz.timezone('Asia/Seoul')),
+                updated_at=datetime.now(pytz.timezone('Asia/Seoul')),
                 point=0,
                 status=AnswerStatus.NOT_USED,
             )
@@ -45,7 +46,7 @@ class AnswerService:
         game_id: str,
     ):
         users = self.user_repo.find_all()  # TODO 활성화된 user 대상으로만 좁혀야 함
-        now = datetime.now()
+        now = datetime.now(pytz.timezone('Asia/Seoul'))
         for user in users:
             # TODO bulk하여 save할지 고민 필요
             self.answer_repo.save(
@@ -80,7 +81,7 @@ class AnswerService:
         # 포인트 계산 (임시로 정답이면 10점)
         # point = 10 if is_correct else 0
 
-        now = datetime.now()
+        now = datetime.now(pytz.timezone('Asia/Seoul'))
         # answer = Answer(
         #     id=self.ulid.generate(),
         #     game_id=game_id,
