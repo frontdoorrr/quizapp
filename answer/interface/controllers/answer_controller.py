@@ -98,7 +98,7 @@ async def get_answer(
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.get("/game/{game_id}", response_model=list[AnswerResponseDTO])
+@router.get("/game/{game_id}", response_model=AnswerResponseListDTO)
 @inject
 async def get_answers_by_game(
     game_id: str,
@@ -107,29 +107,28 @@ async def get_answers_by_game(
 ):
     try:
         answers = answer_service.get_answers_by_game(game_id)
-        # return [
-        #     AnswerResponseDTO(
-        #         id=answer.id,
-        #         game_id=answer.game_id,
-        #         user_id=answer.user_id,
-        #         answer=answer.answer,
-        #         is_correct=answer.is_correct,
-        #         solved_at=answer.solved_at,
-        #         created_at=answer.created_at,
-        #         updated_at=answer.updated_at,
-        #         point=answer.point,
-        #     )
-        #     for answer in answers
-        # ]
         return AnswerResponseListDTO(
-            answers=answers,
+            answers=[
+                AnswerResponseDTO(
+                    id=answer.id,
+                    game_id=answer.game_id,
+                    user_id=answer.user_id,
+                    answer=answer.answer,
+                    is_correct=answer.is_correct,
+                    solved_at=answer.solved_at,
+                    created_at=answer.created_at,
+                    updated_at=answer.updated_at,
+                    point=answer.point,
+                )
+                for answer in answers
+            ],
             total_count=len(answers),
         )
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.get("/user/{user_id}", response_model=list[AnswerResponseDTO])
+@router.get("/user/{user_id}", response_model=AnswerResponseListDTO)
 @inject
 async def get_answers_by_user(
     current_user: CurrentUser = Depends(get_current_user),
@@ -139,20 +138,23 @@ async def get_answers_by_user(
 
     try:
         answers = answer_service.get_answers_by_user(current_user.id)
-        return [
-            AnswerResponseDTO(
-                id=answer.id,
-                game_id=answer.game_id,
-                user_id=answer.user_id,
-                answer=answer.answer,
-                is_correct=answer.is_correct,
-                solved_at=answer.solved_at,
-                created_at=answer.created_at,
-                updated_at=answer.updated_at,
-                point=answer.point,
-            )
-            for answer in answers
-        ]
+        return AnswerResponseListDTO(
+            answers=[
+                AnswerResponseDTO(
+                    id=answer.id,
+                    game_id=answer.game_id,
+                    user_id=answer.user_id,
+                    answer=answer.answer,
+                    is_correct=answer.is_correct,
+                    solved_at=answer.solved_at,
+                    created_at=answer.created_at,
+                    updated_at=answer.updated_at,
+                    point=answer.point,
+                )
+                for answer in answers
+            ],
+            total_count=len(answers),
+        )
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
