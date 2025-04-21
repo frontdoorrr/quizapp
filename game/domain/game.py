@@ -5,7 +5,7 @@ from enum import Enum
 
 class GameStatus(str, Enum):
     DRAFT = "DRAFT"
-    PUBLISHED = "PUBLISHED"
+    OPEN = "OPEN"
     CLOSED = "CLOSED"
 
 
