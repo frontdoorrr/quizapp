@@ -51,7 +51,8 @@ async def submit_answer(
         if answer.is_correct and game_service.get_game(body.game_id).closed_at is None:
             game = game_service.update_game_closing_time(
                 game_id=body.game_id,
-                closed_at=answer.solved_at.astimezone(pytz.timezone('Asia/Seoul')) + timedelta(hours=2),
+                closed_at=answer.solved_at.astimezone(pytz.timezone("Asia/Seoul"))
+                + timedelta(hours=2),
             )
 
         return AnswerResponseDTO(
@@ -254,12 +255,13 @@ async def create_empty_answer(
 def create_answer_for_all_users_per_game(
     game_id: str,
     answer_service: AnswerService = Depends(Provide[Container.answer_service]),
+    count: int = 1,
 ):
     """
     Create Answers for every users.
     If you want make 2 chances, you need to use this api twice.
     """
-    res = answer_service.create_answer_for_all_users_per_game(game_id)
+    res = answer_service.create_answer_for_all_users_per_game(game_id, count)
 
     # TODO Response 수정해두기
     if res:
