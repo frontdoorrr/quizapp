@@ -26,6 +26,7 @@ class Role(StrEnum):
 class CurrentUser:
     id: str
     role: Role
+    email: str | None = None
 
 
 def decode_access_token(token: str):
@@ -59,7 +60,7 @@ def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
 
     user_id = payload.get("sub")
     role = payload.get("role")
-    if not user_id or not role or role != Role.USER.value:
+    if not user_id or not role or role not in [Role.USER.value, Role.ADMIN.value]:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
 
     return CurrentUser(id=user_id, role=Role(role))
