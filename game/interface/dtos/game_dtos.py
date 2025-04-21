@@ -30,6 +30,7 @@ class GameUpdateDTO(GameBase):
     answer: str = Field(max_length=64)
     question_link: str = Field(max_length=128)
     answer_link: str = Field(max_length=128)
+    status: str = Field(max_length=16)
 
 
 class GameResponseDTO(GameBase):

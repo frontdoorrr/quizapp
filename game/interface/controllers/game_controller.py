@@ -61,6 +61,7 @@ async def update_game(
         answer=body.answer,
         question_link=body.question_link,
         answer_link=body.answer_link,
+        status=body.status,
     )
 
 

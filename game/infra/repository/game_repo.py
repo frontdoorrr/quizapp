@@ -3,7 +3,7 @@ from fastapi import HTTPException, status
 from database import SessionLocal
 from game.domain.repository.game_repo import IGameRepository
 from game.domain.game import Game as GameVO
-from game.infra.db_models.game import Game
+from game.infra.db_models.game import Game, GameStatus
 
 
 class GameRepository(IGameRepository):
@@ -77,9 +77,7 @@ class GameRepository(IGameRepository):
 
     def update(self, game: GameVO) -> GameVO:
         with SessionLocal() as db:
-            db_game = (
-                db.query(Game).filter(Game.id == game.id).first()
-            )
+            db_game = db.query(Game).filter(Game.id == game.id).first()
             if not db_game:
                 raise HTTPException(
                     status_code=status.HTTP_404_NOT_FOUND,
@@ -125,7 +123,13 @@ class GameRepository(IGameRepository):
             GameVO | None: The game with the highest number, or None if no games exist
         """
         with SessionLocal() as db:
-            db_game = db.query(Game).order_by(Game.number.desc()).first()
+            # TODO
+            db_game = (
+                db.query(Game)
+                .filter(Game.status == GameStatus.OPEN)
+                .order_by(Game.number.desc())
+                .first()
+            )
             if not db_game:
                 return None
             return GameVO(
