@@ -57,7 +57,7 @@ class TestGameService:
             memo=None,
         )
         self.game_repo.find_by_id.return_value = mock_game
-        
+
         # When
         updated_game = game_service.update_game(
             id=game_id,
@@ -66,9 +66,9 @@ class TestGameService:
             question="Updated Question",
             answer="Updated Answer",
             question_link="https://example.com/updated",
-            answer_link="https://example.com/updated"
+            answer_link="https://example.com/updated",
         )
-        
+
         # Then
         assert updated_game.title == "Updated Title"
         assert updated_game.description == "Updated Description"
@@ -86,7 +86,7 @@ class TestGameService:
             number=1,
             title="Test Game",
             description="Test Description",
-            status=GameStatus.PUBLISHED,
+            status=GameStatus.OPEN,
             created_at=datetime.now(),
             modified_at=datetime.now(),
             opened_at=None,
@@ -116,7 +116,7 @@ class TestGameService:
         with pytest.raises(Exception, match=f"Game {game_id} not found"):
             game_service.get_game(game_id)
 
-    def test_get_PUBLISHED_games(self, game_service):
+    def test_get_OPEN_games(self, game_service):
         # Given
         mock_games = [
             Game(
@@ -124,7 +124,7 @@ class TestGameService:
                 number=1,
                 title="Game 1",
                 description="Description 1",
-                status=GameStatus.PUBLISHED,
+                status=GameStatus.OPEN,
                 created_at=datetime.now(),
                 modified_at=datetime.now(),
                 opened_at=datetime.now(),
@@ -140,7 +140,7 @@ class TestGameService:
                 number=2,
                 title="Game 2",
                 description="Description 2",
-                status=GameStatus.PUBLISHED,
+                status=GameStatus.OPEN,
                 created_at=datetime.now(),
                 modified_at=datetime.now(),
                 opened_at=datetime.now(),
@@ -155,12 +155,12 @@ class TestGameService:
         self.game_repo.find_by_status.return_value = mock_games
 
         # When
-        games = game_service.get_games(GameStatus.PUBLISHED)
+        games = game_service.get_games(GameStatus.OPEN)
 
         # Then
         assert len(games) == 2
-        assert all(game.status == GameStatus.PUBLISHED for game in games)
-        self.game_repo.find_by_status.assert_called_once_with(GameStatus.PUBLISHED)
+        assert all(game.status == GameStatus.OPEN for game in games)
+        self.game_repo.find_by_status.assert_called_once_with(GameStatus.OPEN)
 
     def test_get_all_games(self, game_service):
         # Given
@@ -170,7 +170,7 @@ class TestGameService:
                 number=1,
                 title="Game 1",
                 description="Description 1",
-                status=GameStatus.PUBLISHED,
+                status=GameStatus.OPEN,
                 created_at=datetime.now(),
                 modified_at=datetime.now(),
                 opened_at=datetime.now(),
@@ -214,7 +214,7 @@ class TestGameService:
             number=10,  # 가장 높은 번호
             title="Latest Game",
             description="Latest Description",
-            status=GameStatus.PUBLISHED,
+            status=GameStatus.OPEN,
             created_at=datetime.now(),
             modified_at=datetime.now(),
             opened_at=datetime.now(),
@@ -250,7 +250,7 @@ class TestGameService:
             id=game_id,
             number=1,
             title="Test Game",
-            status=GameStatus.PUBLISHED,
+            status=GameStatus.OPEN,
             created_at=datetime.now(),
             modified_at=datetime.now(),
             opened_at=datetime.now(),
@@ -314,7 +314,7 @@ class TestGameService:
             id=game_id,
             number=1,
             title="Test Game",
-            status=GameStatus.PUBLISHED,
+            status=GameStatus.OPEN,
             created_at=datetime.now(),
             modified_at=datetime.now(),
             opened_at=datetime.now(),
@@ -346,11 +346,9 @@ class TestGameService:
         with pytest.raises(ValueError, match=f"Game not found: {game_id}"):
             game_service.update_game_closing_time(game_id, closing_time)
 
-    @pytest.mark.parametrize("status", [
-        GameStatus.DRAFT,
-        GameStatus.PUBLISHED,
-        GameStatus.CLOSED
-    ])
+    @pytest.mark.parametrize(
+        "status", [GameStatus.DRAFT, GameStatus.OPEN, GameStatus.CLOSED]
+    )
     def test_get_games_by_status_parameterized(self, game_service, status):
         # Given
         mock_games = [
@@ -369,13 +367,14 @@ class TestGameService:
                 question_link=None,
                 answer_link=None,
                 memo=None,
-            ) for i in range(3)
+            )
+            for i in range(3)
         ]
         self.game_repo.find_by_status.return_value = mock_games
-        
+
         # When
         games = game_service.get_games(status)
-        
+
         # Then
         assert len(games) == 3
         assert all(game.status == status for game in games)
