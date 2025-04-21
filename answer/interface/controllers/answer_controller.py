@@ -13,6 +13,8 @@ from answer.interface.dtos.answer_dto import (
     AnswerUserResponseDTO,
 )
 from common.auth import get_current_user, CurrentUser, Role
+from user.application.user_service import UserService
+from user.interface.dtos.user_dto import UserResponseDTO
 
 
 router = APIRouter(prefix="/answer", tags=["answer"])
@@ -99,7 +101,7 @@ async def get_answer(
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.get("/game/{game_id}", response_model=AnswerResponseListDTO)
+@router.get("/game/{game_id}")
 @inject
 async def get_answers_by_game(
     game_id: str,
@@ -108,23 +110,37 @@ async def get_answers_by_game(
 ):
     try:
         answers = answer_service.get_answers_by_game(game_id)
-        return AnswerResponseListDTO(
-            answers=[
-                AnswerResponseDTO(
-                    id=answer.id,
-                    game_id=answer.game_id,
-                    user_id=answer.user_id,
-                    answer=answer.answer,
-                    is_correct=answer.is_correct,
-                    solved_at=answer.solved_at,
-                    created_at=answer.created_at,
-                    updated_at=answer.updated_at,
-                    point=answer.point,
+
+        # 사용자 정보 포함한 응답 생성
+        answer_dtos = []
+        for answer in answers:
+            # 사용자 정보 처리
+            user_dto = None
+            if hasattr(answer, "user") and answer.user is not None:
+                user_dto = UserResponseDTO(
+                    id=answer.user.get("id"),
+                    name=answer.user.get("name"),
+                    email=answer.user.get("email"),
+                    nickname=answer.user.get("nickname"),
+                    point=answer.user.get("point"),
                 )
-                for answer in answers
-            ],
-            total_count=len(answers),
-        )
+
+            # AnswerUserResponseDTO 생성
+            answer_dto = AnswerUserResponseDTO(
+                id=answer.id,
+                game_id=answer.game_id,
+                user_id=answer.user_id,
+                answer=answer.answer,
+                is_correct=answer.is_correct,
+                solved_at=answer.solved_at,
+                created_at=answer.created_at,
+                updated_at=answer.updated_at,
+                point=answer.point,
+                user=user_dto,
+            )
+            answer_dtos.append(answer_dto)
+
+        return {"answers": answer_dtos, "total_count": len(answer_dtos)}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -267,6 +283,41 @@ def create_answer_for_all_users_per_game(
     if res:
         return {200: "Success"}
     return {500: "Failed"}
+
+
+@router.put("/{answer_id}")
+@inject
+def update_answer(
+    answer_id: str,
+    body: AnswerRequestDTO,
+    current_user: CurrentUser = Depends(get_current_user),
+    answer_service: AnswerService = Depends(Provide[Container.answer_service]),
+) -> AnswerResponseDTO:
+    try:
+        # 기존 답변 조회
+        answer = answer_service.get_answer(answer_id)
+        
+        # 답변 업데이트
+        answer.answer = body.answer
+        
+        # 업데이트된 답변 저장
+        updated_answer = answer_service.update_answer(answer_id, answer)
+        
+        return AnswerResponseDTO(
+            id=updated_answer.id,
+            game_id=updated_answer.game_id,
+            user_id=updated_answer.user_id,
+            answer=updated_answer.answer,
+            is_correct=updated_answer.is_correct,
+            solved_at=updated_answer.solved_at,
+            created_at=updated_answer.created_at,
+            updated_at=updated_answer.updated_at,
+            point=updated_answer.point,
+        )
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @router.get("/{game_id}/ranking")

@@ -76,9 +76,51 @@ class AnswerRepository(IAnswerRepository):
             return self._to_domain(model)
 
     def find_by_game_id(self, game_id: str) -> list[AnswerDomain]:
-        with SessionLocal() as db:
-            models = db.query(AnswerModel).filter(AnswerModel.game_id == game_id).all()
-            return [self._to_domain(model) for model in models]
+        try:
+            with SessionLocal() as db:
+                from user.infra.db_models.user import User
+
+                models = (
+                    db.query(AnswerModel)
+                    .outerjoin(User, AnswerModel.user_id == User.id)
+                    .filter(AnswerModel.game_id == game_id)
+                    .all()
+                )
+
+                # 세션이 닫히기 전에 도메인 객체로 변환하고 필요한 user 정보 추출
+                result = []
+                for model in models:
+                    domain = AnswerDomain(
+                        id=model.id,
+                        game_id=model.game_id,
+                        user_id=model.user_id,
+                        answer=model.answer,
+                        is_correct=model.is_correct,
+                        solved_at=model.solved_at,
+                        created_at=model.created_at,
+                        updated_at=model.updated_at,
+                        point=model.point,
+                        status=model.status,
+                    )
+
+                    # User 정보를 세션이 열려있을 때 추출
+                    if hasattr(model, "user") and model.user is not None:
+                        user_info = {
+                            "id": model.user.id,
+                            "nickname": model.user.nickname,
+                            "name": model.user.name,
+                            "email": model.user.email,
+                            "role": model.user.role,
+                            "point": model.user.point,
+                        }
+                        domain.user = user_info
+
+                    result.append(domain)
+
+            return result
+
+        except Exception as e:
+            raise e
 
     def find_by_user_id(self, user_id: str) -> list[AnswerDomain]:
         with SessionLocal() as db:

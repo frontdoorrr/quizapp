@@ -114,6 +114,19 @@ class AnswerService:
 
         return self.answer_repo.update(answer)
 
+    def update_answer(self, id: str, answer: Answer) -> Answer:
+        # 기존 답변 확인
+        existing_answer = self.answer_repo.find_by_id(id)
+        if not existing_answer:
+            raise ValueError(f"Answer not found: {id}")
+            
+        # 답변 내용 업데이트
+        existing_answer.answer = answer.answer
+        existing_answer.updated_at = datetime.now(pytz.timezone("Asia/Seoul"))
+        
+        # 저장
+        return self.answer_repo.update(existing_answer)
+
     def get_answer(self, id: str) -> Answer:
         return self.answer_repo.find_by_id(id)
 
