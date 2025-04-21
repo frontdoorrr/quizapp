@@ -70,6 +70,7 @@ class GameService:
         answer: str | None = None,
         question_link: str | None = None,
         answer_link: str | None = None,
+        status: GameStatus | None = None,
     ):
         game = self.game_repo.find_by_id(id)
         if title:
@@ -84,6 +85,8 @@ class GameService:
             game.question_link = question_link
         if answer_link:
             game.answer_link = answer_link
+        if status:
+            game.status = status
 
         game.modified_at = datetime.now(pytz.timezone("Asia/Seoul"))
 
