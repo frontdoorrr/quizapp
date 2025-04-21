@@ -22,6 +22,11 @@ class AnswerRequestDTO(BaseModel):
     answer: str = Field(min_length=1)
 
 
+class AnswerUpdateDTO(BaseModel):
+    answer: str | None = None
+    point: int | None = None
+
+
 class AnswerResponseDTO(AnswerBase):
     pass
 

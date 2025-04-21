@@ -11,6 +11,7 @@ from answer.interface.dtos.answer_dto import (
     AnswerResponseDTO,
     AnswerResponseListDTO,
     AnswerUserResponseDTO,
+    AnswerUpdateDTO,
 )
 from common.auth import get_current_user, CurrentUser, Role
 from user.application.user_service import UserService
@@ -289,7 +290,7 @@ def create_answer_for_all_users_per_game(
 @inject
 def update_answer(
     answer_id: str,
-    body: AnswerRequestDTO,
+    body: AnswerUpdateDTO,
     current_user: CurrentUser = Depends(get_current_user),
     answer_service: AnswerService = Depends(Provide[Container.answer_service]),
 ) -> AnswerResponseDTO:
@@ -298,7 +299,12 @@ def update_answer(
         answer = answer_service.get_answer(answer_id)
         
         # 답변 업데이트
-        answer.answer = body.answer
+        if body.answer is not None:
+            answer.answer = body.answer
+            
+        # 점수 업데이트
+        if body.point is not None:
+            answer.point = body.point
         
         # 업데이트된 답변 저장
         updated_answer = answer_service.update_answer(answer_id, answer)

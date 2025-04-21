@@ -122,6 +122,7 @@ class AnswerService:
             
         # 답변 내용 업데이트
         existing_answer.answer = answer.answer
+        existing_answer.point = answer.point
         existing_answer.updated_at = datetime.now(pytz.timezone("Asia/Seoul"))
         
         # 저장
