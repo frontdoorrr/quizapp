@@ -22,7 +22,7 @@ from user.interface.dtos.user_dto import (
     PasswordResetDTO,
     PasswordResetVerifyDTO,
 )
-from common.auth import CurrentUser, get_current_user
+from common.auth import CurrentUser, get_admin_user, get_current_user
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -122,6 +122,16 @@ def get_my_info(
 ) -> UserResponseDTO:
 
     return user_service.get_user_by_id(current_user.id)
+
+
+@router.get("/{user_id}")
+@inject
+def get_user_by_id(
+    user_id: str,
+    user_service: UserService = Depends(Provide[Container.user_service]),
+    current_user: CurrentUser = Depends(get_admin_user),
+) -> UserResponseDTO:
+    return user_service.get_user_by_id(user_id)
 
 
 @router.post("/login")
