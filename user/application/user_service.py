@@ -119,6 +119,8 @@ class UserService:
         max_point: int | None = None,
         order_by: str | None = None,
         order: str | None = "asc",
+        offset: int | None = 0,
+        limit: int | None = 10000,
     ):
         return self.user_repo.get_users(
             nickname=nickname,
@@ -126,6 +128,8 @@ class UserService:
             max_point=max_point,
             order_by=order_by,
             order=order,
+            offset=offset,
+            limit=limit,
         )
 
     def get_user_by_id(self, user_id: str) -> User:
@@ -315,9 +319,9 @@ class UserService:
         settings = get_settings()
         # 프로토콜을 포함한 완전한 URL 형식으로 변경
         frontend_url = settings.FRONTEND_URL
-        if not frontend_url.startswith(('http://', 'https://')):
+        if not frontend_url.startswith(("http://", "https://")):
             frontend_url = f"http://{frontend_url}"
-        
+
         reset_link = f"{frontend_url}/reset-password?email={email}&token={token}"
 
         # HTML 형식의 이메일 내용 생성

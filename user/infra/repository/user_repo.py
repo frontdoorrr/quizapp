@@ -176,6 +176,8 @@ class UserRepository(IUserRepository):
         max_point: int | None = None,
         order_by: str | None = None,
         order: str | None = "asc",
+        limit: int | None = None,
+        offset: int | None = None,
     ) -> list[UserVO]:
         with SessionLocal() as db:
             query = db.query(User)
@@ -197,7 +199,7 @@ class UserRepository(IUserRepository):
                 else:
                     query = query.order_by(order_column)
 
-            users = query.all()
+            users = query.limit(limit).offset(offset).all()
             return [
                 UserVO(
                     id=user.id,

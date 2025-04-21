@@ -16,6 +16,8 @@ class UserRequestDTO(UserBase):
     max_point: int | None = None
     order_by: str | None = None  # 'point' or 'nickname'
     order: str | None = "asc"  # 'asc' or 'desc'
+    offset: int | None = 0
+    limit: int | None = 10000
 
 
 class UserCreateDTO(UserBase):
@@ -60,6 +62,7 @@ class UserResponseDTO(UserBase):
     name: str | None = None
     nickname: str | None = None
     email: EmailStr | None = None
+    point: int | None = None
 
 
 class UserResponseListDTO(BaseModel):

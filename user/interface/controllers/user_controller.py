@@ -92,6 +92,8 @@ async def get_users(
         max_point=request.max_point,
         order_by=request.order_by,
         order=request.order,
+        offset=request.offset,
+        limit=request.limit,
     )
     return UserResponseListDTO(
         users=[
