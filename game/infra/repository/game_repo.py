@@ -150,7 +150,10 @@ class GameRepository(IGameRepository):
             )
 
     def delete(self, game: GameVO):
-        raise NotImplementedError
+        with SessionLocal() as db:
+            db.query(Game).filter(Game.id == game.id).delete()
+            db.commit()
+        return game
 
     def find_by_number(self, number):
         raise NotImplementedError

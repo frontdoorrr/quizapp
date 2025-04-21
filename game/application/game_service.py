@@ -7,6 +7,7 @@ from game.domain.game import Game, GameStatus
 from game.domain.repository.game_repo import IGameRepository
 from common.redis.client import RedisClient
 from datetime import timedelta
+from database import SessionLocal
 
 
 class GameService:
@@ -134,7 +135,7 @@ class GameService:
         # """
         game = self.game_repo.find_latest()
         if not game:
-            raise Exception("No games found")
+            raise Exception("No current active game found")
         return game
 
     def update_game_closing_time(self, game_id: str, closed_at: datetime):
@@ -162,4 +163,19 @@ class GameService:
         # 점수 계산 작업을 큐에 추가
         self.redis_client.enqueue({"game_id": game_id})
 
+        return game
+
+    def delete_game(self, game_id: str) -> Game:
+        game = self.game_repo.find_by_id(game_id)
+        if not game:
+            raise ValueError(f"Game not found: {game_id}")
+        
+        # 게임과 관련된 답변 삭제
+        with SessionLocal() as db:
+            from answer.infra.db_models.answer import Answer
+            # 관련된 답변 먼저 삭제
+            db.query(Answer).filter(Answer.game_id == game_id).delete()
+            db.commit()
+            
+        self.game_repo.delete(game)
         return game

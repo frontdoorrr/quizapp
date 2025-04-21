@@ -7,6 +7,7 @@ from containers import Container
 from game.application.game_service import GameService
 from game.domain.game import GameStatus
 from game.interface.dtos.game_dtos import GameCreateDTO, GameResponseDTO, GameUpdateDTO
+from common.auth import CurrentUser, get_admin_user
 
 router = APIRouter(prefix="/game", tags=["game"])
 
@@ -16,6 +17,7 @@ router = APIRouter(prefix="/game", tags=["game"])
 async def create_game(
     body: GameCreateDTO,
     game_service: GameService = Depends(Provide[Container.game_service]),
+    current_user: CurrentUser = Depends(get_admin_user),
 ):
 
     game = game_service.create_game(
@@ -52,6 +54,7 @@ async def update_game(
     game_id: str,
     body: GameUpdateDTO,
     game_service: GameService = Depends(Provide[Container.game_service]),
+    current_user: CurrentUser = Depends(get_admin_user),
 ):
     return game_service.update_game(
         id=game_id,
@@ -174,6 +177,7 @@ async def get_games(
 async def close_game(
     game_id: str,
     game_service: GameService = Depends(Provide[Container.game_service]),
+    current_user: CurrentUser = Depends(get_admin_user),
 ) -> GameResponseDTO:
     """게임을 종료하고 점수 계산을 시작"""
     game = game_service.close_game(game_id)
@@ -191,4 +195,30 @@ async def close_game(
         answer=game.answer if game.status == GameStatus.CLOSED else None,
         question_link=game.question_link,
         answer_link=game.answer_link if game.status == GameStatus.CLOSED else None,
+    )
+
+
+@router.delete("/{game_id}")
+@inject
+def delete_game(
+    game_id: str,
+    game_service: GameService = Depends(Provide[Container.game_service]),
+    current_user: CurrentUser = Depends(get_admin_user),
+) -> GameResponseDTO:
+    game = game_service.delete_game(game_id)
+    return GameResponseDTO(
+        id=game.id,
+        number=game.number,
+        title=game.title,
+        description=game.description,
+        status=game.status,
+        created_at=game.created_at,
+        modified_at=game.modified_at,
+        opened_at=game.opened_at,
+        closed_at=game.closed_at,
+        question=game.question,
+        answer=game.answer,
+        question_link=game.question_link,
+        answer_link=game.answer_link,
+        memo=game.memo,
     )
