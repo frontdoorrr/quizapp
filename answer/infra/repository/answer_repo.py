@@ -101,6 +101,7 @@ class AnswerRepository(IAnswerRepository):
                         User.role == Role.USER,
                     )
                     .order_by(AnswerModel.solved_at)
+                    .limit(5)
                     .all()
                 )
 
