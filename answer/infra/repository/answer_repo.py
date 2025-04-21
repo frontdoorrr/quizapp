@@ -89,6 +89,7 @@ class AnswerRepository(IAnswerRepository):
         try:
             with SessionLocal() as db:
                 from user.infra.db_models.user import User
+                from common.auth import Role
 
                 models = (
                     db.query(AnswerModel)
