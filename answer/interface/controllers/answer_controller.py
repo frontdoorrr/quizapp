@@ -54,8 +54,8 @@ async def submit_answer(
         if answer.is_correct and game_service.get_game(body.game_id).closed_at is None:
             game = game_service.update_game_closing_time(
                 game_id=body.game_id,
-                closed_at=answer.solved_at.astimezone(pytz.timezone("Asia/Seoul"))
-                + timedelta(hours=2),
+                closed_at=answer.solved_at.astimezone(tz=pytz.timezone("Asia/Seoul"))
+                + timedelta(hours=11),
             )
 
         return AnswerResponseDTO(
@@ -297,18 +297,18 @@ def update_answer(
     try:
         # 기존 답변 조회
         answer = answer_service.get_answer(answer_id)
-        
+
         # 답변 업데이트
         if body.answer is not None:
             answer.answer = body.answer
-            
+
         # 점수 업데이트
         if body.point is not None:
             answer.point = body.point
-        
+
         # 업데이트된 답변 저장
         updated_answer = answer_service.update_answer(answer_id, answer)
-        
+
         return AnswerResponseDTO(
             id=updated_answer.id,
             game_id=updated_answer.game_id,
