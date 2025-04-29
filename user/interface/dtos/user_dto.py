@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field, validator, EmailStr
 import re
-from datetime import date
+from datetime import datetime, date
 
 from user.domain.user import Role
 from dataclasses import dataclass
@@ -63,6 +63,7 @@ class UserResponseDTO(UserBase):
     nickname: str | None = None
     email: EmailStr | None = None
     point: int | None = None
+    created_at: datetime | None = None
 
 
 class UserResponseListDTO(BaseModel):
