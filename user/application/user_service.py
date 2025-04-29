@@ -410,8 +410,6 @@ class UserService:
                         <a href="{reset_link}" class="button">비밀번호 재설정</a>
                     </div>
                     <p class="note">* 이 링크는 30분 동안 유효합니다. 만약 비밀번호 재설정을 요청하지 않으셨다면, 이 이메일을 무시하셔도 됩니다.</p>
-                    <p>버튼이 작동하지 않는 경우, 아래 링크를 브라우저에 복사하여 붙여넣으세요:</p>
-                    <p style="word-break: break-all; font-size: 13px; color: #666;">{reset_link}</p>
                 </div>
                 <div class="footer">
                     <p>&copy; {datetime.now().year} Genius Game. All rights reserved.</p>

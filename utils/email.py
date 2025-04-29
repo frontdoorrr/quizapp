@@ -16,7 +16,9 @@ class EmailSender:
         self.smtp_password = os.getenv("SMTP_PASSWORD", "kfzk hpsl dhmb ethd")
         self.sender_email = os.getenv("SENDER_EMAIL", "geniusgamekorea@gmail.com")
 
-    def send_email(self, to_email: str, subject: str, content: str, is_html: bool = False):
+    def send_email(
+        self, to_email: str, subject: str, content: str, is_html: bool = False
+    ):
         """Send general email
 
         Args:
@@ -130,8 +132,6 @@ class EmailSender:
                         {verification_token}
                     </div>
                     <p class="note">* 이 인증번호는 3분 동안만 유효합니다.</p>
-                    <p>인증번호 입력이 어려우신 경우, 아래 링크를 클릭하여 인증을 완료하실 수도 있습니다:</p>
-                    <p style="word-break: break-all; font-size: 13px; color: #666;"><a href="{verification_link}">{verification_link}</a></p>
                 </div>
                 <div class="footer">
                     <p>&copy; {datetime.datetime.now().year} Genius Game. All rights reserved.</p>
