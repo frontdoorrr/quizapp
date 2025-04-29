@@ -1,0 +1,502 @@
+[
+  {
+    "id": "01JSY7WN6NRJSQHNASQJXTDE0Q",
+    "game_id": "01JPJ2CRNWYDQ79C9VQGS414Q0",
+    "user_id": "01JPJ2CRSQF1ZK05YFVX05KWF3",
+    "answer": "Admin answer 1",
+    "is_correct": false,
+    "solved_at": null,
+    "created_at": "2025-04-28 13:02:56.213695",
+    "point": 24
+  },
+  {
+    "id": "01JSY7WN6VB041T6YEAVBK7MQT",
+    "game_id": "01JPJ8QMC4TK2GP13160F0C033",
+    "user_id": "01JNDYVHC9SQFE0R57V9FVB2RZ",
+    "answer": "오답_842e6354",
+    "is_correct": false,
+    "solved_at": null,
+    "created_at": "2025-04-28 13:02:56.219691",
+    "point": 0
+  },
+  {
+    "id": "01JSY7WN6YYQG94WFTPWR7R8V2",
+    "game_id": "01JPJ2CRNWYDQ79C9VQGS414Q0",
+    "user_id": "01JNGG6B1WVQVR4X5VDFKFXQF8",
+    "answer": "오답_b2e27c2f",
+    "is_correct": false,
+    "solved_at": null,
+    "created_at": "2025-04-28 13:02:56.222143",
+    "point": 0
+  },
+  {
+    "id": "01JSY7WN70Q95M9X1KW1QPFQAS",
+    "game_id": "01JPJ7GHQJ84V3KXEZGR0MYNT3",
+    "user_id": "01JPJ2CRSQF1ZK05YFVX05KWF3",
+    "answer": "오답_fde8b956",
+    "is_correct": false,
+    "solved_at": null,
+    "created_at": "2025-04-28 13:02:56.224342",
+    "point": 0
+  },
+  {
+    "id": "01JSY7WN72H4VV2T4HKWTFQPFY",
+    "game_id": "01JSCH4SC17J85J5QGVR24C9BD",
+    "user_id": "01JS5TCDTM53WBPYRQGP9YV79Z",
+    "answer": "오답_96e14d99",
+    "is_correct": false,
+    "solved_at": null,
+    "created_at": "2025-04-28 13:02:56.226332",
+    "point": 0
+  },
+  {
+    "id": "01JSY7WN74WH8K5CVQNYRPHQ5R",
+    "game_id": "01JPJ7GFENYJ7G4X7FBME22558",
+    "user_id": "01JS5WEZYH1AAJ13TKH6K7S135",
+    "answer": "test answer",
+    "is_correct": false,
+    "solved_at": null,
+    "created_at": "2025-04-28 13:02:56.228434",
+    "point": 66
+  },
+  {
+    "id": "01JSY7WN76RWNSFBG10W3KP7GQ",
+    "game_id": "01JPJ2CRNWYDQ79C9VQGS414Q0",
+    "user_id": "01JPJ7GK788XV7JDFT2PB3CF6F",
+    "answer": "Admin answer 1",
+    "is_correct": false,
+    "solved_at": null,
+    "created_at": "2025-04-28 13:02:56.230466",
+    "point": 86
+  },
+  {
+    "id": "01JSY7WN7869DB6SV4TF1Y31YR",
+    "game_id": "01JNJXRR3WD8KHGZF78C3PGRAK",
+    "user_id": "01JNDYVHC9SQFE0R57V9FVB2RZ",
+    "answer": "string",
+    "is_correct": false,
+    "solved_at": null,
+    "created_at": "2025-04-28 13:02:56.232469",
+    "point": 39
+  },
+  {
+    "id": "01JSY7WN7AGKNQ1XBG5VW3Q7ZP",
+    "game_id": "01JNJXS08YVV10NHH6NG4HFKAX",
+    "user_id": "01JNDYVG5WR3VPSKM09SRREM8Z",
+    "answer": "string",
+    "is_correct": false,
+    "solved_at": null,
+    "created_at": "2025-04-28 13:02:56.234392",
+    "point": 31
+  },
+  {
+    "id": "01JSY7WN7C11PQCJ69B11TW16K",
+    "game_id": "01JPJ7GHQ61MHRWWPP451D702A",
+    "user_id": "01JNGG6B1WVQVR4X5VDFKFXQF8",
+    "answer": "오답_596fbc54",
+    "is_correct": false,
+    "solved_at": null,
+    "created_at": "2025-04-28 13:02:56.236369",
+    "point": 0
+  },
+  {
+    "id": "01JSY7WN7EC57E7J7VVD6YKPDK",
+    "game_id": "01JPJ7GHTWRP30G6YWTXWS83JY",
+    "user_id": "01JNDYVHC9SQFE0R57V9FVB2RZ",
+    "answer": "오답_a777d37c",
+    "is_correct": false,
+    "solved_at": null,
+    "created_at": "2025-04-28 13:02:56.238353",
+    "point": 0
+  },
+  {
+    "id": "01JSY7WN7GJZK5KQ4Q3P6MTMRD",
+    "game_id": "01JPJ7GFENYJ7G4X7FBME22558",
+    "user_id": "01JNGG6B1WVQVR4X5VDFKFXQF8",
+    "answer": "test answer",
+    "is_correct": false,
+    "solved_at": null,
+    "created_at": "2025-04-28 13:02:56.240230",
+    "point": 31
+  },
+  {
+    "id": "01JSY7WN7J2YR28J2RHETVZFBH",
+    "game_id": "01JPJ2CRNY04P6AEXS77C6HNRQ",
+    "user_id": "01JPJ7GK788XV7JDFT2PB3CF6F",
+    "answer": "Admin answer 2",
+    "is_correct": false,
+    "solved_at": null,
+    "created_at": "2025-04-28 13:02:56.242266",
+    "point": 52
+  },
+  {
+    "id": "01JSY7WN7M2WSV3X30RXYXZMY3",
+    "game_id": "01JPJ7GHTWRP30G6YWTXWS83JY",
+    "user_id": "01JS5TCDTM53WBPYRQGP9YV79Z",
+    "answer": "No",
+    "is_correct": false,
+    "solved_at": null,
+    "created_at": "2025-04-28 13:02:56.244245",
+    "point": 4
+  },
+  {
+    "id": "01JSY7WN7P2QXQ2JCGVH79P613",
+    "game_id": "01JPJ7GFENYJ7G4X7FBME22558",
+    "user_id": "01JS5TCDTM53WBPYRQGP9YV79Z",
+    "answer": "test answer",
+    "is_correct": false,
+    "solved_at": null,
+    "created_at": "2025-04-28 13:02:56.246123",
+    "point": 8
+  },
+  {
+    "id": "01JSY7WN7Q661CQSNNB2A76AP1",
+    "game_id": "01JPJ8TGGK7KSV0YR1F9X9ZR86",
+    "user_id": "01JNDYVHC9SQFE0R57V9FVB2RZ",
+    "answer": "오답_cc2bbeb0",
+    "is_correct": false,
+    "solved_at": null,
+    "created_at": "2025-04-28 13:02:56.247993",
+    "point": 0
+  },
+  {
+    "id": "01JSY7WN7S09QTHGBNPT98CCBF",
+    "game_id": "01JSCH4SC17J85J5QGVR24C9BD",
+    "user_id": "01JPJ7GK788XV7JDFT2PB3CF6F",
+    "answer": "오답_bca45163",
+    "is_correct": false,
+    "solved_at": null,
+    "created_at": "2025-04-28 13:02:56.249841",
+    "point": 0
+  },
+  {
+    "id": "01JSY7WN7W0W2FTG11FNTYJAVN",
+    "game_id": "01JNJXRR3WD8KHGZF78C3PGRAK",
+    "user_id": "01JNDYVH6R4KVJESWJKEMCB09V",
+    "answer": "string",
+    "is_correct": false,
+    "solved_at": null,
+    "created_at": "2025-04-28 13:02:56.252017",
+    "point": 59
+  },
+  {
+    "id": "01JSY7WN7X8SCZ72HVE16C0QFK",
+    "game_id": "01JPJ8QMC4TK2GP13160F0C033",
+    "user_id": "01JS9RK56XYSN3556TR8NSS98R",
+    "answer": "오답_e0fe69f9",
+    "is_correct": false,
+    "solved_at": null,
+    "created_at": "2025-04-28 13:02:56.253998",
+    "point": 0
+  },
+  {
+    "id": "01JSY7WN80Z2YVPHB6ZM72B3Z9",
+    "game_id": "01JSCH4SC17J85J5QGVR24C9BD",
+    "user_id": "01JS5TCDTM53WBPYRQGP9YV79Z",
+    "answer": "오답_b5f166ff",
+    "is_correct": false,
+    "solved_at": null,
+    "created_at": "2025-04-28 13:02:56.256137",
+    "point": 0
+  },
+  {
+    "id": "01JSY7WN82V4GMBFQZ97RRJYAS",
+    "game_id": "01JPJ2CRNY04P6AEXS77C6HNRQ",
+    "user_id": "01JPJ2CRSQF1ZK05YFVX05KWF3",
+    "answer": "Admin answer 2",
+    "is_correct": false,
+    "solved_at": null,
+    "created_at": "2025-04-28 13:02:56.258089",
+    "point": 28
+  },
+  {
+    "id": "01JSY7WN830DJMP5BX42VBCFS2",
+    "game_id": "01JPJ7GHQ8869TWMC3RE7THG3F",
+    "user_id": "01JPJ7GK788XV7JDFT2PB3CF6F",
+    "answer": "오답_85aceeb9",
+    "is_correct": false,
+    "solved_at": null,
+    "created_at": "2025-04-28 13:02:56.259981",
+    "point": 0
+  },
+  {
+    "id": "01JSY7WN851V8CREFFC3BE6JCD",
+    "game_id": "01JPJ8TGGK7KSV0YR1F9X9ZR86",
+    "user_id": "01JS9RK56XYSN3556TR8NSS98R",
+    "answer": "correct answer",
+    "is_correct": false,
+    "solved_at": null,
+    "created_at": "2025-04-28 13:02:56.261865",
+    "point": 54
+  },
+  {
+    "id": "01JSY7WN8817T0Q14KQ64WM31D",
+    "game_id": "01JPJ7GFENYJ7G4X7FBME22558",
+    "user_id": "01JS9RK56XYSN3556TR8NSS98R",
+    "answer": "오답_a17683e1",
+    "is_correct": false,
+    "solved_at": null,
+    "created_at": "2025-04-28 13:02:56.264349",
+    "point": 0
+  },
+  {
+    "id": "01JSY7WN8ASVZYTK3V6F83Z94S",
+    "game_id": "01JPJ7GHQ61MHRWWPP451D702A",
+    "user_id": "01JPJ7GK788XV7JDFT2PB3CF6F",
+    "answer": "오답_8c94f965",
+    "is_correct": false,
+    "solved_at": null,
+    "created_at": "2025-04-28 13:02:56.266924",
+    "point": 0
+  },
+  {
+    "id": "01JSY7WN8DXSCA5Q85WR3X9Z0W",
+    "game_id": "01JPJ8V8236NMJN3XW6ZM2PGJ2",
+    "user_id": "01JS9RK56XYSN3556TR8NSS98R",
+    "answer": "오답_123f0e4d",
+    "is_correct": false,
+    "solved_at": null,
+    "created_at": "2025-04-28 13:02:56.269239",
+    "point": 0
+  },
+  {
+    "id": "01JSY7WN8FAWQW2030GV9JQR6V",
+    "game_id": "01JPJ7GFENYJ7G4X7FBME22558",
+    "user_id": "01JPJ2CRSQF1ZK05YFVX05KWF3",
+    "answer": "오답_039344ab",
+    "is_correct": false,
+    "solved_at": null,
+    "created_at": "2025-04-28 13:02:56.271326",
+    "point": 0
+  },
+  {
+    "id": "01JSY7WN8HJCW2B01N7FMP3E13",
+    "game_id": "01JPJ2CRNWYDQ79C9VQGS414Q0",
+    "user_id": "01JNGG6B1WVQVR4X5VDFKFXQF8",
+    "answer": "오답_c30cf052",
+    "is_correct": false,
+    "solved_at": null,
+    "created_at": "2025-04-28 13:02:56.273325",
+    "point": 0
+  },
+  {
+    "id": "01JSY7WN8MYWE1WBBY0QBBFWTX",
+    "game_id": "01JSCH4SC17J85J5QGVR24C9BD",
+    "user_id": "01JS5TCDTM53WBPYRQGP9YV79Z",
+    "answer": "test",
+    "is_correct": false,
+    "solved_at": null,
+    "created_at": "2025-04-28 13:02:56.276095",
+    "point": 22
+  },
+  {
+    "id": "01JSY7WN8PXTJ6YW38E8J5QXBW",
+    "game_id": "01JPJ7GFENYJ7G4X7FBME22558",
+    "user_id": "01JNDYVG5WR3VPSKM09SRREM8Z",
+    "answer": "test answer",
+    "is_correct": false,
+    "solved_at": null,
+    "created_at": "2025-04-28 13:02:56.278260",
+    "point": 48
+  },
+  {
+    "id": "01JSY7WN8RBC9TDBMJB080CFJX",
+    "game_id": "01JNJXRR3WD8KHGZF78C3PGRAK",
+    "user_id": "01JS9RK56XYSN3556TR8NSS98R",
+    "answer": "오답_976fa21e",
+    "is_correct": false,
+    "solved_at": null,
+    "created_at": "2025-04-28 13:02:56.280225",
+    "point": 0
+  },
+  {
+    "id": "01JSY7WN8T3E44CGBDY4M2CW23",
+    "game_id": "01JPJ7GFENYJ7G4X7FBME22558",
+    "user_id": "01JPJ7GK788XV7JDFT2PB3CF6F",
+    "answer": "오답_a1fcf7dd",
+    "is_correct": false,
+    "solved_at": null,
+    "created_at": "2025-04-28 13:02:56.282200",
+    "point": 0
+  },
+  {
+    "id": "01JSY7WN8V7AFDFEDDRJ382J4P",
+    "game_id": "01JPJ7GHTWRP30G6YWTXWS83JY",
+    "user_id": "01JPJ2CRSQF1ZK05YFVX05KWF3",
+    "answer": "No",
+    "is_correct": false,
+    "solved_at": null,
+    "created_at": "2025-04-28 13:02:56.283996",
+    "point": 66
+  },
+  {
+    "id": "01JSY7WN8XX0QZ8NC39F3RFJ5M",
+    "game_id": "01JPJ2CRNS2DS29EXFAK3AMY09",
+    "user_id": "01JS9RK56XYSN3556TR8NSS98R",
+    "answer": "오답_4611a014",
+    "is_correct": false,
+    "solved_at": null,
+    "created_at": "2025-04-28 13:02:56.285803",
+    "point": 0
+  },
+  {
+    "id": "01JSY7WN90GYNHCYVFFH7408RS",
+    "game_id": "01JNJXS08YVV10NHH6NG4HFKAX",
+    "user_id": "01JNDYVH6R4KVJESWJKEMCB09V",
+    "answer": "string",
+    "is_correct": false,
+    "solved_at": null,
+    "created_at": "2025-04-28 13:02:56.288079",
+    "point": 78
+  },
+  {
+    "id": "01JSY7WN920QPETAN3ADNRX40E",
+    "game_id": "01JPJ2CRNS2DS29EXFAK3AMY09",
+    "user_id": "01JNDYVHC9SQFE0R57V9FVB2RZ",
+    "answer": "오답_b3a6ae09",
+    "is_correct": false,
+    "solved_at": null,
+    "created_at": "2025-04-28 13:02:56.290490",
+    "point": 0
+  },
+  {
+    "id": "01JSY7WN9483AP7WFJP09SZVP2",
+    "game_id": "01JPJ2CRN5ZGZBXSQHD1TVNNAR",
+    "user_id": "01JPJ2CRSQF1ZK05YFVX05KWF3",
+    "answer": "오답_88720671",
+    "is_correct": false,
+    "solved_at": null,
+    "created_at": "2025-04-28 13:02:56.292455",
+    "point": 0
+  },
+  {
+    "id": "01JSY7WN96E7XZX4A5HDFD88SD",
+    "game_id": "01JPJ2CRNY04P6AEXS77C6HNRQ",
+    "user_id": "01JS9RK56XYSN3556TR8NSS98R",
+    "answer": "오답_81683601",
+    "is_correct": false,
+    "solved_at": null,
+    "created_at": "2025-04-28 13:02:56.294378",
+    "point": 0
+  },
+  {
+    "id": "01JSY7WN98JMYWDGRJKK6VWFPJ",
+    "game_id": "01JSCH4SC17J85J5QGVR24C9BD",
+    "user_id": "01JPJ7GK788XV7JDFT2PB3CF6F",
+    "answer": "test",
+    "is_correct": false,
+    "solved_at": null,
+    "created_at": "2025-04-28 13:02:56.296587",
+    "point": 96
+  },
+  {
+    "id": "01JSY7WN9ASEZ5ZYH3KW68FWFS",
+    "game_id": "01JPJ8QMC4TK2GP13160F0C033",
+    "user_id": "01JS9RK56XYSN3556TR8NSS98R",
+    "answer": "correct answer",
+    "is_correct": false,
+    "solved_at": null,
+    "created_at": "2025-04-28 13:02:56.298797",
+    "point": 54
+  },
+  {
+    "id": "01JSY7WN9CHKKT1C1NNVRF36VF",
+    "game_id": "01JPJ7GHPSKBE8VKQGTDE61GDN",
+    "user_id": "01JPJ2CRSQF1ZK05YFVX05KWF3",
+    "answer": "Test Answer 2",
+    "is_correct": false,
+    "solved_at": null,
+    "created_at": "2025-04-28 13:02:56.300947",
+    "point": 81
+  },
+  {
+    "id": "01JSY7WN9FQ73TWF73CPS78791",
+    "game_id": "01JSCH4SC17J85J5QGVR24C9BD",
+    "user_id": "01JNDYVFSYZJMCB3EPP2PNXGGP",
+    "answer": "오답_58a791a4",
+    "is_correct": false,
+    "solved_at": null,
+    "created_at": "2025-04-28 13:02:56.303701",
+    "point": 0
+  },
+  {
+    "id": "01JSY7WN9HT0Z4768B7R3V2F39",
+    "game_id": "01JPJ7GHQJ84V3KXEZGR0MYNT3",
+    "user_id": "01JS5WEZYH1AAJ13TKH6K7S135",
+    "answer": "오답_79800f19",
+    "is_correct": false,
+    "solved_at": null,
+    "created_at": "2025-04-28 13:02:56.305758",
+    "point": 0
+  },
+  {
+    "id": "01JSY7WN9K0E8DJME5PX5A2XE6",
+    "game_id": "01JPJ7GFENYJ7G4X7FBME22558",
+    "user_id": "01JNDYVG5WR3VPSKM09SRREM8Z",
+    "answer": "오답_dc08fb35",
+    "is_correct": false,
+    "solved_at": null,
+    "created_at": "2025-04-28 13:02:56.307766",
+    "point": 0
+  },
+  {
+    "id": "01JSY7WN9NK5E1WRZYTTGSHDJG",
+    "game_id": "01JSCH4SC17J85J5QGVR24C9BD",
+    "user_id": "01JNDYVH6R4KVJESWJKEMCB09V",
+    "answer": "test",
+    "is_correct": false,
+    "solved_at": null,
+    "created_at": "2025-04-28 13:02:56.309951",
+    "point": 6
+  },
+  {
+    "id": "01JSY7WN9Q9S3EP7D9CDC7W6YF",
+    "game_id": "01JNJXRR3WD8KHGZF78C3PGRAK",
+    "user_id": "01JS5TCDTM53WBPYRQGP9YV79Z",
+    "answer": "string",
+    "is_correct": false,
+    "solved_at": null,
+    "created_at": "2025-04-28 13:02:56.311932",
+    "point": 75
+  },
+  {
+    "id": "01JSY7WN9TKZ8QSM2X55YA6RSP",
+    "game_id": "01JNJXRR3WD8KHGZF78C3PGRAK",
+    "user_id": "01JNDYVHC9SQFE0R57V9FVB2RZ",
+    "answer": "오답_77375d7d",
+    "is_correct": false,
+    "solved_at": null,
+    "created_at": "2025-04-28 13:02:56.314126",
+    "point": 0
+  },
+  {
+    "id": "01JSY7WN9WJZ49DQ445E2MGPGX",
+    "game_id": "01JPJ2CRNS2DS29EXFAK3AMY09",
+    "user_id": "01JNDYVG5WR3VPSKM09SRREM8Z",
+    "answer": "오답_c58c10ce",
+    "is_correct": false,
+    "solved_at": null,
+    "created_at": "2025-04-28 13:02:56.316511",
+    "point": 0
+  },
+  {
+    "id": "01JSY7WN9Y7CA4KGWRFD3Q2GSS",
+    "game_id": "01JPJ2CRNY04P6AEXS77C6HNRQ",
+    "user_id": "01JS5TCDTM53WBPYRQGP9YV79Z",
+    "answer": "오답_0695efde",
+    "is_correct": false,
+    "solved_at": null,
+    "created_at": "2025-04-28 13:02:56.318392",
+    "point": 0
+  },
+  {
+    "id": "01JSY7WNA00K47J8EV8M1QQ6MD",
+    "game_id": "01JPJ7GHTWRP30G6YWTXWS83JY",
+    "user_id": "01JNDYVG5WR3VPSKM09SRREM8Z",
+    "answer": "오답_8fa0e1c0",
+    "is_correct": false,
+    "solved_at": null,
+    "created_at": "2025-04-28 13:02:56.320446",
+    "point": 0
+  }
+]
