@@ -221,6 +221,7 @@ class AnswerRepository(IAnswerRepository):
                     AnswerModel.game_id == game_id,
                     AnswerModel.user_id == user_id,
                     AnswerModel.is_correct == False,
+                    AnswerModel.status == AnswerStatus.NOT_USED,
                 )
                 .first()
             )
