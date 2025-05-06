@@ -55,7 +55,7 @@ async def submit_answer(
             game = game_service.update_game_closing_time(
                 game_id=body.game_id,
                 closed_at=answer.solved_at.astimezone(tz=pytz.timezone("Asia/Seoul"))
-                + timedelta(hours=11),
+                + timedelta(hours=12),
             )
 
         return AnswerResponseDTO(
