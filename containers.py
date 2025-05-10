@@ -13,6 +13,7 @@ from inquiry.application.inquiry_service import InquiryService
 from inquiry.infra.repository.inquiry_repo import InquiryRepository
 from common.redis.client import RedisClient
 from common.redis.config import RedisSettings
+from user.application.active_user_service import ActiveUserService
 
 
 class Container(containers.DeclarativeContainer):
@@ -69,4 +70,10 @@ class Container(containers.DeclarativeContainer):
     inquiry_service = providers.Singleton(
         InquiryService,
         inquiry_repo=inquiry_repo,
+    )
+    
+    # Active Users
+    active_user_service = providers.Singleton(
+        ActiveUserService,
+        redis_client=redis_client
     )
