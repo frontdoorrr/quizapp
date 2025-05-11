@@ -42,9 +42,9 @@ async def create_game(
         status=game.status,
         memo=game.memo,
         question=game.question,
-        answer=game.answer,
+        # answer=game.answer,
         question_link=game.question_link,
-        answer_link=game.answer_link,
+        # answer_link=game.answer_link,
     )
 
 
@@ -88,9 +88,9 @@ def get_current_game(
             status=game.status,
             memo=game.memo,
             question=game.question,
-            answer=game.answer,
+            # answer=game.answer,
             question_link=game.question_link,
-            answer_link=game.answer_link,
+            # answer_link=game.answer_link,
         )
     except Exception as e:
         raise HTTPException(
@@ -127,9 +127,9 @@ async def get_game(
         status=game.status,
         memo=game.memo,
         question=game.question,
-        answer=game.answer,
+        # answer=game.answer,
         question_link=game.question_link,
-        answer_link=game.answer_link,
+        # answer_link=game.answer_link,
     )
 
 
@@ -164,9 +164,9 @@ async def get_games(
             status=game.status,
             memo=game.memo,
             question=game.question,
-            answer=game.answer,
+            # answer=game.answer,
             question_link=game.question_link,
-            answer_link=game.answer_link,
+            # answer_link=game.answer_link,
         )
         for game in games
     ]
@@ -192,9 +192,9 @@ async def close_game(
         opened_at=game.opened_at,
         closed_at=game.closed_at,
         question=game.question,
-        answer=game.answer if game.status == GameStatus.CLOSED else None,
+        # answer=game.answer if game.status == GameStatus.CLOSED else None,
         question_link=game.question_link,
-        answer_link=game.answer_link if game.status == GameStatus.CLOSED else None,
+        # answer_link=game.answer_link if game.status == GameStatus.CLOSED else None,
     )
 
 
@@ -217,8 +217,8 @@ def delete_game(
         opened_at=game.opened_at,
         closed_at=game.closed_at,
         question=game.question,
-        answer=game.answer,
+        # answer=game.answer,
         question_link=game.question_link,
-        answer_link=game.answer_link,
+        # answer_link=game.answer_link,
         memo=game.memo,
     )

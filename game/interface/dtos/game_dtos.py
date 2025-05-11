@@ -45,6 +45,6 @@ class GameResponseDTO(GameBase):
     status: str
     memo: str | None
     question: str
-    answer: str | None
+    # answer: str | None
     question_link: str | None
-    answer_link: str | None
+    # answer_link: str | None
