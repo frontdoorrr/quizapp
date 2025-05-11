@@ -6,7 +6,7 @@ from containers import Container
 
 from game.application.game_service import GameService
 from game.domain.game import GameStatus
-from game.interface.dtos.game_dtos import GameCreateDTO, GameResponseDTO, GameUpdateDTO
+from game.interface.dtos.game_dtos import GameCreateDTO, GameResponseDTO, GameUpdateDTO, CurrentGameResponseDTO
 from common.auth import CurrentUser, get_admin_user
 
 router = APIRouter(prefix="/game", tags=["game"])
@@ -68,7 +68,7 @@ async def update_game(
     )
 
 
-@router.get("/current/", response_model=GameResponseDTO)
+@router.get("/current/", response_model=CurrentGameResponseDTO)
 @inject
 def get_current_game(
     game_service: GameService = Depends(Provide[Container.game_service]),
@@ -76,7 +76,7 @@ def get_current_game(
 
     try:
         game = game_service.get_current_game()
-        return GameResponseDTO(
+        return CurrentGameResponseDTO(
             id=game.id,
             number=game.number,
             created_at=game.created_at,
@@ -103,6 +103,7 @@ def get_current_game(
 @inject
 async def get_game(
     game_id: str,
+    current_user: CurrentUser = Depends(get_admin_user),
     game_service: GameService = Depends(Provide[Container.game_service]),
 ):
     """Get a game by id
@@ -127,9 +128,9 @@ async def get_game(
         status=game.status,
         memo=game.memo,
         question=game.question,
-        # answer=game.answer,
+        answer=game.answer,
         question_link=game.question_link,
-        # answer_link=game.answer_link,
+        answer_link=game.answer_link,
     )
 
 
