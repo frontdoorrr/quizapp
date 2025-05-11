@@ -21,6 +21,8 @@ from user.interface.dtos.user_dto import (
     PasswordResetRequestDTO,
     PasswordResetDTO,
     PasswordResetVerifyDTO,
+    UserRankResponseDTO,
+    UserRankResponseListDTO,
 )
 from common.auth import CurrentUser, get_admin_user, get_current_user
 
@@ -83,7 +85,7 @@ def update_user(
 @inject
 async def get_users(
     request: UserRequestDTO = Depends(),
-    current_user: CurrentUser = Depends(get_current_user),
+    current_user: CurrentUser = Depends(get_admin_user), # 어드민만 조회가능하도록 수정
     user_service: UserService = Depends(Provide[Container.user_service]),
 ) -> UserResponseListDTO:
     users = user_service.get_users(
@@ -114,6 +116,36 @@ async def get_users(
             for user in users
         ]
     )
+
+@router.get("/ranked", response_model=UserRankResponseListDTO)
+@inject
+async def get_ranked_users(
+    request: UserRequestDTO = Depends(),
+    current_user: CurrentUser = Depends(get_current_user),
+    user_service: UserService = Depends(Provide[Container.user_service]),
+) -> UserRankResponseListDTO:
+    try:
+        users = user_service.get_users(
+            nickname=request.nickname,
+            min_point=request.min_point,
+            max_point=request.max_point,
+            order_by=request.order_by,
+            order=request.order,
+            offset=request.offset,
+            limit=request.limit,
+        )
+        return UserRankResponseListDTO(
+            users=[
+                UserRankResponseDTO(
+                    nickname=user.nickname,
+                    point=user.point,
+                )
+                for user in users
+            ]
+        )
+    except Exception as e:
+        logger.error(f"Error getting ranked users: {str(e)}", exc_info=True)
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
 
 
 @router.get("/me")

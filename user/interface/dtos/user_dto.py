@@ -69,6 +69,14 @@ class UserResponseDTO(UserBase):
 class UserResponseListDTO(BaseModel):
     users: list[UserResponseDTO]
 
+class UserRankResponseDTO(UserBase):
+    nickname: str
+    point: int
+
+
+class UserRankResponseListDTO(BaseModel):
+    users: list[UserRankResponseDTO]
+
 
 class UserUpdateDTO(UserBase):
     name: str | None = Field(min_length=2, max_length=32, default=None)
