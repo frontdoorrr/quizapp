@@ -194,9 +194,9 @@ async def close_game(
         opened_at=game.opened_at,
         closed_at=game.closed_at,
         question=game.question,
-        # answer=game.answer if game.status == GameStatus.CLOSED else None,
+        answer=game.answer,
         question_link=game.question_link,
-        # answer_link=game.answer_link if game.status == GameStatus.CLOSED else None,
+        answer_link=game.answer_link,
     )
 
 
