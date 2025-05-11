@@ -138,6 +138,7 @@ async def get_game(
 @inject
 async def get_games(
     status: str | None = None,
+    current_user: CurrentUser = Depends(get_admin_user),
     game_service: GameService = Depends(Provide[Container.game_service]),
 ):
     """Get all games with optional status filter
@@ -165,9 +166,9 @@ async def get_games(
             status=game.status,
             memo=game.memo,
             question=game.question,
-            # answer=game.answer,
+            answer=game.answer,
             question_link=game.question_link,
-            # answer_link=game.answer_link,
+            answer_link=game.answer_link,
         )
         for game in games
     ]
