@@ -127,7 +127,7 @@ class AnswerRepository(IAnswerRepository):
             models = db.query(AnswerModel).filter(AnswerModel.user_id == user_id).all()
             return [self._to_domain(model) for model in models]
 
-    def find_corrected_by_game_id(self, game_id: str) -> list[AnswerDomain]:
+    def find_corrected_by_game_id(self, game_id: str, limit: int = 10) -> list[AnswerDomain]:
         try:
             with SessionLocal() as db:
                 from user.infra.db_models.user import User
@@ -144,7 +144,7 @@ class AnswerRepository(IAnswerRepository):
                         User.role == Role.USER,
                     )
                     .order_by(AnswerModel.solved_at)
-                    .limit(10)
+                    .limit(limit)
                     .all()
                 )
 
