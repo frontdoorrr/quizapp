@@ -14,7 +14,7 @@ class AnswerBase(BaseModel):
     solved_at: datetime | None
     created_at: datetime
     updated_at: datetime
-    point: int
+    # point: int
 
 
 class AnswerRequestDTO(BaseModel):
