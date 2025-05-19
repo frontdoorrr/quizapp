@@ -147,8 +147,8 @@ class AnswerService:
     ) -> Answer:
         return self.answer_repo.find_corrected_by_game_id_and_user_id(game_id, user_id)
 
-    def get_corrected_answers_by_game(self, game_id: str) -> list[Answer]:
-        return self.answer_repo.find_corrected_by_game_id(game_id)
+    def get_corrected_answers_by_game(self, game_id: str, limit: int = 10) -> list[Answer]:
+        return self.answer_repo.find_corrected_by_game_id(game_id, limit=limit)
 
     def delete_answer_by_game_and_user(self, game_id: str, user_id: str) -> None:
         """Delete answer by game_id and user_id
@@ -169,15 +169,31 @@ class AnswerService:
             )
         self.answer_repo.delete_by_id(answer.id)
 
-    # def create_empty_answer(self, game_id: str, user_id: str) -> Answer:
-    #     # Check if game exists
-    #     game = self.game_repo.find_by_id(game_id)
-    #     if not game:
-    #         raise ValueError("Game not found")
+    def calculate_points(self, game_id: str, multiplier: int = 50):
+        corrected_answers = self.get_corrected_answers_by_game(game_id)
 
-    #     # Check if user exists
-    #     user = self.user_repo.find_by_id(user_id)
-    #     if not user:
-    #         raise ValueError("User not found")
+        # 점수 계산 로직
+        
+        length = len(corrected_answers)
 
-    #     return self.answer_repo.create_answer(game_id, user_id)
+
+        for idx, answer in enumerate(corrected_answers):
+            rank = idx + 1
+
+            if answer.is_correct:
+                answer.point = round(multiplier * ((1 - (2 / length)) ** rank))
+            self.answer_repo.update(answer)
+    
+    def update_total_user_point(self, game_id: str):
+        corrected_answers = self.get_corrected_answers_by_game(game_id, limit=100)
+        for corrected_answer in corrected_answers:
+            user_id = corrected_answer.user_id
+            answers = self.get_answers_by_user(user_id)
+            total_point = sum(answer.point for answer in answers)
+            user = self.user_repo.find_by_id(user_id)
+            user.point = total_point
+            self.user_repo.update(user)
+            
+        
+        
+        

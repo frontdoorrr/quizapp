@@ -13,7 +13,7 @@ from answer.interface.dtos.answer_dto import (
     AnswerUserResponseDTO,
     AnswerUpdateDTO,
 )
-from common.auth import get_current_user, CurrentUser, Role
+from common.auth import get_current_user, get_admin_user, CurrentUser, Role
 from user.application.user_service import UserService
 from user.interface.dtos.user_dto import UserResponseDTO
 
@@ -55,7 +55,7 @@ async def submit_answer(
             game = game_service.update_game_closing_time(
                 game_id=body.game_id,
                 closed_at=answer.solved_at.astimezone(tz=pytz.timezone("Asia/Seoul"))
-                + timedelta(hours=12),
+                + timedelta(hours=11),
             )
 
         return AnswerResponseDTO(
@@ -332,7 +332,10 @@ def get_game_ranking(
     game_id: str,
     answer_service: AnswerService = Depends(Provide[Container.answer_service]),
 ) -> list[AnswerUserResponseDTO]:
-    domain_answers = answer_service.get_corrected_answers_by_game(game_id=game_id)
+    domain_answers = answer_service.get_corrected_answers_by_game(
+        game_id=game_id,
+        limit=10,
+    )
 
     # 도메인 모델을 DTO로 변환
     answer_dtos = []
@@ -352,3 +355,15 @@ def get_game_ranking(
             answer_dtos.append(AnswerUserResponseDTO.model_validate(answer_dict))
 
     return answer_dtos
+
+
+@router.post("/user/calculate")
+@inject
+async def calculate_total_user_point(
+    game_id: str,
+    answer_service: AnswerService = Depends(Provide[Container.answer_service]),
+    current_user: CurrentUser = Depends(get_admin_user),
+):
+    answer_service.update_total_user_point(game_id=game_id)
+
+    return {"message": "Total user point calculated successfully"}

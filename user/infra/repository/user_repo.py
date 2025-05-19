@@ -165,6 +165,7 @@ class UserRepository(IUserRepository):
             user.updated_at = user_vo.updated_at
             user.memo = user_vo.memo
             user.coin = user_vo.coin
+            user.point = user_vo.point
 
             db.commit()
             return user_vo

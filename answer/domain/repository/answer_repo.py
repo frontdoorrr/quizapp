@@ -27,7 +27,7 @@ class IAnswerRepository(metaclass=ABCMeta):
         raise NotImplementedError
 
     @abstractmethod
-    def find_corrected_by_game_id(self, game_id: str) -> list[Answer]:
+    def find_corrected_by_game_id(self, game_id: str, limit: int = 10) -> list[Answer]:
         raise NotImplementedError
 
     @abstractmethod

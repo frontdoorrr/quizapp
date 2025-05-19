@@ -48,3 +48,19 @@ class GameResponseDTO(GameBase):
     answer: str | None
     question_link: str | None
     answer_link: str | None
+
+class CurrentGameResponseDTO(GameBase):
+    id: str
+    number: int
+    created_at: datetime
+    modified_at: datetime
+    opened_at: datetime | None
+    closed_at: datetime | None
+    title: str
+    description: str
+    status: str
+    memo: str | None
+    question: str
+    # answer: str | None
+    question_link: str | None
+    # answer_link: str | None
