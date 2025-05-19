@@ -332,8 +332,10 @@ def get_game_ranking(
     game_id: str,
     answer_service: AnswerService = Depends(Provide[Container.answer_service]),
 ) -> list[AnswerUserResponseDTO]:
-    domain_answers = answer_service.get_corrected_answers_by_game(game_id=game_id, limit=10)
-    
+    domain_answers = answer_service.get_corrected_answers_by_game(
+        game_id=game_id,
+        limit=10,
+    )
 
     # 도메인 모델을 DTO로 변환
     answer_dtos = []
@@ -354,14 +356,14 @@ def get_game_ranking(
 
     return answer_dtos
 
+
 @router.post("/user/calculate")
 @inject
 async def calculate_total_user_point(
     game_id: str,
     answer_service: AnswerService = Depends(Provide[Container.answer_service]),
     current_user: CurrentUser = Depends(get_admin_user),
-
 ):
     answer_service.update_total_user_point(game_id=game_id)
-    
+
     return {"message": "Total user point calculated successfully"}
