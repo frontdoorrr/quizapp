@@ -6,7 +6,12 @@ from containers import Container
 
 from game.application.game_service import GameService
 from game.domain.game import GameStatus
-from game.interface.dtos.game_dtos import GameCreateDTO, GameResponseDTO, GameUpdateDTO, CurrentGameResponseDTO
+from game.interface.dtos.game_dtos import (
+    GameCreateDTO,
+    GameResponseDTO,
+    GameUpdateDTO,
+    CurrentGameResponseDTO,
+)
 from common.auth import CurrentUser, get_admin_user
 
 router = APIRouter(prefix="/game", tags=["game"])
@@ -206,21 +211,12 @@ def delete_game(
     game_id: str,
     game_service: GameService = Depends(Provide[Container.game_service]),
     current_user: CurrentUser = Depends(get_admin_user),
-) -> GameResponseDTO:
+):
     game = game_service.delete_game(game_id)
-    return GameResponseDTO(
-        id=game.id,
-        number=game.number,
-        title=game.title,
-        description=game.description,
-        status=game.status,
-        created_at=game.created_at,
-        modified_at=game.modified_at,
-        opened_at=game.opened_at,
-        closed_at=game.closed_at,
-        question=game.question,
-        # answer=game.answer,
-        question_link=game.question_link,
-        # answer_link=game.answer_link,
-        memo=game.memo,
-    )
+
+    return {
+        "id": game.id,
+        "number": game.number,
+        "title": game.title,
+        "description": game.description,
+    }
