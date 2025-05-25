@@ -31,7 +31,15 @@ class AnswerResponseDTO(AnswerBase):
     pass
 
 
-class AnswerUserResponseDTO(AnswerBase):
+class AnswerUserResponseDTO(BaseModel):
+    id: str
+    game_id: str
+    user_id: str
+    # answer: str
+    is_correct: bool
+    solved_at: datetime | None
+    created_at: datetime
+    updated_at: datetime
     user: UserResponseDTO | None = None
 
 
